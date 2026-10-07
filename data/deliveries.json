@@ -1,0 +1,24 @@
+[
+  {
+    "order_id": "ORD-123",
+    "delivered_at": "2026-09-24T21:55:00",
+    "status": "DELIVERED",
+    "delivered_weight": 1.0,
+    "items": [
+      {
+        "item_id": "ITEM-001",
+        "quantity": 2
+      },
+      {
+        "item_id": "ITEM-002",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "order_id": "ORD-124",
+    "delivered_at": "2026-09-24T19:20:00",
+    "status": "DELIVERED",
+    "delivered_weight": 1.5
+  }
+]

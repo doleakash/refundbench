@@ -1,0 +1,27 @@
+[
+  {
+    "case_id": "CASE-001",
+    "customer_message": "My order was delivered late. Can I get a refund?",
+    "order_id": "ORD-123"
+  },
+  {
+    "case_id": "CASE-002",
+    "customer_message": "My order arrived on time. Can I get a refund?",
+    "order_id": "ORD-124"
+  },
+  {
+    "case_id": "CASE-003",
+    "customer_message": "Why was my order cancelled?",
+    "order_id": "ORD-125"
+  },
+  {
+    "case_id": "CASE-004",
+    "customer_message": "My order was delivered late. Can I get a refund?",
+    "order_id": "ORD-126"
+  },
+  {
+    "case_id": "CASE-005",
+    "customer_message": "Where is my order?",
+    "order_id": "ORD-999"
+  }
+]

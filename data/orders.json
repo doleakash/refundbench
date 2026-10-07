@@ -1,0 +1,51 @@
+[
+  {
+    "order_id": "ORD-123",
+    "customer_id": "CUS-001",
+    "expected_delivery_at": "2026-09-24T20:45:00",
+    "status": "DELIVERED",
+    "total_amount": 1340,
+    "order_weight": 2.0,
+    "items": [
+      {
+        "item_id": "ITEM-001",
+        "name": "Biryani",
+        "quantity": 4,
+        "unit_price": 320
+      },
+      {
+        "item_id": "ITEM-002",
+        "name": "Raita",
+        "quantity": 1,
+        "unit_price": 60
+      }
+    ]
+  },
+  {
+    "order_id": "ORD-124",
+    "customer_id": "CUS-002",
+    "expected_delivery_at": "2026-09-24T19:30:00",
+    "status": "DELIVERED",
+    "total_amount": 800,
+    "order_weight": 1.5,
+    "items": []
+  },
+  {
+    "order_id": "ORD-125",
+    "customer_id": "CUS-003",
+    "expected_delivery_at": "2026-09-24T18:00:00",
+    "status": "CANCELLED",
+    "total_amount": 500,
+    "order_weight": 1.0,
+    "items": []
+  },
+  {
+    "order_id": "ORD-126",
+    "customer_id": "CUS-004",
+    "expected_delivery_at": "2026-09-24T20:00:00",
+    "status": "DELIVERED",
+    "total_amount": 900,
+    "order_weight": 1.8,
+    "items": []
+  }
+]
