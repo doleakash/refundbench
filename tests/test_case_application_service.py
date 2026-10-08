@@ -1,4 +1,5 @@
 import json
+from types import SimpleNamespace
 
 from app.agent.state import AgentState
 from app.application.cases.repository import InMemoryCaseRepository
@@ -64,7 +65,10 @@ def test_case_service_stores_case_and_owns_refund_lifecycle(tmp_path):
 	assert state.timing_events[-1].stage == "REFUND_ACCEPTANCE:REFUNDED"
 
 
-def test_case_api_preserves_case_and_refund_response_contract(tmp_path):
+def test_case_api_preserves_case_and_refund_response_contract(
+	tmp_path,
+	monkeypatch,
+):
 	(tmp_path / "orders.json").write_text(
 		json.dumps([{"order_id": "ORD-123"}]),
 		encoding="utf-8",
@@ -79,11 +83,21 @@ def test_case_api_preserves_case_and_refund_response_contract(tmp_path):
 			reason="Approved.",
 		),
 	)
+	runner_calls = []
+
+	def run_agent(**kwargs):
+		runner_calls.append(kwargs)
+		return state
+
 	service = CaseApplicationService(
 		cases=InMemoryCaseRepository(),
 		orders=JSONOrderRepository(tmp_path),
 		refund_workflow=RefundWorkflow(),
-		agent_runner=lambda **kwargs: state,
+		agent_runner=run_agent,
+	)
+	monkeypatch.setattr(
+		"app.application.cases.service.get_settings",
+		lambda: SimpleNamespace(max_customer_message_length=50),
 	)
 	client = TestClient(create_api_app(service))
 
@@ -98,7 +112,20 @@ def test_case_api_preserves_case_and_refund_response_contract(tmp_path):
 	)
 	assert created.status_code == 200
 	assert created.json()["case_id"] == "CASE-API"
+	assert created.json()["intent"] == "GENERAL_SUPPORT"
 	assert client.get("/cases/CASE-API").json() == created.json()
+	assert len(runner_calls) == 1
+
+	too_long = client.post(
+		"/cases",
+		json={
+			"order_id": "ORD-123",
+			"customer_message": "x" * 51,
+		},
+	)
+	assert too_long.status_code == 422
+	assert "maximum length of 50 characters" in too_long.json()["detail"]
+	assert len(runner_calls) == 1
 
 	accepted = client.post("/cases/CASE-API/refund/accept")
 	assert accepted.status_code == 200

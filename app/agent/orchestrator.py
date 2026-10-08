@@ -136,6 +136,12 @@ def _get_deterministic_next_action(
 
 		return Action.EXTRACT_GRIEVANCES
 
+	if (
+		completed_action is Action.EXTRACT_GRIEVANCES
+		and state.escalation_reason is not None
+	):
+		return Action.ESCALATE
+
 	transitions = {
 		Action.EXTRACT_GRIEVANCES: Action.GET_EVIDENCE,
 		Action.GET_EVIDENCE: Action.RUN_JUDGES,

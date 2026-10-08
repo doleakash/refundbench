@@ -36,6 +36,7 @@ class GrievanceResult(BaseModel):
 	grievance_id: str
 	type: str
 	claim: str
+	raw_claims: list[str] = Field(default_factory=list)
 	evidence: EvidenceResult | None = None
 	judgments: list[JudgmentResult] = Field(default_factory=list)
 	consensus: str | None = None
@@ -45,6 +46,7 @@ class GrievanceResult(BaseModel):
 class CaseResult(BaseModel):
 	case_id: str
 	order_id: str
+	intent: str
 	status: str
 	response: str | None
 	settlement: SettlementResult | None

@@ -54,6 +54,7 @@ flowchart TD
 │   ├── response/              # Customer response generation
 │   ├── settlement/            # Settlement and refund lifecycle
 │   └── bootstrap.py           # Dependency wiring and API app factory
+├── benchmark/                 # Golden-set runner, comparator, and result models
 ├── config/                    # Environment settings and logging setup
 ├── data/                      # JSON orders, deliveries, and agent test cases
 ├── frontend/                  # Streamlit UI and HTTP API client
@@ -73,12 +74,20 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Configure the required OpenAI settings in the environment or a root `.env`
-file:
+Configure the required API key and model in the environment or a root `.env`
+file. OpenAI is the default provider:
 
 ```dotenv
 OPENAI_API_KEY=your_api_key
 OPEN_AI_MODEL=your_model_name
+```
+
+To use Groq instead, set `LLM_PROVIDER=GROQ`; `LLM_BASE_URL` is optional and
+defaults to Groq's OpenAI-compatible endpoint. OpenAI uses the SDK's default
+endpoint unless `LLM_BASE_URL` is explicitly set:
+
+```dotenv
+LLM_PROVIDER=GROQ
 ```
 
 Start the FastAPI backend:

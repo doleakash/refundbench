@@ -19,6 +19,7 @@ from app.infrastructure.observability import TimingEvent, log_timing_event
 from config.settings import get_settings
 
 _LLM_RETRY_BACKOFF = 0.25
+_GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
 
 class LLMModel(AgentModel):
@@ -37,11 +38,19 @@ class LLMModel(AgentModel):
         self.model = model
         self.max_retries = settings.max_llm_retries
 
-        self.client = OpenAI(
-            api_key=api_key,
-            timeout=settings.llm_timeout,
-            max_retries=0,
-        )
+        client_options = {
+            "api_key": api_key,
+            "timeout": settings.llm_timeout,
+            "max_retries": 0,
+        }
+        base_url = settings.llm_base_url
+        if settings.llm_provider == "GROQ":
+            base_url = base_url or _GROQ_BASE_URL
+
+        if base_url:
+            self.client = OpenAI(**client_options, base_url=base_url)
+        else:
+            self.client = OpenAI(**client_options)
 
     def complete(
         self,

@@ -13,6 +13,7 @@ from app.infrastructure.observability import TimingEvent, log_timing_event
 from app.settlement.refund_ledger import RefundRecord
 from app.settlement.refund_workflow import RefundWorkflow
 from app.settlement.settlement import SettlementStatus
+from config.settings import get_settings
 
 logger = logging.getLogger(__name__)
 AgentRunner = Callable[..., AgentState]
@@ -40,11 +41,17 @@ class CaseApplicationService:
 		customer_message: str,
 	) -> AgentState:
 		order_id = order_id.strip()
-		customer_message = customer_message.strip()
-		if not order_id or not customer_message:
+		if not order_id or not customer_message.strip():
 			raise InvalidCaseRequest(
 				"Order ID and customer complaint are required."
 			)
+		max_length = get_settings().max_customer_message_length
+		if len(customer_message) > max_length:
+			raise InvalidCaseRequest(
+				"Customer message exceeds the maximum length "
+				f"of {max_length} characters."
+			)
+		customer_message = customer_message.strip()
 
 		state = self.agent_runner(
 			customer_message=customer_message,

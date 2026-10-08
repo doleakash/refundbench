@@ -1,8 +1,11 @@
+import json
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from time import perf_counter
 from typing import Callable
 
 from app.agent.state import Action, AgentState
+from app.domain.models import CustomerIntent
 from app.evaluation.consensus import Consensus
 from app.evaluation.evidence import get_evidence
 from app.evaluation.extractor import GrievanceExtractor
@@ -15,6 +18,8 @@ from app.settlement.settlement import Settlement
 from config.settings import get_settings
 
 MAX_PARALLEL_JUDGE_CALLS = get_settings().max_parallel_judge_calls
+MAX_GRIEVANCES = get_settings().max_grievances
+logger = logging.getLogger(__name__)
 TimingRecorder = Callable[
 	[AgentState, str, float, bool, str | None],
 	None,
@@ -72,6 +77,72 @@ class AgentActionHandlers:
 				state.customer_message,
 				case_id=state.case_id,
 				order_id=state.order_id,
+			)
+			state.intent = getattr(
+				extractor,
+				"intent",
+				CustomerIntent.GENERAL_SUPPORT,
+			)
+			raw_claims = getattr(extractor, "raw_claims", [])
+			limit_exceeded = len(state.grievances) > MAX_GRIEVANCES
+			if limit_exceeded:
+				state.escalation_reason = (
+					f"Case has {len(state.grievances)} normalized grievances, "
+					f"exceeding the limit of {MAX_GRIEVANCES}; "
+					"human review is required."
+				)
+				state.observations.append(state.escalation_reason)
+			logger.info(
+				"intent_classification %s",
+				json.dumps({
+					"case_id": state.case_id,
+					"order_id": state.order_id,
+					"llm_extraction": {
+						"intent": state.intent.value,
+						"raw_claim_count": len(raw_claims),
+						"raw_claims": [
+							claim.model_dump(mode="json")
+							for claim in raw_claims
+						],
+					},
+					"normalization": {
+						"normalized_grievance_count": len(
+							state.grievances
+						),
+						"normalized_grievances": [
+							{
+								"grievance_id": grievance.grievance_id,
+								"type": grievance.type.value,
+								"claim": grievance.claim,
+								"raw_claim_count": len(
+									grievance.raw_claims
+								),
+								"raw_claims": grievance.raw_claims,
+							}
+							for grievance in state.grievances
+						],
+						"merged_claims": [
+							{
+								"grievance_id": grievance.grievance_id,
+								"raw_claims": grievance.raw_claims,
+							}
+							for grievance in state.grievances
+							if len(grievance.raw_claims) > 1
+						],
+						"ambiguous_claims": [
+							claim.model_dump(mode="json")
+							for claim in raw_claims
+							if claim.ambiguous
+						],
+						"grievance_limit": MAX_GRIEVANCES,
+						"limit_exceeded": limit_exceeded,
+						"escalation_reason": (
+							state.escalation_reason
+							if limit_exceeded
+							else None
+						),
+					},
+				}),
 			)
 			succeeded = True
 		finally:

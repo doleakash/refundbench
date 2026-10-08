@@ -44,6 +44,7 @@ def case_to_response(state: AgentState) -> CaseResult:
 				grievance_id=grievance_id,
 				type=grievance.type.value,
 				claim=grievance.claim,
+				raw_claims=grievance.raw_claims,
 				evidence=(
 					EvidenceResult(
 						source=evidence.source,
@@ -79,6 +80,7 @@ def case_to_response(state: AgentState) -> CaseResult:
 	return CaseResult(
 		case_id=state.case_id,
 		order_id=state.order_id,
+		intent=state.intent.value,
 		status=status,
 		response=state.response,
 		settlement=settlement_result,

@@ -4,7 +4,8 @@ from pathlib import Path
 
 from app.agent.orchestrator import run_agent
 from app.agent.state import Action, AgentDecision, AgentModel
-from app.domain.models import Grievance, GrievanceType
+from app.domain.models import CustomerIntent, Grievance, GrievanceType
+from app.evaluation.extractor import RawClaim
 from app.evaluation.judge import Judgment
 
 DATA_FILE = (
@@ -101,8 +102,53 @@ def load_test_cases():
 		return json.load(f)
 
 
-def test_agent_cases():
+def test_agent_cases(monkeypatch):
 	test_cases = load_test_cases()
+
+	class FakeExtractor:
+		model = "test-model"
+		intent = CustomerIntent.REFUND_REQUEST
+		raw_claims = []
+
+		def extract(self, customer_message, case_id=None, order_id=None):
+			if "delivered late" not in customer_message.lower():
+				return []
+			self.raw_claims = [
+				RawClaim(
+					raw_claim="My order was delivered late",
+					type=GrievanceType.LATE_DELIVERY,
+				)
+			]
+			return [
+				Grievance(
+					grievance_id="G1",
+					type=GrievanceType.LATE_DELIVERY,
+					claim="My order was delivered late",
+					raw_claims=[
+						"My order was delivered late",
+					],
+				)
+			]
+
+	class FakeJudge:
+		model = "test-model"
+
+		def judge(self, grievance, evidence, case_id=None, order_id=None):
+			return Judgment(
+				grievance_id=grievance.grievance_id,
+				verdict="UPHELD",
+				reason="Test evidence supports the grievance.",
+				confidence=0.9,
+			)
+
+	monkeypatch.setattr(
+		"app.agent.action_handlers.GrievanceExtractor",
+		FakeExtractor,
+	)
+	monkeypatch.setattr(
+		"app.agent.action_handlers.Judge",
+		FakeJudge,
+	)
 
 	for case in test_cases:
 		fake_model = FullPipelineModel()
@@ -150,6 +196,30 @@ def test_agent_captures_tool_failure(monkeypatch):
 def test_agent_retries_transient_tool_failure(monkeypatch):
 	calls = 0
 
+	class FakeExtractor:
+		model = "test-model"
+		intent = CustomerIntent.ORDER_SUPPORT
+
+		def extract(self, customer_message, case_id=None, order_id=None):
+			return [
+				Grievance(
+					grievance_id="G1",
+					type=GrievanceType.LATE_DELIVERY,
+					claim="The order was late.",
+				)
+			]
+
+	class FakeJudge:
+		model = "test-model"
+
+		def judge(self, grievance, evidence, case_id=None, order_id=None):
+			return Judgment(
+				grievance_id=grievance.grievance_id,
+				verdict="UPHELD",
+				reason="Evidence supports the grievance.",
+				confidence=0.9,
+			)
+
 	original_get_order = __import__(
 		"app.agent.action_handlers",
 		fromlist=["get_order"],
@@ -167,6 +237,14 @@ def test_agent_retries_transient_tool_failure(monkeypatch):
 	monkeypatch.setattr(
 		"app.agent.action_handlers.get_order",
 		flaky_get_order,
+	)
+	monkeypatch.setattr(
+		"app.agent.action_handlers.GrievanceExtractor",
+		FakeExtractor,
+	)
+	monkeypatch.setattr(
+		"app.agent.action_handlers.Judge",
+		FakeJudge,
 	)
 
 	state = run_agent(
@@ -230,13 +308,30 @@ def test_agent_rejects_repeated_successful_action_but_allows_retry(monkeypatch):
 	)
 
 
-def test_agent_uses_deterministic_happy_path(monkeypatch):
+def test_agent_uses_deterministic_happy_path(monkeypatch, caplog):
+	caplog.set_level("INFO")
+
 	class NoDecisionModel(AgentModel):
 		def decide(self, state):
 			raise AssertionError("Agent decision model must not be called")
 
 	class FakeExtractor:
 		model = "test-model"
+		intent = CustomerIntent.REFUND_REQUEST
+		raw_claims = [
+			RawClaim(
+				raw_claim="Late delivery",
+				type=GrievanceType.LATE_DELIVERY,
+			),
+			RawClaim(
+				raw_claim="Missing items",
+				type=GrievanceType.MISSING_ITEMS,
+			),
+			RawClaim(
+				raw_claim="Leaked container",
+				type=GrievanceType.LEAKED_ITEM,
+			),
+		]
 
 		def extract(self, customer_message, case_id=None, order_id=None):
 			return [
@@ -296,6 +391,21 @@ def test_agent_uses_deterministic_happy_path(monkeypatch):
 		"STOP",
 	]
 	assert state.settlement.total_refund == 740.0
+	assert state.intent is CustomerIntent.REFUND_REQUEST
+	intent_log = next(
+		record.getMessage()
+		for record in caplog.records
+		if record.getMessage().startswith("intent_classification ")
+	)
+	intent_result = json.loads(intent_log.removeprefix(
+		"intent_classification "
+	))
+	assert intent_result["case_id"] == state.case_id
+	assert intent_result["order_id"] == state.order_id
+	assert intent_result["llm_extraction"]["intent"] == "REFUND_REQUEST"
+	assert intent_result["llm_extraction"]["raw_claim_count"] == 3
+	assert intent_result["normalization"]["normalized_grievance_count"] == 3
+	assert intent_result["normalization"]["limit_exceeded"] is False
 	assert sum(
 		event.stage == "LLM_EXTRACT_GRIEVANCES"
 		for event in state.timing_events
@@ -371,3 +481,124 @@ def test_missing_delivery_escalates_without_llm_calls():
 	)
 	assert not state.grievances
 	assert not any(event.model is not None for event in state.timing_events)
+
+
+def test_grievance_limit_escalates_before_evidence_and_judging(
+	monkeypatch,
+	caplog,
+):
+	caplog.set_level("INFO")
+	downstream_calls = {"evidence": 0, "judge": 0}
+
+	class FakeExtractor:
+		model = "test-model"
+		intent = CustomerIntent.REFUND_REQUEST
+		raw_claims = [
+			RawClaim(
+				raw_claim="The food was spicy",
+				type=GrievanceType.FOOD_QUALITY,
+			),
+			RawClaim(
+				raw_claim="The food was burned",
+				type=GrievanceType.FOOD_QUALITY,
+			),
+			RawClaim(
+				raw_claim="The container leaked",
+				type=GrievanceType.LEAKED_ITEM,
+			),
+			RawClaim(
+				raw_claim="The food seemed strange",
+				type=GrievanceType.FOOD_QUALITY,
+				ambiguous=True,
+			),
+		]
+
+		def extract(self, customer_message, case_id=None, order_id=None):
+			return [
+				Grievance(
+					grievance_id="G1",
+					type=GrievanceType.FOOD_QUALITY,
+					claim="The food was spicy; The food was burned",
+					raw_claims=[
+						"The food was spicy",
+						"The food was burned",
+					],
+				),
+				Grievance(
+					grievance_id="G2",
+					type=GrievanceType.LEAKED_ITEM,
+					claim="The container leaked",
+					raw_claims=["The container leaked"],
+				),
+				Grievance(
+					grievance_id="G3",
+					type=GrievanceType.FOOD_QUALITY,
+					claim="The food seemed strange",
+					raw_claims=["The food seemed strange"],
+				),
+			]
+
+	class FakeJudge:
+		def __init__(self):
+			downstream_calls["judge"] += 1
+
+	def fake_get_evidence(*args, **kwargs):
+		downstream_calls["evidence"] += 1
+		raise AssertionError("Evidence must not run after claim-limit escalation")
+
+	monkeypatch.setattr(
+		"app.agent.action_handlers.GrievanceExtractor",
+		FakeExtractor,
+	)
+	monkeypatch.setattr("app.agent.action_handlers.MAX_GRIEVANCES", 1)
+	monkeypatch.setattr(
+		"app.agent.action_handlers.get_evidence",
+		fake_get_evidence,
+	)
+	monkeypatch.setattr("app.agent.action_handlers.Judge", FakeJudge)
+
+	state = run_agent(
+		customer_message="My order was late and items were missing.",
+		order_id="ORD-123",
+		case_id="CASE-CLAIM-LIMIT",
+	)
+
+	assert state.actions == [
+		Action.GET_ORDER.value,
+		Action.GET_DELIVERY.value,
+		Action.EXTRACT_GRIEVANCES.value,
+		Action.ESCALATE.value,
+	]
+	assert state.escalation_reason is not None
+	assert "exceeding the limit of 1" in state.escalation_reason
+	assert state.intent is CustomerIntent.REFUND_REQUEST
+	assert len(state.grievances) == 3
+	assert not state.evidence
+	assert not state.judgments
+	assert not state.policy_decisions
+	assert state.settlement is None
+	assert downstream_calls == {"evidence": 0, "judge": 0}
+
+	event = next(
+		record.getMessage()
+		for record in caplog.records
+		if record.getMessage().startswith("intent_classification ")
+	)
+	details = json.loads(event.removeprefix("intent_classification "))
+	assert details["llm_extraction"]["intent"] == "REFUND_REQUEST"
+	assert details["llm_extraction"]["raw_claim_count"] == 4
+	assert details["llm_extraction"]["raw_claims"][-1]["ambiguous"]
+	assert details["normalization"]["normalized_grievance_count"] == 3
+	assert details["normalization"]["merged_claims"] == [{
+		"grievance_id": "G1",
+		"raw_claims": ["The food was spicy", "The food was burned"],
+	}]
+	assert details["normalization"]["grievance_limit"] == 1
+	assert details["normalization"]["limit_exceeded"] is True
+	assert details["normalization"]["escalation_reason"] == (
+		state.escalation_reason
+	)
+	assert any(
+		event.stage == "LLM_EXTRACT_GRIEVANCES" and event.success
+		for event in state.timing_events
+	)

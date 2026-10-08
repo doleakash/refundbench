@@ -14,7 +14,7 @@ def to_http_exception(error: CaseApplicationError) -> HTTPException:
 	if isinstance(error, InvalidCaseRequest):
 		return HTTPException(
 			status_code=422,
-			detail="Order ID and customer complaint are required.",
+			detail=str(error),
 		)
 	if isinstance(error, RefundNotAcceptable):
 		return HTTPException(

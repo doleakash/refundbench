@@ -3,7 +3,7 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
-from app.domain.models import Delivery, Grievance, Order
+from app.domain.models import CustomerIntent, Delivery, Grievance, Order
 from app.infrastructure.observability import TimingEvent
 
 
@@ -25,6 +25,7 @@ class AgentState(BaseModel):
     customer_message: str
     order_id: str
     case_id: str
+    intent: CustomerIntent = CustomerIntent.GENERAL_SUPPORT
 
     # Agent execution state
     actions: list[str] = Field(default_factory=list)

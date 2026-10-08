@@ -101,6 +101,50 @@ def test_llm_invalid_decision_output_is_not_retried(monkeypatch):
     assert error.value.__cause__ is not None
 
 
+@pytest.mark.parametrize(
+    ("provider", "configured_base_url", "expected_base_url"),
+    [
+        (None, None, None),
+        ("GROQ", None, "https://api.groq.com/openai/v1"),
+        ("GROQ", "https://groq.example/v1", "https://groq.example/v1"),
+    ],
+)
+def test_llm_client_uses_configured_provider_endpoint(
+    monkeypatch,
+    provider,
+    configured_base_url,
+    expected_base_url,
+):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("OPEN_AI_MODEL", "test-model")
+    if provider is None:
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+    else:
+        monkeypatch.setenv("LLM_PROVIDER", provider)
+    if configured_base_url is None:
+        monkeypatch.delenv("LLM_BASE_URL", raising=False)
+    else:
+        monkeypatch.setenv("LLM_BASE_URL", configured_base_url)
+
+    captured = {}
+
+    def openai_client(**kwargs):
+        captured.update(kwargs)
+        return SimpleNamespace()
+
+    monkeypatch.setattr("app.infrastructure.llm_model.OpenAI", openai_client)
+
+    LLMModel()
+
+    assert captured["api_key"] == "test-key"
+    assert captured["timeout"] > 0
+    assert captured["max_retries"] == 0
+    if expected_base_url is None:
+        assert "base_url" not in captured
+    else:
+        assert captured["base_url"] == expected_base_url
+
+
 def main():
     state = AgentState(
         customer_message="My order ORD-123 was delivered late. Can I get a refund?",
