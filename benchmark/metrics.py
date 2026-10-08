@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from benchmark.models import BenchmarkResult
+from benchmark.models import BenchmarkResult, CasePerformance
 
 
 class BenchmarkMetrics(BaseModel):
@@ -13,6 +13,16 @@ class BenchmarkMetrics(BaseModel):
 	escalation_accuracy: float
 	refund_status_accuracy: float | None
 	idempotency_key_accuracy: float | None
+
+
+class PerformanceMetrics(BaseModel):
+	case_latencies_ms: dict[str, float | None]
+	average_latency_ms: float
+	p50_latency_ms: float
+	p95_latency_ms: float
+	average_llm_call_count: float
+	average_judge_call_count: float
+	total_retry_count: int
 
 
 def calculate_metrics(
@@ -65,4 +75,58 @@ def calculate_metrics(
 		idempotency_key_accuracy=optional_accuracy(
 			"settlement.idempotency_key"
 		),
+	)
+
+
+def calculate_performance_metrics(
+	results: list[BenchmarkResult],
+) -> PerformanceMetrics:
+	performance = [
+		result.performance or CasePerformance()
+		for result in results
+	]
+	latencies = sorted(
+		item.latency_ms
+		for item in performance
+		if item.latency_ms is not None
+	)
+
+	def percentile(percent: float) -> float:
+		if not latencies:
+			return 0.0
+		position = (len(latencies) - 1) * percent
+		lower = int(position)
+		upper = min(lower + 1, len(latencies) - 1)
+		fraction = position - lower
+		return (
+			latencies[lower] * (1 - fraction)
+			+ latencies[upper] * fraction
+		)
+
+	total = len(results)
+	return PerformanceMetrics(
+		case_latencies_ms={
+			result.case_id: (
+				result.performance.latency_ms
+				if result.performance is not None
+				else None
+			)
+			for result in results
+		},
+		average_latency_ms=(
+			sum(latencies) / len(latencies) if latencies else 0.0
+		),
+		p50_latency_ms=percentile(0.5),
+		p95_latency_ms=percentile(0.95),
+		average_llm_call_count=(
+			sum(item.llm_call_count for item in performance) / total
+			if total
+			else 0.0
+		),
+		average_judge_call_count=(
+			sum(item.judge_call_count for item in performance) / total
+			if total
+			else 0.0
+		),
+		total_retry_count=sum(item.retry_count for item in performance),
 	)

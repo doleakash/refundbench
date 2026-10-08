@@ -1,5 +1,12 @@
-from benchmark.metrics import calculate_metrics
-from benchmark.models import BenchmarkResult, FieldComparison
+from benchmark.metrics import (
+	calculate_metrics,
+	calculate_performance_metrics,
+)
+from benchmark.models import (
+	BenchmarkResult,
+	CasePerformance,
+	FieldComparison,
+)
 
 
 def make_result(
@@ -97,3 +104,67 @@ def test_metrics_reports_optional_fields_as_not_applicable():
 
 	assert metrics.refund_status_accuracy is None
 	assert metrics.idempotency_key_accuracy is None
+
+
+def test_performance_metrics_aggregate_case_execution_data():
+	results = [
+		BenchmarkResult(
+			case_id="CASE-001",
+			passed=True,
+			comparisons=[],
+			performance=CasePerformance(
+				latency_ms=100,
+				llm_call_count=4,
+				judge_call_count=3,
+				retry_count=1,
+			),
+		),
+		BenchmarkResult(
+			case_id="CASE-002",
+			passed=False,
+			comparisons=[],
+			performance=CasePerformance(
+				latency_ms=200,
+				llm_call_count=2,
+				judge_call_count=1,
+				retry_count=2,
+			),
+		),
+		BenchmarkResult(
+			case_id="CASE-003",
+			passed=True,
+			comparisons=[],
+			performance=CasePerformance(
+				latency_ms=300,
+				llm_call_count=0,
+				judge_call_count=0,
+				retry_count=0,
+			),
+		),
+	]
+
+	metrics = calculate_performance_metrics(results)
+
+	assert metrics.case_latencies_ms == {
+		"CASE-001": 100,
+		"CASE-002": 200,
+		"CASE-003": 300,
+	}
+	assert metrics.average_latency_ms == 200
+	assert metrics.p50_latency_ms == 200
+	assert metrics.p95_latency_ms == 290
+	assert metrics.average_llm_call_count == 2
+	assert metrics.average_judge_call_count == 4 / 3
+	assert metrics.total_retry_count == 3
+
+
+def test_performance_metrics_empty_results_are_zero():
+	metrics = calculate_performance_metrics([])
+
+	assert metrics.case_latencies_ms == {}
+	assert metrics.average_latency_ms == 0
+	assert metrics.p50_latency_ms == 0
+	assert metrics.p95_latency_ms == 0
+	assert metrics.average_llm_call_count == 0
+	assert metrics.average_judge_call_count == 0
+	assert metrics.total_retry_count == 0

@@ -9,13 +9,17 @@ from app.bootstrap import build_container
 from app.policy.engine import PolicyAction
 from app.settlement.refund_ledger import RefundRecord
 from benchmark.comparator import compare_outcomes
-from benchmark.metrics import calculate_metrics
+from benchmark.metrics import (
+	calculate_metrics,
+	calculate_performance_metrics,
+)
 from benchmark.models import (
 	ActualGrievance,
 	ActualJudgement,
 	ActualOutcome,
 	ActualSettlement,
 	BenchmarkResult,
+	CasePerformance,
 	GoldenCase,
 )
 
@@ -162,11 +166,36 @@ def _run_case(
 		customer_message=golden_case.customer_message,
 	)
 
-	return compare_outcomes(
+	result = compare_outcomes(
 		case_id=golden_case.case_id,
 		expected=golden_case.expected,
 		actual=_actual_outcome(state, service),
 	)
+	total_event = next(
+		(
+			event
+			for event in state.timing_events
+			if event.stage == "TOTAL_AGENT"
+		),
+		None,
+	)
+	llm_events = [
+		event
+		for event in state.timing_events
+		if event.model is not None
+	]
+	result.performance = CasePerformance(
+		latency_ms=(
+			total_event.duration_ms if total_event is not None else None
+		),
+		llm_call_count=len(llm_events),
+		judge_call_count=sum(
+			event.stage.startswith("LLM_JUDGE:")
+			for event in llm_events
+		),
+		retry_count=sum(state.tool_retry_count.values()),
+	)
+	return result
 
 
 def run_benchmark(
@@ -227,6 +256,7 @@ def main() -> None:
 			print(result)
 
 	metrics = calculate_metrics(results)
+	performance = calculate_performance_metrics(results)
 
 	print()
 	print(f"Cases:                  {len(results)}")
@@ -256,6 +286,25 @@ def main() -> None:
 			else "N/A"
 		)
 	)
+	print()
+	print("Performance")
+	for case_id, latency_ms in performance.case_latencies_ms.items():
+		print(
+			f"  {case_id} end-to-end latency: "
+			+ (f"{latency_ms:.2f} ms" if latency_ms is not None else "N/A")
+		)
+	print(f"  Average latency:       {performance.average_latency_ms:.2f} ms")
+	print(f"  P50 latency:           {performance.p50_latency_ms:.2f} ms")
+	print(f"  P95 latency:           {performance.p95_latency_ms:.2f} ms")
+	print(
+		f"  Average LLM calls:     "
+		f"{performance.average_llm_call_count:.2f}"
+	)
+	print(
+		f"  Average judge calls:   "
+		f"{performance.average_judge_call_count:.2f}"
+	)
+	print(f"  Total retries:         {performance.total_retry_count}")
 
 
 if __name__ == "__main__":

@@ -79,7 +79,15 @@ class FieldComparison(BaseModel):
 	passed: bool
 
 
+class CasePerformance(BaseModel):
+	latency_ms: float | None = None
+	llm_call_count: int = 0
+	judge_call_count: int = 0
+	retry_count: int = 0
+
+
 class BenchmarkResult(BaseModel):
 	case_id: str
 	passed: bool
 	comparisons: list[FieldComparison]
+	performance: CasePerformance | None = None
