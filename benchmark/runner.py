@@ -9,9 +9,10 @@ from app.bootstrap import build_container
 from app.policy.engine import PolicyAction
 from app.settlement.refund_ledger import RefundRecord
 from benchmark.comparator import compare_outcomes
+from benchmark.metrics import calculate_metrics
 from benchmark.models import (
-	ActualJudgement,
 	ActualGrievance,
+	ActualJudgement,
 	ActualOutcome,
 	ActualSettlement,
 	BenchmarkResult,
@@ -28,6 +29,7 @@ GOLDEN_SET_PATH = (
 def load_golden_cases(path: Path = GOLDEN_SET_PATH) -> list[GoldenCase]:
 	with path.open(encoding="utf-8") as golden_set_file:
 		data = json.load(golden_set_file)
+
 	raw_cases = data if isinstance(data, list) else [data]
 	return [GoldenCase.model_validate(case) for case in raw_cases]
 
@@ -40,12 +42,11 @@ def _actual_outcome(
 	refund = case_service.refund_workflow.settlement.ledger.get_refund(
 		state.order_id
 	)
+
 	return ActualOutcome(
 		intent=state.intent.value,
 		grievances=[
-			ActualGrievance(
-				type=grievance.type.value,
-			)
+			ActualGrievance(type=grievance.type.value)
 			for grievance in state.grievances
 		],
 		judgements=[
@@ -72,9 +73,13 @@ def _actual_outcome(
 				if settlement is not None
 				else 0.0
 			),
-			refund_status=refund.status if refund is not None else None,
+			refund_status=(
+				refund.status if refund is not None else None
+			),
 			idempotency_key=(
-				refund.idempotency_key if refund is not None else None
+				refund.idempotency_key
+				if refund is not None
+				else None
 			),
 		),
 		escalation=(
@@ -101,21 +106,25 @@ def _apply_preconditions(
 ) -> None:
 	if golden_case.preconditions is None:
 		return
+
 	existing_refund = golden_case.preconditions.existing_refund
 	if existing_refund is None:
 		return
 
 	ledger = case_service.refund_workflow.settlement.ledger
+
 	refund: RefundRecord = ledger.create_refund(
 		case_id=golden_case.case_id,
 		order_id=golden_case.order_id,
 		amount=existing_refund.amount,
 	)
+
 	if refund.amount != existing_refund.amount:
 		raise ValueError(
 			f"Existing refund amount cannot be seeded for order "
 			f"{golden_case.order_id}."
 		)
+
 	if refund.idempotency_key != existing_refund.idempotency_key:
 		raise ValueError(
 			f"Existing refund idempotency key cannot be seeded for order "
@@ -126,6 +135,7 @@ def _apply_preconditions(
 		pass
 	elif existing_refund.status in {"PROCESSING", "REFUNDED"}:
 		ledger.accept_refund(golden_case.order_id)
+
 		if existing_refund.status == "REFUNDED":
 			ledger.mark_refunded(golden_case.order_id)
 	else:
@@ -138,8 +148,7 @@ def _apply_preconditions(
 		raise ValueError(
 			f"Existing refund status {existing_refund.status} cannot be "
 			f"seeded for order {golden_case.order_id}."
-		)
-	return
+	)
 
 
 def _run_case(
@@ -147,10 +156,12 @@ def _run_case(
 	service: CaseApplicationService,
 ) -> BenchmarkResult:
 	_apply_preconditions(golden_case, service)
+
 	state = service.process_case(
 		order_id=golden_case.order_id,
 		customer_message=golden_case.customer_message,
 	)
+
 	return compare_outcomes(
 		case_id=golden_case.case_id,
 		expected=golden_case.expected,
@@ -164,25 +175,32 @@ def run_benchmark(
 	case_id: str | None = None,
 ) -> list[BenchmarkResult]:
 	golden_cases = load_golden_cases(golden_set_path)
+
 	if case_id is not None:
 		golden_cases = [
 			case for case in golden_cases if case.case_id == case_id
 		]
+
 		if not golden_cases:
 			raise ValueError(f"Golden case not found: {case_id}")
 
-	results = []
+	results: list[BenchmarkResult] = []
+
 	for golden_case in golden_cases:
 		if case_service is not None:
 			results.append(_run_case(golden_case, case_service))
 		else:
-			with TemporaryDirectory(prefix="refundbench-") as ledger_dir:
+			with TemporaryDirectory(
+				prefix="refundbench-"
+			) as ledger_dir:
 				service = build_container(
 					ledger_data_dir=Path(ledger_dir),
 				).case_service
+
 				results.append(
 					_run_case(golden_case, service)
 				)
+
 	return results
 
 
@@ -204,11 +222,40 @@ def main() -> None:
 			f"{result.case_id}  "
 			f"{'PASS' if result.passed else 'FAIL'}"
 		)
+
 		if not result.passed:
 			print(result)
-	print(f"Cases: {len(results)}")
-	print(f"Passed: {sum(result.passed for result in results)}")
-	print(f"Failed: {sum(not result.passed for result in results)}")
+
+	metrics = calculate_metrics(results)
+
+	print()
+	print(f"Cases:                  {len(results)}")
+	print(f"Passed:                 {sum(result.passed for result in results)}")
+	print(f"Failed:                 {sum(not result.passed for result in results)}")
+	print()
+	print(f"Pass Rate:              {metrics.pass_rate:.0%}")
+	print(f"Intent Accuracy:        {metrics.intent_accuracy:.0%}")
+	print(f"Grievance Accuracy:     {metrics.grievance_accuracy:.0%}")
+	print(f"Judgement Accuracy:     {metrics.judgement_accuracy:.0%}")
+	print(f"Refund Decision:        {metrics.refund_decision_accuracy:.0%}")
+	print(f"Refund Amount:          {metrics.refund_amount_accuracy:.0%}")
+	print(f"Escalation:             {metrics.escalation_accuracy:.0%}")
+	print(
+		"Refund Status:          "
+		+ (
+			f"{metrics.refund_status_accuracy:.0%}"
+			if metrics.refund_status_accuracy is not None
+			else "N/A"
+		)
+	)
+	print(
+		"Idempotency Key:        "
+		+ (
+			f"{metrics.idempotency_key_accuracy:.0%}"
+			if metrics.idempotency_key_accuracy is not None
+			else "N/A"
+		)
+	)
 
 
 if __name__ == "__main__":
