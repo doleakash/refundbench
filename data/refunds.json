@@ -1,0 +1,9 @@
+{
+  "ORD-123": {
+    "case_id": "CASE-GOLDEN-015",
+    "order_id": "ORD-123",
+    "amount": 100.0,
+    "status": "PROPOSED",
+    "idempotency_key": "refund:ORD-123"
+  }
+}

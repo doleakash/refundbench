@@ -14,7 +14,11 @@ from app.infrastructure.observability import TimingEvent, log_timing_event
 from app.infrastructure.tools import get_delivery, get_order
 from app.policy.engine import Policy
 from app.response.generator import generate_grievance_response
-from app.settlement.settlement import Settlement
+from app.settlement.settlement import (
+	Settlement,
+	SettlementDecision,
+	SettlementStatus,
+)
 from config.settings import get_settings
 
 MAX_PARALLEL_JUDGE_CALLS = get_settings().max_parallel_judge_calls
@@ -332,6 +336,19 @@ class AgentActionHandlers:
 	@staticmethod
 	def _escalate(state: AgentState) -> None:
 		state.observations.append("Case escalated to a human.")
+		if state.escalation_reason == "Delivery record could not be found.":
+			state.settlement = SettlementDecision(
+				total_refund=0.0,
+				status=SettlementStatus.ESCALATE,
+				reason=(
+					"Delivery record and required evidence are unavailable."
+				),
+			)
+			state.response = (
+				"This case requires human review because the delivery "
+				"record and required evidence are unavailable. No refund "
+				"has been approved or issued."
+			)
 
 	@staticmethod
 	def _stop(state: AgentState) -> None:

@@ -1,0 +1,418 @@
+[
+  {
+    "case_id": "CASE-GOLDEN-001",
+    "category": "straightforward",
+    "order_id": "ORD-123",
+    "customer_message": "My order arrived 85 minutes late. I want a refund.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "LATE_DELIVERY",
+          "claim": "The order was delivered late"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "LATE_DELIVERY",
+          "verdict": "UPHELD"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 100
+      },
+      "escalation": false,
+      "answer": "The delivery records show the order was late. A refund of ₹100 is approved."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-002",
+    "category": "straightforward",
+    "order_id": "ORD-123",
+    "customer_message": "Two of the four biryanis in my order were missing. Please refund me.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "MISSING_ITEMS",
+          "claim": "Two biryanis were missing"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "MISSING_ITEMS",
+          "verdict": "UPHELD"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 640
+      },
+      "escalation": false,
+      "answer": "Delivery data confirms two missing biryanis. A refund of ₹640 is approved."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-003",
+    "category": "straightforward",
+    "order_id": "ORD-123",
+    "customer_message": "The raita container leaked all over the bag. Can I get a refund?",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "LEAKED_ITEM",
+          "claim": "The raita container leaked"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "LEAKED_ITEM",
+          "verdict": "INSUFFICIENT_EVIDENCE"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 0
+      },
+      "escalation": false,
+      "answer": "The spillage claim needs customer evidence, such as a photo, before it can be reviewed. No refund is approved."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-004",
+    "category": "straightforward",
+    "order_id": "ORD-123",
+    "customer_message": "I ordered mutton biryani but received chicken instead. Please refund the wrong item.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "WRONG_ITEM",
+          "claim": "Chicken was delivered instead of mutton"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "WRONG_ITEM",
+          "verdict": "INSUFFICIENT_EVIDENCE"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 0
+      },
+      "escalation": true,
+      "answer": "The wrong-item claim requires human review because no verification evidence is available."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-005",
+    "category": "straightforward",
+    "order_id": "ORD-123",
+    "customer_message": "The food was burned and tasted awful. I want a refund.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "FOOD_QUALITY",
+          "claim": "The food was burned and tasted awful"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "FOOD_QUALITY",
+          "verdict": "INSUFFICIENT_EVIDENCE"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 0
+      },
+      "escalation": true,
+      "answer": "The food-quality claim requires human review because no verification evidence is available."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-006",
+    "category": "multiple_grievances",
+    "order_id": "ORD-123",
+    "customer_message": "The order was late, and two biryanis were missing. Please refund both issues.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "LATE_DELIVERY",
+          "claim": "The order was delivered late"
+        },
+        {
+          "type": "MISSING_ITEMS",
+          "claim": "Two biryanis were missing"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "LATE_DELIVERY",
+          "verdict": "UPHELD"
+        },
+        {
+          "grievance_type": "MISSING_ITEMS",
+          "verdict": "UPHELD"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 740
+      },
+      "escalation": false,
+      "answer": "The late delivery and missing biryanis are supported. A total refund of ₹740 is approved."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-007",
+    "category": "multiple_grievances",
+    "order_id": "ORD-123",
+    "customer_message": "The food was burned, overly spicy, and smelled foul. Also, one dish was chicken instead of mutton.",
+    "expected": {
+      "intent": "ORDER_SUPPORT",
+      "grievances": [
+        {
+          "type": "FOOD_QUALITY",
+          "claim": "The food was burned, overly spicy, and smelled foul"
+        },
+        {
+          "type": "WRONG_ITEM",
+          "claim": "Chicken was delivered instead of mutton"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "FOOD_QUALITY",
+          "verdict": "INSUFFICIENT_EVIDENCE"
+        },
+        {
+          "grievance_type": "WRONG_ITEM",
+          "verdict": "INSUFFICIENT_EVIDENCE"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 0
+      },
+      "escalation": true,
+      "answer": "Both claims require human review because the available systems cannot verify them."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-008",
+    "category": "evidence_ambiguity",
+    "order_id": "ORD-124",
+    "customer_message": "I thought the delivery was late, but the app says the driver arrived before the promised time. Can you check?",
+    "expected": {
+      "intent": "DELIVERY_SUPPORT",
+      "grievances": [
+        {
+          "type": "LATE_DELIVERY",
+          "claim": "The delivery may have been late"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "LATE_DELIVERY",
+          "verdict": "REJECTED"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 0
+      },
+      "escalation": false,
+      "answer": "The delivery record shows arrival before the promised time, so no refund is approved."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-009",
+    "category": "evidence_ambiguity",
+    "order_id": "ORD-124",
+    "customer_message": "I think something from my order might be missing, but I am not sure. Can you check?",
+    "expected": {
+      "intent": "ORDER_SUPPORT",
+      "grievances": [
+        {
+          "type": "MISSING_ITEMS",
+          "claim": "An item may be missing"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "MISSING_ITEMS",
+          "verdict": "INSUFFICIENT_EVIDENCE"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 0
+      },
+      "escalation": true,
+      "answer": "There is not enough item-level delivery evidence to resolve this claim; it requires review."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-010",
+    "category": "decision_boundary",
+    "order_id": "ORD-123",
+    "customer_message": "The raita was missing, so please refund its price.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "MISSING_ITEMS",
+          "claim": "The raita was missing"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "MISSING_ITEMS",
+          "verdict": "REJECTED"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 0
+      },
+      "escalation": false,
+      "answer": "The delivery record shows the raita was delivered, so no refund is approved for this claim."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-011",
+    "category": "decision_boundary",
+    "order_id": "ORD-123",
+    "customer_message": "Four biryanis were missing, but perhaps only two arrived. Please refund the missing food.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "MISSING_ITEMS",
+          "claim": "Biryanis were missing"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "MISSING_ITEMS",
+          "verdict": "UPHELD"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 640
+      },
+      "escalation": false,
+      "answer": "The records verify two missing biryanis, so the refund is calculated from those quantities: ₹640."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-012",
+    "category": "data_tool_failure",
+    "order_id": "ORD-999",
+    "customer_message": "Where is my order? I need help with its delivery.",
+    "expected": {
+      "intent": "GENERAL_SUPPORT",
+      "grievances": [],
+      "judgements": [],
+      "settlement": {
+        "decision": "ESCALATE",
+        "refund_amount": 0
+      },
+      "escalation": true,
+      "answer": "The order could not be found, so the case is escalated for review."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-013",
+    "category": "data_tool_failure",
+    "order_id": "ORD-126",
+    "customer_message": "My order was late. Please check the delivery and refund me.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "LATE_DELIVERY",
+          "claim": "The order was delivered late"
+        }
+      ],
+      "judgements": [],
+      "settlement": {
+        "decision": "ESCALATE",
+        "refund_amount": 0
+      },
+      "escalation": true,
+      "answer": "The delivery record is unavailable, so the late-delivery refund request is escalated without a judgement or refund."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-014",
+    "category": "refund_lifecycle",
+    "order_id": "ORD-123",
+    "customer_message": "My order was delivered late. Please create the refund proposal for this case.",
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "LATE_DELIVERY",
+          "claim": "The order was delivered late"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "LATE_DELIVERY",
+          "verdict": "UPHELD"
+        }
+      ],
+      "settlement": {
+        "decision": "AUTO_APPROVED",
+        "refund_amount": 100,
+        "refund_status": "PROPOSED"
+      },
+      "escalation": false,
+      "answer": "A ₹100 refund proposal is recorded as PROPOSED and is pending acceptance; it has not yet been processed or refunded."
+    }
+  },
+  {
+    "case_id": "CASE-GOLDEN-015",
+    "category": "refund_lifecycle",
+    "order_id": "ORD-123",
+    "customer_message": "I am submitting the same late-delivery refund request again. Please do not create a duplicate refund.",
+    "preconditions": {
+      "existing_refund": {
+        "status": "PROCESSING",
+        "amount": 100,
+        "idempotency_key": "refund:ORD-123"
+      }
+    },
+    "expected": {
+      "intent": "REFUND_REQUEST",
+      "grievances": [
+        {
+          "type": "LATE_DELIVERY",
+          "claim": "The order was delivered late"
+        }
+      ],
+      "judgements": [
+        {
+          "grievance_type": "LATE_DELIVERY",
+          "verdict": "UPHELD"
+        }
+      ],
+      "settlement": {
+        "decision": "PROCESSING",
+        "refund_amount": 100,
+        "refund_status": "PROCESSING",
+        "idempotency_key": "refund:ORD-123"
+      },
+      "escalation": false,
+      "answer": "The existing ₹100 refund remains PROCESSING. The request reuses idempotency key refund:ORD-123, preventing duplicate financial execution."
+    }
+  }
+]

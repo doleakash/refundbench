@@ -148,6 +148,17 @@ remain separate. Preserve distinct business issues as separate claims.
 Combine multiple descriptions of food quality into separate raw claims; the
 application will normalize them.
 
+A grievance must describe an actual problem or failure with the order.
+Requests for a refund, compensation, replacement, cancellation, or another
+resolution express customer intent; they are not grievances and must not be
+included in claims. When a message reports a problem and asks for a resolution,
+extract the problem as a claim and classify the requested resolution as intent.
+References to a previous or repeated request can identify its underlying
+grievance even when the customer does not restate the original problem. If the
+message names the issue type (for example, "the same late-delivery refund
+request"), extract that issue as a claim and preserve the customer's wording.
+Do not infer an issue when the message does not identify one.
+
 Customer message:
 {customer_message}
 
@@ -168,6 +179,7 @@ Supported grievance types:
 Rules:
 - Preserve the customer's wording in raw_claim.
 - Do not omit a refund request when grievances are also present.
+- Extract only order problems or failures as claims, never requested remedies.
 - Do not decide whether the claim is true.
 - Do not calculate refunds.
 - Do not resolve the case.

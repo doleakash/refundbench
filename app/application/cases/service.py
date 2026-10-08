@@ -9,10 +9,11 @@ from app.application.cases.errors import (
 	RefundNotAcceptable,
 )
 from app.application.cases.repository import CaseRepository, OrderRepository
+from app.domain.models import CustomerIntent
 from app.infrastructure.observability import TimingEvent, log_timing_event
 from app.settlement.refund_ledger import RefundRecord
 from app.settlement.refund_workflow import RefundWorkflow
-from app.settlement.settlement import SettlementStatus
+from app.settlement.settlement import SettlementDecision, SettlementStatus
 from config.settings import get_settings
 
 logger = logging.getLogger(__name__)
@@ -53,16 +54,42 @@ class CaseApplicationService:
 			)
 		customer_message = customer_message.strip()
 
+		existing_refund = self.refund_workflow.settlement.ledger.get_refund(
+			order_id
+		)
 		state = self.agent_runner(
 			customer_message=customer_message,
 			order_id=order_id,
 		)
+
+		if (
+			existing_refund is not None
+			and state.intent == CustomerIntent.REFUND_REQUEST
+			and state.settlement is not None
+		):
+			state.settlement = SettlementDecision(
+				total_refund=existing_refund.amount,
+				status=SettlementStatus(existing_refund.status),
+				reason=(
+					f"An existing refund is "
+					f"{existing_refund.status.lower()} for this order. "
+					"No duplicate refund was created."
+				),
+				idempotency_key=existing_refund.idempotency_key,
+			)
+			state.response = (
+				f"Your existing refund of ₹{existing_refund.amount:.0f} "
+				f"is {existing_refund.status.lower()}. No duplicate "
+				"refund has been created."
+			)
+
 		self.cases.save(state)
 
 		if (
 			state.settlement is not None
 			and state.settlement.status == SettlementStatus.AUTO_APPROVED
 			and state.settlement.total_refund > 0
+			and existing_refund is None
 		):
 			self.refund_workflow.create_refund_proposal(
 				case_id=state.case_id,
@@ -80,10 +107,22 @@ class CaseApplicationService:
 
 	def accept_refund(self, case_id: str) -> RefundRecord:
 		state = self.get_case(case_id)
+		existing_refund = self.refund_workflow.settlement.ledger.get_refund(
+			state.order_id
+		)
+		if (
+			existing_refund is not None
+			and existing_refund.status in {"PROCESSING", "REFUNDED"}
+		):
+			return existing_refund
+
 		settlement = state.settlement
 		if (
 			settlement is None
-			or settlement.status != SettlementStatus.AUTO_APPROVED
+			or settlement.status not in {
+				SettlementStatus.AUTO_APPROVED,
+				SettlementStatus.PROPOSED,
+			}
 			or settlement.total_refund <= 0
 		):
 			raise RefundNotAcceptable(

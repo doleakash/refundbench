@@ -56,11 +56,6 @@ class AgentHarness:
 					"Cannot extract grievances before retrieving the order"
 				)
 
-			if state.delivery is None:
-				raise ValueError(
-					"Cannot extract grievances before retrieving the delivery"
-				)
-
 		if action is Action.GET_EVIDENCE:
 			if state.order is None:
 				raise ValueError(

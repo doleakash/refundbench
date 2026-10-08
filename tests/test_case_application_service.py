@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from app.agent.state import AgentState
 from app.application.cases.repository import InMemoryCaseRepository
 from app.application.cases.service import CaseApplicationService
+from app.domain.models import CustomerIntent, Grievance, GrievanceType
 from app.infrastructure.order_repository import JSONOrderRepository
 from app.interfaces.api.routes import create_api_app
 from app.settlement.refund_workflow import RefundWorkflow
@@ -63,6 +64,62 @@ def test_case_service_stores_case_and_owns_refund_lifecycle(tmp_path):
 	assert refund.status == "REFUNDED"
 	assert refund.idempotency_key == "refund:ORD-123"
 	assert state.timing_events[-1].stage == "REFUND_ACCEPTANCE:REFUNDED"
+
+
+def test_duplicate_request_preserves_processing_refund(tmp_path):
+	workflow = RefundWorkflow()
+	existing = workflow.settlement.ledger.create_refund(
+		case_id="CASE-ORIGINAL",
+		order_id="ORD-123",
+		amount=100.0,
+	)
+	workflow.settlement.ledger.accept_refund("ORD-123")
+	state = AgentState(
+		customer_message="My order was late. Refund me again.",
+		order_id="ORD-123",
+		case_id="CASE-DUPLICATE",
+		intent=CustomerIntent.REFUND_REQUEST,
+		grievances=[
+			Grievance(
+				grievance_id="G1",
+				type=GrievanceType.LATE_DELIVERY,
+				claim="The order was late.",
+			)
+		],
+		judgments={"G1": ["UPHELD"]},
+		settlement=SettlementDecision(
+			total_refund=200.0,
+			status=SettlementStatus.AUTO_APPROVED,
+			reason="A new refund was approved.",
+		),
+	)
+
+	service = CaseApplicationService(
+		cases=InMemoryCaseRepository(),
+		orders=None,
+		refund_workflow=workflow,
+		agent_runner=lambda **kwargs: state,
+	)
+
+	result = service.process_case(
+		order_id="ORD-123",
+		customer_message=state.customer_message,
+	)
+
+	assert result.intent == CustomerIntent.REFUND_REQUEST
+	assert [grievance.type for grievance in result.grievances] == [
+		GrievanceType.LATE_DELIVERY,
+	]
+	assert result.judgments == {"G1": ["UPHELD"]}
+	assert result.settlement.status == SettlementStatus.PROCESSING
+	assert result.settlement.total_refund == 100.0
+	assert result.settlement.idempotency_key == "refund:ORD-123"
+	assert workflow.settlement.ledger.get_refund("ORD-123") is existing
+	assert existing.status == "PROCESSING"
+	assert existing.amount == 100.0
+	assert workflow.refund_service.provider.calls == 0
+	assert service.accept_refund(result.case_id) is existing
+	assert workflow.refund_service.provider.calls == 0
 
 
 def test_case_api_preserves_case_and_refund_response_contract(

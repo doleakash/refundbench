@@ -14,6 +14,18 @@ def generate_grievance_response(
             "but it has not been approved or issued."
         )
 
+    if settlement.status == SettlementStatus.PROCESSING:
+        response = (
+            f"Your existing refund of ₹{settlement.total_refund:.0f} "
+            "remains in progress. No duplicate refund was created."
+        )
+        if settlement.idempotency_key is not None:
+            response += (
+                f" The existing idempotency key "
+                f"{settlement.idempotency_key} is preserved."
+            )
+        return response
+
     messages = []
 
     if settlement.total_refund > 0:

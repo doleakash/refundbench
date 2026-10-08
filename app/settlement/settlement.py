@@ -9,6 +9,9 @@ from app.settlement.refund_ledger import RefundLedger
 class SettlementStatus(str, Enum):
     AUTO_APPROVED = "AUTO_APPROVED"
     ESCALATE = "ESCALATE"
+    PROPOSED = "PROPOSED"
+    PROCESSING = "PROCESSING"
+    REFUNDED = "REFUNDED"
 
 
 class SettlementDecision:
@@ -17,10 +20,12 @@ class SettlementDecision:
         total_refund: float,
         status: SettlementStatus,
         reason: str,
+        idempotency_key: str | None = None,
     ):
         self.total_refund = total_refund
         self.status = status
         self.reason = reason
+        self.idempotency_key = idempotency_key
 
     def __repr__(self):
         return (
@@ -48,6 +53,18 @@ class Settlement:
         order_id: str,
     ) -> SettlementDecision:
 
+        existing_refund = self.ledger.get_refund(order_id)
+        if existing_refund is not None:
+            return SettlementDecision(
+                total_refund=existing_refund.amount,
+                status=SettlementStatus(existing_refund.status),
+                reason=(
+                    f"Refund already exists for order {order_id}. "
+                    f"Preserving its {existing_refund.status} status."
+                ),
+                idempotency_key=existing_refund.idempotency_key,
+            )
+
         total_refund = 0.0
 
         for decision in decisions:
@@ -61,18 +78,6 @@ class Settlement:
                 reason=(
                     f"Refund amount ₹{total_refund:.2f} exceeds "
                     f"auto-approval cap of ₹{self.REFUND_CAP:.2f}."
-                ),
-            )
-
-        existing_refund = self.ledger.get_refund(order_id)
-
-        if existing_refund is not None:
-            return SettlementDecision(
-                total_refund=existing_refund.amount,
-                status=SettlementStatus.AUTO_APPROVED,
-                reason=(
-                    f"Refund already exists for order {order_id}. "
-                    f"Returning existing refund record."
                 ),
             )
 

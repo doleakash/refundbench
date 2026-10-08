@@ -14,14 +14,15 @@ def case_to_response(state: AgentState) -> CaseResult:
 	settlement = state.settlement
 	if settlement is not None:
 		status = (
-			"AUTO_APPROVED"
-			if settlement.status == SettlementStatus.AUTO_APPROVED
-			else "ESCALATED"
+			"ESCALATED"
+			if settlement.status == SettlementStatus.ESCALATE
+			else settlement.status.value
 		)
 		settlement_result = SettlementResult(
 			status=settlement.status.value,
 			amount=settlement.total_refund,
 			reason=settlement.reason,
+			idempotency_key=settlement.idempotency_key,
 		)
 	else:
 		settlement_result = None

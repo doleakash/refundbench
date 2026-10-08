@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 from app.agent.orchestrator import run_agent
 from app.application.cases.repository import InMemoryCaseRepository
@@ -22,13 +23,18 @@ class ApplicationContainer:
 	refund_workflow: RefundWorkflow
 
 
-def build_container(settings: Settings | None = None) -> ApplicationContainer:
+def build_container(
+	settings: Settings | None = None,
+	ledger_data_dir: Path | None = None,
+) -> ApplicationContainer:
 	settings = settings or get_settings()
 	configure_logging(settings)
 
 	case_repository = InMemoryCaseRepository()
 	order_repository = JSONOrderRepository(settings.data_dir)
-	ledger = RefundLedger()
+	ledger = RefundLedger(
+		data_dir=ledger_data_dir or settings.data_dir
+	)
 	settlement = Settlement(ledger=ledger)
 	refund_provider = MockRefundProvider()
 	refund_service = RefundService(
@@ -43,7 +49,10 @@ def build_container(settings: Settings | None = None) -> ApplicationContainer:
 		cases=case_repository,
 		orders=order_repository,
 		refund_workflow=refund_workflow,
-		agent_runner=run_agent,
+		agent_runner=lambda **kwargs: run_agent(
+			settlement=refund_workflow.settlement,
+			**kwargs,
+		),
 	)
 
 	return ApplicationContainer(

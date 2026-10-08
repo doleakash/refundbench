@@ -12,6 +12,7 @@ class SettlementResult(BaseModel):
 	status: str
 	amount: float
 	reason: str
+	idempotency_key: str | None = None
 
 
 class EvidenceResult(BaseModel):

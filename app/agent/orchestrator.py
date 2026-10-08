@@ -132,7 +132,7 @@ def _get_deterministic_next_action(
 			state.escalation_reason = (
 				"Delivery record could not be found."
 			)
-			return Action.ESCALATE
+			return Action.EXTRACT_GRIEVANCES
 
 		return Action.EXTRACT_GRIEVANCES
 
@@ -160,6 +160,7 @@ def _run_agent(
 	case_id: str | None = None,
 	max_iterations: int = MAX_ITERATIONS,
 	model: AgentModel | None = None,
+	settlement: Settlement | None = None,
 ) -> AgentState:
 	if max_iterations <= 0:
 		raise ValueError(
@@ -177,7 +178,7 @@ def _run_agent(
 
 	# One Settlement instance for the entire agent run.
 	# This keeps the RefundLedger alive and makes settlement idempotent.
-	settlement = Settlement()
+	settlement = settlement or Settlement()
 	handlers = AgentActionHandlers(
 		settlement=settlement,
 		record_timing=record_timing,
@@ -362,6 +363,7 @@ def run_agent(
 	case_id: str | None = None,
 	max_iterations: int = MAX_ITERATIONS,
 	model: AgentModel | None = None,
+	settlement: Settlement | None = None,
 ) -> AgentState:
 	"""Run the deterministic workflow; model is retained for call compatibility."""
 	started_at = perf_counter()
@@ -373,6 +375,7 @@ def run_agent(
 			case_id=resolved_case_id,
 			max_iterations=max_iterations,
 			model=model,
+			settlement=settlement,
 		)
 	except Exception:
 		event = TimingEvent(

@@ -459,13 +459,42 @@ def test_agent_uses_deterministic_happy_path(monkeypatch, caplog):
 	)
 
 
-def test_missing_delivery_escalates_without_llm_calls():
+def test_missing_delivery_extracts_request_then_escalates_without_judges(
+	monkeypatch,
+):
+	extractor_calls = []
+
+	class FakeExtractor:
+		model = "test-model"
+		intent = CustomerIntent.REFUND_REQUEST
+		raw_claims = []
+
+		def extract(self, customer_message, case_id=None, order_id=None):
+			extractor_calls.append(customer_message)
+			return [
+				Grievance(
+					grievance_id="G1",
+					type=GrievanceType.LATE_DELIVERY,
+					claim="The order was late",
+				)
+			]
+
+	class NoJudge:
+		def __init__(self):
+			raise AssertionError("Judge must not run without delivery data")
+
+	monkeypatch.setattr(
+		"app.agent.action_handlers.GrievanceExtractor",
+		FakeExtractor,
+	)
+	monkeypatch.setattr("app.agent.action_handlers.Judge", NoJudge)
+
 	class NoDecisionModel(AgentModel):
 		def decide(self, state):
 			raise AssertionError("Agent decision model must not be called")
 
 	state = run_agent(
-		customer_message="My order was late.",
+		customer_message="My order was late. Please check the delivery and refund me.",
 		order_id="ORD-126",
 		case_id="CASE-MISSING-DELIVERY",
 		model=NoDecisionModel(),
@@ -474,13 +503,31 @@ def test_missing_delivery_escalates_without_llm_calls():
 	assert state.actions == [
 		"GET_ORDER",
 		"GET_DELIVERY",
+		"EXTRACT_GRIEVANCES",
 		"ESCALATE",
+	]
+	assert extractor_calls == [
+		"My order was late. Please check the delivery and refund me."
 	]
 	assert state.escalation_reason == (
 		"Delivery record could not be found."
 	)
-	assert not state.grievances
-	assert not any(event.model is not None for event in state.timing_events)
+	assert state.intent is CustomerIntent.REFUND_REQUEST
+	assert [grievance.type for grievance in state.grievances] == [
+		GrievanceType.LATE_DELIVERY,
+	]
+	assert not state.evidence
+	assert not state.judgments
+	assert not state.policy_decisions
+	assert state.settlement.status.value == "ESCALATE"
+	assert state.settlement.total_refund == 0
+	assert "delivery record and required evidence are unavailable" in (
+		state.response
+	)
+	assert not any(
+		event.stage.startswith("LLM_JUDGE:")
+		for event in state.timing_events
+	)
 
 
 def test_grievance_limit_escalates_before_evidence_and_judging(

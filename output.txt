@@ -1,0 +1,2435 @@
+{
+  "case_id": "CASE-F8C9270E",
+  "customer_message": "My order arrived 85 minutes late. I want a refund.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.2116249997925479,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.16799999866634607,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1527.410124999733,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1559.619040999678,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.042291001591365784,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1898.2371669990243,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 2162.8310829983093,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1777.2509999995236,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 2166.7852499995206,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.08549999984097667,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.05583299935096875,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 1.4189590001478791,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-F8C9270E",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.006916998245287687,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "A refund of ₹100 has been approved. Grievance G1: ₹100 approved. Late delivery grievance upheld."
+}
+{
+  "case_id": "CASE-E1E89DC2",
+  "customer_message": "Two of the four biryanis in my order were missing. Please refund me.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.5203330001677386,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.28649999876506627,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1504.245541000273,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1506.1052079981891,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.0824999988253694,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1694.6489580004709,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1768.5091249986726,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1680.2636249994976,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 1773.1987080005638,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.041540999518474564,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.04350000017439015,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 0.8384169996134005,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E1E89DC2",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.00541700137546286,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "A refund of ₹640 has been approved. Grievance G1: ₹640 approved. Refund calculated from verified missing item quantities."
+}
+{
+  "case_id": "CASE-E771E945",
+  "customer_message": "The raita container leaked all over the bag. Can I get a refund?",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.4011249984614551,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.1965000010386575,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1328.7585830003081,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1330.964540997229,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.03462499807938002,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1858.6668329990061,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1954.6737089985982,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1855.0536660004582,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 1958.6808750027558,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.02987500192830339,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.012250002328073606,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 0.7912090004538186,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-E771E945",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.004540997906588018,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Grievance G1: We need additional evidence to review this claim."
+}
+{
+  "case_id": "CASE-04BF4423",
+  "customer_message": "I ordered mutton biryani but received chicken instead. Please refund the wrong item.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.24458299958496355,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.149125000461936,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1631.9735420001962,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1633.4151670016581,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.03562500205589458,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1475.6008750009642,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1452.5528749982186,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1588.02554200156,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 1594.038916999125,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.027291000151308253,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.011458003427833319,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 0.6965840002521873,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-04BF4423",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.004458001058083028,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Grievance G1: This claim requires human review."
+}
+{
+  "case_id": "CASE-49BFE089",
+  "customer_message": "The food was burned and tasted awful. I want a refund.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.2509580008336343,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.18233400260214694,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1573.1872500000463,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1574.4402080017608,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.01708300260361284,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1538.2857920012611,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1537.6186670000607,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1549.386582999432,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 1554.3230830007815,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.044458000047598034,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.020833998860325664,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 1.1215829981665593,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-49BFE089",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.006291000318014994,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Grievance G1: This claim requires human review."
+}
+{
+  "case_id": "CASE-2193F3CD",
+  "customer_message": "The order was late, and two biryanis were missing. Please refund both issues.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.3493750009511132,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.3876249975292012,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1922.5175409992517,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1924.5112919998064,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.10254199878545478,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1427.7746250008931,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1503.6488750010903,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1586.865500001295,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G2:1",
+      "duration_ms": 1636.982916999841,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G2:2",
+      "duration_ms": 1727.5224580007489,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G2:3",
+      "duration_ms": 2238.8971670006867,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 2252.1065000000817,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.0596249992668163,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.05624999903375283,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 1.088375000108499,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-2193F3CD",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.004875000740867108,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 2 grievances.",
+    "Collected evidence for 2 grievances.",
+    "Ran 3 judges in parallel for 2 grievances.",
+    "Built consensus for 2 grievances.",
+    "Applied policy to 2 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "A refund of ₹740 has been approved. Grievance G1: ₹100 approved. Late delivery grievance upheld. Grievance G2: ₹640 approved. Refund calculated from verified missing item quantities."
+}
+{
+  "case_id": "CASE-9D4E8473",
+  "customer_message": "The food was burned, overly spicy, and smelled foul. Also, one dish was chicken instead of mutton.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.3555000002961606,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.18070800069835968,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 2456.7927499992948,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 2458.620917001099,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.03287499930593185,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1455.7445410027867,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 2047.4439579993486,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1432.2617499965418,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G2:1",
+      "duration_ms": 1638.11650000207,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G2:2",
+      "duration_ms": 1492.436832999374,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G2:3",
+      "duration_ms": 1715.3439590001653,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 2051.7589160008356,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.05441699977382086,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.019582999811973423,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 1.3364170008571818,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-9D4E8473",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.005292000423651189,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 2 grievances.",
+    "Collected evidence for 2 grievances.",
+    "Ran 3 judges in parallel for 2 grievances.",
+    "Built consensus for 2 grievances.",
+    "Applied policy to 2 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Grievance G1: This claim requires human review. Grievance G2: This claim requires human review."
+}
+{
+  "case_id": "CASE-AE6426DB",
+  "customer_message": "I thought the delivery was late, but the app says the driver arrived before the promised time. Can you check?",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.3780410006584134,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.22158299907459877,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 2132.849499997974,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 2134.661792002589,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.07250000271596946,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 2006.203375000041,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1941.5957919991342,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 2162.176958998316,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 2168.6760839984345,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.05249999958323315,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.021624997316394,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "SETTLE",
+      "duration_ms": 1.2700420011242386,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-AE6426DB",
+      "order_id": "ORD-124",
+      "stage": "STOP",
+      "duration_ms": 0.005040998075855896,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Grievance G1: No refund was approved for this claim."
+}
+{
+  "case_id": "CASE-DF583F71",
+  "customer_message": "I think something from my order might be missing, but I am not sure. Can you check?",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.3257080024923198,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.1687500007392373,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1919.828875001258,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1921.9436249986757,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.03300000025774352,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1533.0608330004907,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 2145.493500000157,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1556.4976669993484,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 2149.972457998956,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.04116700074519031,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.013540997315431014,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "SETTLE",
+      "duration_ms": 0.7660420014872216,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DF583F71",
+      "order_id": "ORD-124",
+      "stage": "STOP",
+      "duration_ms": 0.004249999619787559,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Grievance G1: This claim requires human review."
+}
+{
+  "case_id": "CASE-0C079C2C",
+  "customer_message": "The raita was missing, so please refund its price.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.296041998808505,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.17512499834992923,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1523.496999998315,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1525.1272079985938,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.06666599801974371,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 2036.7356249989825,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1950.5006250001315,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 2181.7021669994574,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 2187.9373340016173,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.04770799932884984,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.0195419997908175,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 1.1633750000328291,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-0C079C2C",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.004707999323727563,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Grievance G1: No refund was approved for this claim."
+}
+{
+  "case_id": "CASE-4F3AA27D",
+  "customer_message": "Four biryanis were missing, but perhaps only two arrived. Please refund the missing food.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.4065829998580739,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.29187499967520125,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 2213.4885839986964,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 2215.1902500008873,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.01879199771792628,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 2460.3656250001222,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1947.5924159996794,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1845.2760410000337,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 2462.0916670028237,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.061125003412598744,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.04537499989964999,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 1.5200840025499929,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-4F3AA27D",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.007834001735318452,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "A refund of ₹640 has been approved. Grievance G1: ₹640 approved. Refund calculated from verified missing item quantities."
+}
+{
+  "case_id": "CASE-3E57848D",
+  "customer_message": "Where is my order? I need help with its delivery.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "ESCALATE"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-3E57848D",
+      "order_id": "ORD-999",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.3623749980761204,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E57848D",
+      "order_id": "ORD-999",
+      "stage": "ESCALATE",
+      "duration_ms": 0.005333000444807112,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "ESCALATE"
+  ],
+  "observations": [
+    "Order not found.",
+    "Case escalated to a human."
+  ],
+  "tool_errors": [],
+  "response": null
+}
+{
+  "case_id": "CASE-DEB6A972",
+  "customer_message": "My order was late. Please check the delivery and refund me.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "ESCALATE"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-DEB6A972",
+      "order_id": "ORD-126",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.18983300105901435,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DEB6A972",
+      "order_id": "ORD-126",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.15450000137207098,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DEB6A972",
+      "order_id": "ORD-126",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1529.743041999609,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-DEB6A972",
+      "order_id": "ORD-126",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1531.6315410018433,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-DEB6A972",
+      "order_id": "ORD-126",
+      "stage": "ESCALATE",
+      "duration_ms": 0.029666000045835972,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "ESCALATE"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery record not found.",
+    "Extracted 1 grievances.",
+    "Case escalated to a human."
+  ],
+  "tool_errors": [],
+  "response": "This case requires human review because the delivery record and required evidence are unavailable. No refund has been approved or issued."
+}
+{
+  "case_id": "CASE-3E42D3AC",
+  "customer_message": "My order was delivered late. Please create the refund proposal for this case.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.49341599878971465,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.23029099975246936,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 1298.3014170022216,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 1300.4949579990353,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.0698750009178184,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1353.465749998577,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1966.2465420005901,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1548.0763750019833,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 1970.962708001025,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.057999997807201,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.028750000637955964,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 1.4474999989033677,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-3E42D3AC",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.00583400105824694,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: AUTO_APPROVED.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "A refund of ₹100 has been approved. Grievance G1: ₹100 approved. Late delivery grievance upheld."
+}
+{
+  "case_id": "CASE-307E9938",
+  "customer_message": "I am submitting the same late-delivery refund request again. Please do not create a duplicate refund.",
+  "events": [
+    {
+      "event_type": "ACTION",
+      "message": "GET_ORDER"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_DELIVERY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "EXTRACT_GRIEVANCES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "GET_EVIDENCE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "RUN_JUDGES"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "BUILD_CONSENSUS"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "APPLY_POLICY"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "SETTLE"
+    },
+    {
+      "event_type": "ACTION",
+      "message": "STOP"
+    }
+  ],
+  "timing_events": [
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "GET_ORDER",
+      "duration_ms": 0.4208749996905681,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "GET_DELIVERY",
+      "duration_ms": 0.24612500055809505,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "LLM_EXTRACT_GRIEVANCES",
+      "duration_ms": 2318.4678750003513,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "EXTRACT_GRIEVANCES",
+      "duration_ms": 2320.5848750003497,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "GET_EVIDENCE",
+      "duration_ms": 0.08512500062352046,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:1",
+      "duration_ms": 1458.9272079974762,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:2",
+      "duration_ms": 1457.3004590019991,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "LLM_JUDGE:G1:3",
+      "duration_ms": 1454.7115409986873,
+      "success": true,
+      "model": "gpt-5.6-luna"
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "RUN_JUDGES",
+      "duration_ms": 1463.3926669994253,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "BUILD_CONSENSUS",
+      "duration_ms": 0.048207999498117715,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "APPLY_POLICY",
+      "duration_ms": 0.02162500095437281,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "SETTLE",
+      "duration_ms": 0.055791999329812825,
+      "success": true,
+      "model": null
+    },
+    {
+      "case_id": "CASE-307E9938",
+      "order_id": "ORD-123",
+      "stage": "STOP",
+      "duration_ms": 0.0044579974201042205,
+      "success": true,
+      "model": null
+    }
+  ],
+  "actions": [
+    "GET_ORDER",
+    "GET_DELIVERY",
+    "EXTRACT_GRIEVANCES",
+    "GET_EVIDENCE",
+    "RUN_JUDGES",
+    "BUILD_CONSENSUS",
+    "APPLY_POLICY",
+    "SETTLE",
+    "STOP"
+  ],
+  "observations": [
+    "Order found with status DELIVERED.",
+    "Delivery found with status DELIVERED.",
+    "Extracted 1 grievances.",
+    "Collected evidence for 1 grievances.",
+    "Ran 3 judges in parallel for 1 grievances.",
+    "Built consensus for 1 grievances.",
+    "Applied policy to 1 grievances.",
+    "Settlement completed: PROCESSING.",
+    "Customer response generated.",
+    "Agent stopped."
+  ],
+  "tool_errors": [],
+  "response": "Your existing refund of ₹100 remains in progress. No duplicate refund was created. The existing idempotency key refund:ORD-123 is preserved."
+}
+CASE-GOLDEN-001  PASS
+CASE-GOLDEN-002  PASS
+CASE-GOLDEN-003  PASS
+CASE-GOLDEN-004  PASS
+CASE-GOLDEN-005  PASS
+CASE-GOLDEN-006  PASS
+CASE-GOLDEN-007  PASS
+CASE-GOLDEN-008  PASS
+CASE-GOLDEN-009  PASS
+CASE-GOLDEN-010  PASS
+CASE-GOLDEN-011  PASS
+CASE-GOLDEN-012  PASS
+CASE-GOLDEN-013  PASS
+CASE-GOLDEN-014  PASS
+CASE-GOLDEN-015  PASS
+Cases: 15
+Passed: 15
+Failed: 0

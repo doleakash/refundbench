@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+import json
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -13,8 +15,31 @@ class RefundRecord:
 
 
 class RefundLedger:
-    def __init__(self):
+    def __init__(self, data_dir: Path | None = None):
+        self._data_file = (
+            data_dir / "refunds.json" if data_dir is not None else None
+        )
         self._records_by_order: dict[str, RefundRecord] = {}
+        if self._data_file is not None and self._data_file.exists():
+            with self._data_file.open(encoding="utf-8") as file:
+                self._records_by_order = {
+                    order_id: RefundRecord(**record)
+                    for order_id, record in json.load(file).items()
+                }
+
+    def _persist(self) -> None:
+        if self._data_file is None:
+            return
+        self._data_file.parent.mkdir(parents=True, exist_ok=True)
+        with self._data_file.open("w", encoding="utf-8") as file:
+            json.dump(
+                {
+                    order_id: asdict(record)
+                    for order_id, record in self._records_by_order.items()
+                },
+                file,
+                indent=2,
+            )
 
     def create_refund(
         self,
@@ -37,6 +62,7 @@ class RefundLedger:
         )
 
         self._records_by_order[order_id] = record
+        self._persist()
 
         return record
 
@@ -49,6 +75,7 @@ class RefundLedger:
 
         if record.status == "PROPOSED":
             record.status = "PROCESSING"
+            self._persist()
 
         return record
 
@@ -58,7 +85,9 @@ class RefundLedger:
     ) -> RefundRecord:
 
         record = self._records_by_order[order_id]
-        record.status = "REFUNDED"
+        if record.status != "REFUNDED":
+            record.status = "REFUNDED"
+            self._persist()
 
         return record
 

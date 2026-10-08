@@ -83,6 +83,92 @@ def test_extractor_keeps_intent_separate_from_multiple_grievances(
 	]
 
 
+def test_extractor_prompt_excludes_resolution_requests_from_grievances(
+	monkeypatch,
+):
+	class FakeLLM:
+		model = "test-model"
+		prompt = ""
+
+		def complete(self, messages, case_id=None, order_id=None):
+			self.prompt = messages[-1]["content"]
+			return SimpleNamespace(
+				choices=[
+					SimpleNamespace(
+						message=SimpleNamespace(content=json.dumps({
+							"intent": "REFUND_REQUEST",
+							"claims": [{
+								"raw_claim": "The raita was missing",
+								"type": "MISSING_ITEMS",
+								"ambiguous": False,
+							}],
+						}))
+					)
+				]
+			)
+
+	monkeypatch.setattr("app.evaluation.extractor.LLMModel", FakeLLM)
+	extractor = GrievanceExtractor()
+	grievances = extractor.extract(
+		"The raita was missing, so please refund its price."
+	)
+
+	assert extractor.intent is CustomerIntent.REFUND_REQUEST
+	assert [grievance.type for grievance in grievances] == [
+		GrievanceType.MISSING_ITEMS,
+	]
+	assert "they are not grievances" in extractor.llm.prompt
+	assert "never requested remedies" in extractor.llm.prompt
+
+
+def test_extractor_prompt_recognizes_referenced_grievance_without_restatement(
+	monkeypatch,
+):
+	class FakeLLM:
+		model = "test-model"
+		prompt = ""
+
+		def complete(self, messages, case_id=None, order_id=None):
+			self.prompt = messages[-1]["content"]
+			return SimpleNamespace(
+				choices=[
+					SimpleNamespace(
+						message=SimpleNamespace(content=json.dumps({
+							"intent": "REFUND_REQUEST",
+							"claims": [{
+								"raw_claim": (
+									"the same late-delivery refund request"
+								),
+								"type": "LATE_DELIVERY",
+								"ambiguous": False,
+							}],
+						}))
+					)
+				]
+			)
+
+	monkeypatch.setattr("app.evaluation.extractor.LLMModel", FakeLLM)
+	extractor = GrievanceExtractor()
+	grievances = extractor.extract(
+		"I am submitting the same late-delivery refund request again. "
+		"Please do not create a duplicate refund."
+	)
+
+	assert extractor.intent is CustomerIntent.REFUND_REQUEST
+	assert [grievance.type for grievance in grievances] == [
+		GrievanceType.LATE_DELIVERY,
+	]
+	assert grievances[0].raw_claims == [
+		"the same late-delivery refund request",
+	]
+	assert "References to a previous or repeated request" in (
+		extractor.llm.prompt
+	)
+	assert "Do not infer an issue when the message does not identify one." in (
+		extractor.llm.prompt
+	)
+
+
 def test_normalize_claims_attaches_related_ambiguity_and_preserves_sources():
 	raw_claims = [
 		RawClaim(
