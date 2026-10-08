@@ -7,6 +7,7 @@ from app.agent.state import Action, AgentDecision, AgentModel
 from app.domain.models import CustomerIntent, Grievance, GrievanceType
 from app.evaluation.extractor import RawClaim
 from app.evaluation.judge import Judgment
+from app.infrastructure.observability import TimingEvent
 
 DATA_FILE = (
 	Path(__file__).resolve().parent.parent
@@ -134,11 +135,24 @@ def test_agent_cases(monkeypatch):
 		model = "test-model"
 
 		def judge(self, grievance, evidence, case_id=None, order_id=None):
-			return Judgment(
-				grievance_id=grievance.grievance_id,
-				verdict="UPHELD",
-				reason="Test evidence supports the grievance.",
-				confidence=0.9,
+			return (
+				Judgment(
+					grievance_id=grievance.grievance_id,
+					verdict="UPHELD",
+					reason="Test evidence supports the grievance.",
+					confidence=0.9,
+				),
+				TimingEvent(
+					case_id=case_id,
+					order_id=order_id,
+					stage="LLM_JUDGE",
+					duration_ms=0.0,
+					success=True,
+					model=self.model,
+					prompt_tokens=None,
+					completion_tokens=None,
+					total_tokens=None,
+				),
 			)
 
 	monkeypatch.setattr(
@@ -213,11 +227,24 @@ def test_agent_retries_transient_tool_failure(monkeypatch):
 		model = "test-model"
 
 		def judge(self, grievance, evidence, case_id=None, order_id=None):
-			return Judgment(
-				grievance_id=grievance.grievance_id,
-				verdict="UPHELD",
-				reason="Evidence supports the grievance.",
-				confidence=0.9,
+			return (
+				Judgment(
+					grievance_id=grievance.grievance_id,
+					verdict="UPHELD",
+					reason="Evidence supports the grievance.",
+					confidence=0.9,
+				),
+				TimingEvent(
+					case_id=case_id,
+					order_id=order_id,
+					stage="LLM_JUDGE",
+					duration_ms=0.0,
+					success=True,
+					model=self.model,
+					prompt_tokens=None,
+					completion_tokens=None,
+					total_tokens=None,
+				),
 			)
 
 	original_get_order = __import__(
@@ -356,11 +383,24 @@ def test_agent_uses_deterministic_happy_path(monkeypatch, caplog):
 
 		def judge(self, grievance, evidence, case_id=None, order_id=None):
 			self.all_judges_started.wait()
-			return Judgment(
-				grievance_id=grievance.grievance_id,
-				verdict="UPHELD",
-				reason="Evidence supports the grievance.",
-				confidence=0.9,
+			return (
+				Judgment(
+					grievance_id=grievance.grievance_id,
+					verdict="UPHELD",
+					reason="Evidence supports the grievance.",
+					confidence=0.9,
+				),
+				TimingEvent(
+					case_id=case_id,
+					order_id=order_id,
+					stage="LLM_JUDGE",
+					duration_ms=0.0,
+					success=True,
+					model=self.model,
+					prompt_tokens=None,
+					completion_tokens=None,
+					total_tokens=None,
+				),
 			)
 
 	monkeypatch.setattr(

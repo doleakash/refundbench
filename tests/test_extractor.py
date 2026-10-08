@@ -11,6 +11,7 @@ from app.evaluation.extractor import (
 	RawClaim,
 	normalize_claims,
 )
+from app.infrastructure.observability import TimingEvent
 
 
 def test_extractor_keeps_intent_separate_from_multiple_grievances(
@@ -55,6 +56,13 @@ def test_extractor_keeps_intent_separate_from_multiple_grievances(
 						message=SimpleNamespace(content=content)
 					)
 				]
+			), TimingEvent(
+				case_id=case_id,
+				order_id=order_id,
+				stage="LLM_EXTRACT_GRIEVANCES",
+				duration_ms=0.0,
+				success=True,
+				model=self.model,
 			)
 
 	monkeypatch.setattr("app.evaluation.extractor.LLMModel", FakeLLM)
@@ -105,6 +113,13 @@ def test_extractor_prompt_excludes_resolution_requests_from_grievances(
 						}))
 					)
 				]
+			), TimingEvent(
+				case_id=case_id,
+				order_id=order_id,
+				stage="LLM_EXTRACT_GRIEVANCES",
+				duration_ms=0.0,
+				success=True,
+				model=self.model,
 			)
 
 	monkeypatch.setattr("app.evaluation.extractor.LLMModel", FakeLLM)
@@ -145,6 +160,13 @@ def test_extractor_prompt_recognizes_referenced_grievance_without_restatement(
 						}))
 					)
 				]
+			), TimingEvent(
+				case_id=case_id,
+				order_id=order_id,
+				stage="LLM_EXTRACT_GRIEVANCES",
+				duration_ms=0.0,
+				success=True,
+				model=self.model,
 			)
 
 	monkeypatch.setattr("app.evaluation.extractor.LLMModel", FakeLLM)
@@ -167,6 +189,52 @@ def test_extractor_prompt_recognizes_referenced_grievance_without_restatement(
 	assert "Do not infer an issue when the message does not identify one." in (
 		extractor.llm.prompt
 	)
+
+
+def test_extractor_preserves_reported_issue_challenged_by_app_evidence(
+	monkeypatch,
+):
+	class FakeLLM:
+		model = "test-model"
+		prompt = ""
+
+		def complete(self, messages, case_id=None, order_id=None):
+			self.prompt = messages[-1]["content"]
+			return SimpleNamespace(
+				choices=[
+					SimpleNamespace(
+						message=SimpleNamespace(content=json.dumps({
+							"intent": "DELIVERY_SUPPORT",
+							"claims": [{
+								"raw_claim": "The delivery may have been late",
+								"type": "LATE_DELIVERY",
+								"ambiguous": False,
+							}],
+						}))
+					)
+				]
+			), TimingEvent(
+				case_id=case_id,
+				order_id=order_id,
+				stage="LLM_EXTRACT_GRIEVANCES",
+				duration_ms=0.0,
+				success=True,
+				model=self.model,
+			)
+
+	monkeypatch.setattr("app.evaluation.extractor.LLMModel", FakeLLM)
+	extractor = GrievanceExtractor()
+	grievances = extractor.extract(
+		"I thought the delivery was late, but the app says the driver "
+		"arrived before the promised time. Can you check?",
+	)
+
+	assert extractor.intent is CustomerIntent.DELIVERY_SUPPORT
+	assert [grievance.type for grievance in grievances] == [
+		GrievanceType.LATE_DELIVERY,
+	]
+	assert grievances[0].claim == "The delivery may have been late"
+	assert "judges, not extraction, determine" in extractor.llm.prompt
 
 
 def test_normalize_claims_attaches_related_ambiguity_and_preserves_sources():
@@ -328,6 +396,13 @@ def test_invalid_extraction_output_escalates_without_downstream_work(
 						message=SimpleNamespace(content=content)
 					)
 				]
+			), TimingEvent(
+				case_id=case_id,
+				order_id=order_id,
+				stage="LLM_EXTRACT_GRIEVANCES",
+				duration_ms=0.0,
+				success=True,
+				model=self.model,
 			)
 
 	monkeypatch.setattr("app.evaluation.extractor.LLMModel", FakeLLM)

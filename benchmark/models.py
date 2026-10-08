@@ -84,6 +84,9 @@ class CasePerformance(BaseModel):
 	llm_call_count: int = 0
 	judge_call_count: int = 0
 	retry_count: int = 0
+	prompt_token_count: int = 0
+	completion_token_count: int = 0
+	total_token_count: int = 0
 
 
 class BenchmarkResult(BaseModel):

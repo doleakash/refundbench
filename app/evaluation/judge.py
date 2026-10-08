@@ -4,6 +4,7 @@ from openai import NotFoundError, PermissionDeniedError
 from pydantic import BaseModel
 
 from app.domain.models import Evidence, Grievance
+from app.infrastructure.observability import TimingEvent
 from app.infrastructure.llm_model import LLMModel
 
 
@@ -25,7 +26,7 @@ class Judge:
 		evidence: Evidence,
 		case_id: str | None = None,
 		order_id: str | None = None,
-	) -> Judgment:
+	) -> tuple[Judgment, TimingEvent]:
 
 		prompt = f"""
 You are a refund claim judge.
@@ -74,7 +75,7 @@ Return JSON only:
 """
 
 		try:
-			response = self.llm.complete(
+			response, timing_event = self.llm.complete(
 				[
 					{
 						"role": "system",
@@ -96,4 +97,4 @@ Return JSON only:
 
 		content = response.choices[0].message.content
 
-		return Judgment.model_validate_json(content)
+		return Judgment.model_validate_json(content), timing_event

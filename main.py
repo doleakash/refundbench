@@ -1,18 +1,29 @@
-from app.agent.orchestrator import run_agent
+from app.infrastructure.llm_model import LLMModel
 
 
-def main() -> None:
-	message = """
-My order was delivered 85 minutes late.
-Two of my four biryanis were missing.
-The raita container leaked everywhere.
-"""
-	state = run_agent(
-		customer_message=message,
-		order_id="ORD-123",
-	)
-	print(state.response)
+def main():
+    model = LLMModel()
+
+    response = model.client.chat.completions.create(
+        model=model.model,
+        messages=[
+            {
+                "role": "user",
+                "content": "Say hello in one word.",
+            }
+        ],
+    )
+
+    print("\n===== FULL RESPONSE =====")
+    print(response.model_dump())
+
+    print("\n===== USAGE =====")
+    print(response.usage)
+
+    print("\n===== USAGE DICT =====")
+    if response.usage is not None:
+        print(response.usage.model_dump())
 
 
 if __name__ == "__main__":
-	main()
+    main()

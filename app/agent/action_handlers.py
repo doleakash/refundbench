@@ -150,13 +150,27 @@ class AgentActionHandlers:
 			)
 			succeeded = True
 		finally:
-			self.record_timing(
-				state,
-				"LLM_EXTRACT_GRIEVANCES",
-				started_at,
-				succeeded,
-				extractor.model,
-			)
+			if succeeded:
+				timing_event = getattr(extractor, "timing_event", None)
+				if timing_event is not None:
+					timing_event.stage = "LLM_EXTRACT_GRIEVANCES"
+					state.timing_events.append(timing_event)
+				else:
+					self.record_timing(
+						state,
+						"LLM_EXTRACT_GRIEVANCES",
+						started_at,
+						succeeded,
+						extractor.model,
+					)
+			else:
+				self.record_timing(
+					state,
+					"LLM_EXTRACT_GRIEVANCES",
+					started_at,
+					succeeded,
+					extractor.model,
+				)
 
 		state.observations.append(
 			f"Extracted {len(state.grievances)} grievances."
@@ -191,12 +205,14 @@ class AgentActionHandlers:
 				f"{judge_number}"
 			)
 			try:
-				judgment = judge.judge(
+				judgment, timing_event = judge.judge(
 					grievance=grievance,
 					evidence=evidence,
 					case_id=state.case_id,
 					order_id=state.order_id,
 				)
+				timing_event.stage = stage
+				return judgment, timing_event, None
 			except Exception as error:
 				event = TimingEvent(
 					case_id=state.case_id,
@@ -207,16 +223,6 @@ class AgentActionHandlers:
 					model=judge.model,
 				)
 				return None, event, error
-
-			event = TimingEvent(
-				case_id=state.case_id,
-				order_id=state.order_id,
-				stage=stage,
-				duration_ms=(perf_counter() - started_at) * 1000,
-				success=True,
-				model=judge.model,
-			)
-			return judgment, event, None
 
 		grievance_tasks = []
 		for grievance in state.grievances:
@@ -258,8 +264,8 @@ class AgentActionHandlers:
 		}
 		for grievance_id, (judgment, event, error) in results:
 			state.timing_events.append(event)
-			log_timing_event(event)
 			if error is not None:
+				log_timing_event(event)
 				failures_by_grievance[grievance_id].append(error)
 			else:
 				judgments_by_grievance[grievance_id].append(judgment)

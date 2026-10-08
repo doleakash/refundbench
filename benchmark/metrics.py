@@ -23,6 +23,9 @@ class PerformanceMetrics(BaseModel):
 	average_llm_call_count: float
 	average_judge_call_count: float
 	total_retry_count: int
+	average_prompt_token_count: float
+	average_completion_token_count: float
+	average_total_token_count: float
 
 
 def calculate_metrics(
@@ -129,4 +132,19 @@ def calculate_performance_metrics(
 			else 0.0
 		),
 		total_retry_count=sum(item.retry_count for item in performance),
+		average_prompt_token_count=(
+			sum(item.prompt_token_count for item in performance) / total
+			if total
+			else 0.0
+		),
+		average_completion_token_count=(
+			sum(item.completion_token_count for item in performance) / total
+			if total
+			else 0.0
+		),
+		average_total_token_count=(
+			sum(item.total_token_count for item in performance) / total
+			if total
+			else 0.0
+		),
 	)

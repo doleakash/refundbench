@@ -19,7 +19,7 @@ from app.infrastructure.observability import TimingEvent, log_timing_event
 from config.settings import get_settings
 
 _LLM_RETRY_BACKOFF = 0.25
-_GROQ_BASE_URL = "https://api.groq.com/openai/v1"
+_OPENAI_BASE_URL = "https://api.openai.com/v1"
 
 
 class LLMModel(AgentModel):
@@ -43,28 +43,49 @@ class LLMModel(AgentModel):
             "timeout": settings.llm_timeout,
             "max_retries": 0,
         }
-        base_url = settings.llm_base_url
-        if settings.llm_provider == "GROQ":
-            base_url = base_url or _GROQ_BASE_URL
+        base_url = settings.llm_base_url or _OPENAI_BASE_URL
 
-        if base_url:
-            self.client = OpenAI(**client_options, base_url=base_url)
-        else:
-            self.client = OpenAI(**client_options)
+        self.client = OpenAI(**client_options, base_url=base_url)
 
     def complete(
         self,
         messages: Sequence[ChatCompletionMessageParam],
         case_id: Optional[str] = None,
         order_id: Optional[str] = None,
-    ) -> ChatCompletion:
+    ) -> tuple[ChatCompletion, TimingEvent]:
         for attempt in range(self.max_retries + 1):
             started_at = perf_counter()
             try:
-                return self.client.chat.completions.create(
+                response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
                 )
+                usage = getattr(response, "usage", None)
+                event = TimingEvent(
+                    case_id=case_id,
+                    order_id=order_id,
+                    stage="LLM_CALL",
+                    duration_ms=(perf_counter() - started_at) * 1000,
+                    success=True,
+                    model=self.model,
+                    prompt_tokens=(
+                        getattr(usage, "prompt_tokens", None)
+                        if usage is not None
+                        else None
+                    ),
+                    completion_tokens=(
+                        getattr(usage, "completion_tokens", None)
+                        if usage is not None
+                        else None
+                    ),
+                    total_tokens=(
+                        getattr(usage, "total_tokens", None)
+                        if usage is not None
+                        else None
+                    ),
+                )
+                log_timing_event(event)
+                return response, event
             except (APIConnectionError, APIStatusError) as error:
                 retryable = isinstance(error, APIConnectionError) or (
                     isinstance(error, APIStatusError)
@@ -169,7 +190,7 @@ Return JSON only:
 """
 
         try:
-            response = self.complete(
+            response, _ = self.complete(
                 [
                     {
                         "role": "system",

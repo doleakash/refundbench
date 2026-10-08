@@ -18,6 +18,9 @@ class TimingEvent(BaseModel):
     duration_ms: float
     success: bool
     model: str | None = None
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    total_tokens: int | None = None
 
 
 class AgentTrace(BaseModel):

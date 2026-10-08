@@ -194,6 +194,15 @@ def _run_case(
 			for event in llm_events
 		),
 		retry_count=sum(state.tool_retry_count.values()),
+		prompt_token_count=sum(
+			event.prompt_tokens or 0 for event in llm_events
+		),
+		completion_token_count=sum(
+			event.completion_tokens or 0 for event in llm_events
+		),
+		total_token_count=sum(
+			event.total_tokens or 0 for event in llm_events
+		),
 	)
 	return result
 
@@ -303,6 +312,18 @@ def main() -> None:
 	print(
 		f"  Average judge calls:   "
 		f"{performance.average_judge_call_count:.2f}"
+	)
+	print(
+		f"  Average prompt tokens: "
+		f"{performance.average_prompt_token_count:.2f}"
+	)
+	print(
+		f"  Average completion tokens: "
+		f"{performance.average_completion_token_count:.2f}"
+	)
+	print(
+		f"  Average total tokens:  "
+		f"{performance.average_total_token_count:.2f}"
 	)
 	print(f"  Total retries:         {performance.total_retry_count}")
 

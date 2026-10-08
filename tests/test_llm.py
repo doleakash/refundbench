@@ -8,6 +8,60 @@ from app.agent.state import Action, AgentState
 from app.infrastructure.llm_model import LLMModel
 
 
+@pytest.mark.parametrize(
+    ("usage", "expected_tokens"),
+    [
+        (
+            SimpleNamespace(
+                prompt_tokens=11,
+                completion_tokens=7,
+                total_tokens=18,
+            ),
+            (11, 7, 18),
+        ),
+        (None, (None, None, None)),
+    ],
+)
+def test_llm_complete_records_provider_token_usage(
+    monkeypatch,
+    usage,
+    expected_tokens,
+):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setenv("OPEN_AI_MODEL", "test-model")
+    response = SimpleNamespace(usage=usage)
+    model = LLMModel()
+    model.client = SimpleNamespace(
+        chat=SimpleNamespace(
+            completions=SimpleNamespace(create=lambda **kwargs: response),
+        ),
+    )
+    timing_events = []
+    monkeypatch.setattr(
+        "app.infrastructure.llm_model.log_timing_event",
+        timing_events.append,
+    )
+
+    result, event = model.complete(
+        [],
+        case_id="CASE-USAGE",
+        order_id="ORD-123",
+    )
+
+    assert len(timing_events) == 1
+    assert result is response
+    assert event.stage == "LLM_CALL"
+    assert event.success is True
+    assert event.model == "test-model"
+    assert event.case_id == "CASE-USAGE"
+    assert event.order_id == "ORD-123"
+    assert (
+        event.prompt_tokens,
+        event.completion_tokens,
+        event.total_tokens,
+    ) == expected_tokens
+
+
 def test_llm_retries_transient_failure_once(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setenv("OPEN_AI_MODEL", "test-model")
@@ -59,9 +113,12 @@ def test_llm_retries_transient_failure_once(monkeypatch):
 
     assert result.action is Action.GET_ORDER
     assert calls == 2
-    assert len(retry_events) == 1
+    assert len(retry_events) == 2
     assert retry_events[0].case_id == "CASE-RETRY"
     assert retry_events[0].order_id == "ORD-123"
+    assert retry_events[0].stage == "LLM_RETRY:1"
+    assert retry_events[1].stage == "LLM_CALL"
+    assert retry_events[1].prompt_tokens is None
 
 
 def test_llm_invalid_decision_output_is_not_retried(monkeypatch):
@@ -104,8 +161,8 @@ def test_llm_invalid_decision_output_is_not_retried(monkeypatch):
 @pytest.mark.parametrize(
     ("provider", "configured_base_url", "expected_base_url"),
     [
-        (None, None, None),
-        ("GROQ", None, "https://api.groq.com/openai/v1"),
+        ("OPENAI", None, "https://api.openai.com/v1"),
+        ("XAI", "https://api.x.ai/v1", "https://api.x.ai/v1"),
         ("GROQ", "https://groq.example/v1", "https://groq.example/v1"),
     ],
 )
@@ -117,10 +174,7 @@ def test_llm_client_uses_configured_provider_endpoint(
 ):
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setenv("OPEN_AI_MODEL", "test-model")
-    if provider is None:
-        monkeypatch.delenv("LLM_PROVIDER", raising=False)
-    else:
-        monkeypatch.setenv("LLM_PROVIDER", provider)
+    monkeypatch.setenv("LLM_PROVIDER", provider)
     if configured_base_url is None:
         monkeypatch.delenv("LLM_BASE_URL", raising=False)
     else:
@@ -139,10 +193,23 @@ def test_llm_client_uses_configured_provider_endpoint(
     assert captured["api_key"] == "test-key"
     assert captured["timeout"] > 0
     assert captured["max_retries"] == 0
-    if expected_base_url is None:
-        assert "base_url" not in captured
-    else:
-        assert captured["base_url"] == expected_base_url
+    assert captured["base_url"] == expected_base_url
+
+
+def test_llm_provider_is_informational(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "ARBITRARY_PROVIDER")
+
+    from config.settings import get_settings
+
+    assert get_settings().llm_provider == "ARBITRARY_PROVIDER"
+
+
+def test_open_ai_model_remains_required(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.delenv("OPEN_AI_MODEL", raising=False)
+
+    with pytest.raises(ValueError, match="OPEN_AI_MODEL is not configured"):
+        LLMModel()
 
 
 def main():

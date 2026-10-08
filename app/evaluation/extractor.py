@@ -10,6 +10,7 @@ from app.domain.models import (
 	Grievance,
 	GrievanceType,
 )
+from app.infrastructure.observability import TimingEvent
 from app.infrastructure.llm_model import LLMModel
 
 
@@ -128,6 +129,7 @@ class GrievanceExtractor:
 		self.model = self.llm.model
 		self.intent = CustomerIntent.GENERAL_SUPPORT
 		self.raw_claims: list[RawClaim] = []
+		self.timing_event: TimingEvent | None = None
 
 	def extract(
 		self,
@@ -153,6 +155,9 @@ Requests for a refund, compensation, replacement, cancellation, or another
 resolution express customer intent; they are not grievances and must not be
 included in claims. When a message reports a problem and asks for a resolution,
 extract the problem as a claim and classify the requested resolution as intent.
+Extract a reported problem even when the customer also cites information that
+may contradict it; judges, not extraction, determine whether the problem is
+supported by evidence.
 References to a previous or repeated request can identify its underlying
 grievance even when the customer does not restate the original problem. If the
 message names the issue type (for example, "the same late-delivery refund
@@ -200,7 +205,7 @@ Return JSON only:
 """
 
 		try:
-			response = self.llm.complete(
+			response, timing_event = self.llm.complete(
 				[
 					{
 						"role": "system",
@@ -214,6 +219,7 @@ Return JSON only:
 				case_id=case_id,
 				order_id=order_id,
 			)
+			self.timing_event = timing_event
 		except (NotFoundError, PermissionDeniedError) as error:
 			raise ValueError(
 				f"Configured OPEN_AI_MODEL '{self.model}' is unavailable "

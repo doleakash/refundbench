@@ -29,8 +29,6 @@ class Settings:
 
 	def __post_init__(self) -> None:
 		provider = self.llm_provider.strip().upper()
-		if provider not in {"OPENAI", "GROQ"}:
-			raise ValueError("LLM_PROVIDER must be OPENAI or GROQ")
 		object.__setattr__(self, "llm_provider", provider)
 		if self.llm_timeout <= 0:
 			raise ValueError("LLM_TIMEOUT must be greater than zero")

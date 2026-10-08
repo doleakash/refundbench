@@ -117,6 +117,9 @@ def test_performance_metrics_aggregate_case_execution_data():
 				llm_call_count=4,
 				judge_call_count=3,
 				retry_count=1,
+				prompt_token_count=100,
+				completion_token_count=40,
+				total_token_count=140,
 			),
 		),
 		BenchmarkResult(
@@ -128,6 +131,9 @@ def test_performance_metrics_aggregate_case_execution_data():
 				llm_call_count=2,
 				judge_call_count=1,
 				retry_count=2,
+				prompt_token_count=80,
+				completion_token_count=20,
+				total_token_count=100,
 			),
 		),
 		BenchmarkResult(
@@ -139,6 +145,9 @@ def test_performance_metrics_aggregate_case_execution_data():
 				llm_call_count=0,
 				judge_call_count=0,
 				retry_count=0,
+				prompt_token_count=30,
+				completion_token_count=10,
+				total_token_count=40,
 			),
 		),
 	]
@@ -156,6 +165,9 @@ def test_performance_metrics_aggregate_case_execution_data():
 	assert metrics.average_llm_call_count == 2
 	assert metrics.average_judge_call_count == 4 / 3
 	assert metrics.total_retry_count == 3
+	assert metrics.average_prompt_token_count == 70
+	assert metrics.average_completion_token_count == 70 / 3
+	assert metrics.average_total_token_count == 280 / 3
 
 
 def test_performance_metrics_empty_results_are_zero():
@@ -168,3 +180,6 @@ def test_performance_metrics_empty_results_are_zero():
 	assert metrics.average_llm_call_count == 0
 	assert metrics.average_judge_call_count == 0
 	assert metrics.total_retry_count == 0
+	assert metrics.average_prompt_token_count == 0
+	assert metrics.average_completion_token_count == 0
+	assert metrics.average_total_token_count == 0

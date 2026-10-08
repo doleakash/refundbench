@@ -1,5 +1,5 @@
 {
-  "case_id": "CASE-6627CFBF",
+  "case_id": "CASE-951890FF",
   "customer_message": "My order arrived 85 minutes late. I want a refund.",
   "events": [
     {
@@ -41,108 +41,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.31629200020688586,
+      "duration_ms": 0.1872079992608633,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.3237919991079252,
+      "duration_ms": 0.17337499957648106,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1640.502791000472,
+      "duration_ms": 1593.0676669995592,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 502,
+      "completion_tokens": 56,
+      "total_tokens": 558
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1679.417667000962,
+      "duration_ms": 1630.493500000739,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.047666999307693914,
+      "duration_ms": 0.0640419966657646,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 2058.3017079989077,
+      "duration_ms": 2166.2128749994736,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 382,
+      "completion_tokens": 105,
+      "total_tokens": 487
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 2057.793166997726,
+      "duration_ms": 3068.0691670022497,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 382,
+      "completion_tokens": 105,
+      "total_tokens": 487
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 2462.462791998405,
+      "duration_ms": 1842.9446250011097,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 382,
+      "completion_tokens": 81,
+      "total_tokens": 463
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 2467.0435419975547,
+      "duration_ms": 3076.0374589990533,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.0837500010675285,
+      "duration_ms": 0.10441699851071462,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.050082999223377556,
+      "duration_ms": 0.11341600111336447,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.5781669972056989,
+      "duration_ms": 1.7949579996638931,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6627CFBF",
+      "case_id": "CASE-951890FF",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.00654099858365953,
+      "duration_ms": 0.0065829990489874035,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -172,7 +211,7 @@
   "response": "A refund of ₹100 has been approved. Grievance G1: ₹100 approved. Late delivery grievance upheld."
 }
 {
-  "case_id": "CASE-81ACABEB",
+  "case_id": "CASE-3F1554BE",
   "customer_message": "Two of the four biryanis in my order were missing. Please refund me.",
   "events": [
     {
@@ -214,108 +253,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.46166699758032337,
+      "duration_ms": 0.6397500001185108,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.18716599879553542,
+      "duration_ms": 0.39362499956041574,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1526.4056669984711,
+      "duration_ms": 1289.1240829994786,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 506,
+      "completion_tokens": 60,
+      "total_tokens": 566
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1528.6611660012568,
+      "duration_ms": 1295.7707499990647,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.08462500045425259,
+      "duration_ms": 0.185042001248803,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1551.8126249990019,
+      "duration_ms": 1973.1394170012209,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 403,
+      "completion_tokens": 69,
+      "total_tokens": 472
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1532.0880409999518,
+      "duration_ms": 1683.5038749995874,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 403,
+      "completion_tokens": 71,
+      "total_tokens": 474
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1536.1272080008348,
+      "duration_ms": 2070.9249999999884,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 403,
+      "completion_tokens": 69,
+      "total_tokens": 472
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1555.2056659980735,
+      "duration_ms": 2080.173083999398,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.057999997807201,
+      "duration_ms": 0.15845900270505808,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.06704200131935067,
+      "duration_ms": 0.1065420001395978,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.2557079971884377,
+      "duration_ms": 0.7927079968794715,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-81ACABEB",
+      "case_id": "CASE-3F1554BE",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.007375001587206498,
+      "duration_ms": 0.009750001481734216,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -345,7 +423,7 @@
   "response": "A refund of ₹640 has been approved. Grievance G1: ₹640 approved. Refund calculated from verified missing item quantities."
 }
 {
-  "case_id": "CASE-7605EF2A",
+  "case_id": "CASE-16B1FFB7",
   "customer_message": "The raita container leaked all over the bag. Can I get a refund?",
   "events": [
     {
@@ -387,108 +465,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.4247090000717435,
+      "duration_ms": 0.5182499990041833,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.243417001911439,
+      "duration_ms": 0.308666996716056,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1407.9232500007492,
+      "duration_ms": 2557.1814579998318,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 505,
+      "completion_tokens": 58,
+      "total_tokens": 563
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1409.9543330012239,
+      "duration_ms": 2560.0572920011473,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.034500000765547156,
+      "duration_ms": 0.0475410015496891,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1738.570166999125,
+      "duration_ms": 2341.4011249988107,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 350,
+      "completion_tokens": 93,
+      "total_tokens": 443
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1776.6430409974419,
+      "duration_ms": 1649.9971669982187,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 350,
+      "completion_tokens": 70,
+      "total_tokens": 420
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1896.9020410004305,
+      "duration_ms": 2026.0568749981758,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 350,
+      "completion_tokens": 86,
+      "total_tokens": 436
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1903.0614590010373,
+      "duration_ms": 2345.282499998575,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.05324999801814556,
+      "duration_ms": 0.05583299935096875,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.02600000152597204,
+      "duration_ms": 0.041541999962646514,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.2017920016660355,
+      "duration_ms": 1.2643330010178033,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-7605EF2A",
+      "case_id": "CASE-16B1FFB7",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.007083999662427232,
+      "duration_ms": 0.01091699959943071,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -518,7 +635,7 @@
   "response": "Grievance G1: We need additional evidence to review this claim."
 }
 {
-  "case_id": "CASE-A4B0146E",
+  "case_id": "CASE-AD78076B",
   "customer_message": "I ordered mutton biryani but received chicken instead. Please refund the wrong item.",
   "events": [
     {
@@ -560,108 +677,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.37220900048851036,
+      "duration_ms": 0.7831660004740115,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.1940000001923181,
+      "duration_ms": 0.5699160028598271,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1674.6829590010748,
+      "duration_ms": 2923.7572499987436,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 507,
+      "completion_tokens": 59,
+      "total_tokens": 566
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1676.7555000005814,
+      "duration_ms": 2926.7706250029732,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.06687499990221113,
+      "duration_ms": 0.06466700142482296,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1873.4245840023505,
+      "duration_ms": 1862.4659170018276,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 346,
+      "completion_tokens": 66,
+      "total_tokens": 412
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1837.4512909977057,
+      "duration_ms": 1735.9610419989622,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 346,
+      "completion_tokens": 67,
+      "total_tokens": 413
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1530.0051660015015,
+      "duration_ms": 1766.0415829996055,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 346,
+      "completion_tokens": 67,
+      "total_tokens": 413
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1876.4009589976922,
+      "duration_ms": 1866.8314589995134,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.03166699752910063,
+      "duration_ms": 0.0524159986525774,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.013500000932253897,
+      "duration_ms": 0.023874999897088856,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 0.8322080029756762,
+      "duration_ms": 1.150833999417955,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-A4B0146E",
+      "case_id": "CASE-AD78076B",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.004583002009894699,
+      "duration_ms": 0.006165999366203323,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -691,7 +847,7 @@
   "response": "Grievance G1: This claim requires human review."
 }
 {
-  "case_id": "CASE-5528DFAF",
+  "case_id": "CASE-6F30D7A0",
   "customer_message": "The food was burned and tasted awful. I want a refund.",
   "events": [
     {
@@ -733,108 +889,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.2835419982147869,
+      "duration_ms": 0.3499999984342139,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.285707999864826,
+      "duration_ms": 0.243499998759944,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1600.1919579975947,
+      "duration_ms": 1502.4990829988383,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 502,
+      "completion_tokens": 85,
+      "total_tokens": 587
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1601.8209579997347,
+      "duration_ms": 1505.2969159987697,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.03445900074439123,
+      "duration_ms": 0.05324999801814556,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1433.4115410019876,
+      "duration_ms": 1928.8802919982118,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 345,
+      "completion_tokens": 81,
+      "total_tokens": 426
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1606.7422090018226,
+      "duration_ms": 1925.3655830034404,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 345,
+      "completion_tokens": 59,
+      "total_tokens": 404
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1429.8312499995518,
+      "duration_ms": 2014.6928329995717,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 345,
+      "completion_tokens": 59,
+      "total_tokens": 404
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1611.2444169993978,
+      "duration_ms": 2023.7412919996132,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.05120900095789693,
+      "duration_ms": 0.015208999684546143,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.018750000890577212,
+      "duration_ms": 0.00541700137546286,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.359249999950407,
+      "duration_ms": 0.31524999940302223,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-5528DFAF",
+      "case_id": "CASE-6F30D7A0",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.007874998118495569,
+      "duration_ms": 0.001958997017936781,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -864,7 +1059,7 @@
   "response": "Grievance G1: This claim requires human review."
 }
 {
-  "case_id": "CASE-57CE8BCA",
+  "case_id": "CASE-637A6471",
   "customer_message": "The order was late, and two biryanis were missing. Please refund both issues.",
   "events": [
     {
@@ -906,132 +1101,180 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.34212500031571835,
+      "duration_ms": 0.11379100033082068,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.18708399875322357,
+      "duration_ms": 0.07095799810485914,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 2476.1619999990216,
+      "duration_ms": 1763.5397499980172,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 507,
+      "completion_tokens": 86,
+      "total_tokens": 593
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 2477.976875001332,
+      "duration_ms": 1764.9940000010247,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.08654199700686149,
+      "duration_ms": 0.17683300029602833,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1538.3084579989372,
+      "duration_ms": 1992.1266659985122,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 379,
+      "completion_tokens": 96,
+      "total_tokens": 475
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1532.1452919997682,
+      "duration_ms": 1942.7323329982755,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 379,
+      "completion_tokens": 62,
+      "total_tokens": 441
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1718.5307909967378,
+      "duration_ms": 1988.5805000012624,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 379,
+      "completion_tokens": 85,
+      "total_tokens": 464
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G2:1",
-      "duration_ms": 1591.6536250006175,
+      "duration_ms": 1621.4558330029831,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 397,
+      "completion_tokens": 68,
+      "total_tokens": 465
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G2:2",
-      "duration_ms": 1527.6017090000096,
+      "duration_ms": 2078.220125000371,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 397,
+      "completion_tokens": 68,
+      "total_tokens": 465
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G2:3",
-      "duration_ms": 1628.7087079981575,
+      "duration_ms": 1927.4334170004295,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 397,
+      "completion_tokens": 69,
+      "total_tokens": 466
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1724.3882500006293,
+      "duration_ms": 2097.2912079996604,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.03891700180247426,
+      "duration_ms": 0.08316599996760488,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.0397080002585426,
+      "duration_ms": 0.0866250011313241,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 0.7244160005939193,
+      "duration_ms": 2.305250000063097,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-57CE8BCA",
+      "case_id": "CASE-637A6471",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.004875000740867108,
+      "duration_ms": 0.010250001651002094,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -1061,7 +1304,7 @@
   "response": "A refund of ₹740 has been approved. Grievance G1: ₹100 approved. Late delivery grievance upheld. Grievance G2: ₹640 approved. Refund calculated from verified missing item quantities."
 }
 {
-  "case_id": "CASE-723B1BCE",
+  "case_id": "CASE-EF86EBBF",
   "customer_message": "The food was burned, overly spicy, and smelled foul. Also, one dish was chicken instead of mutton.",
   "events": [
     {
@@ -1103,132 +1346,180 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.29820900090271607,
+      "duration_ms": 0.39312499939114787,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.17395900067640468,
+      "duration_ms": 0.21020799977122806,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 2980.8689999990747,
+      "duration_ms": 2291.78150000007,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 512,
+      "completion_tokens": 197,
+      "total_tokens": 709
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 2982.541624998703,
+      "duration_ms": 2294.6158749982715,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.03633300002547912,
+      "duration_ms": 0.0334169999405276,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 2279.5127499994123,
+      "duration_ms": 1570.460416998685,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 351,
+      "completion_tokens": 86,
+      "total_tokens": 437
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1826.0771659988677,
+      "duration_ms": 1536.4565409981878,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 351,
+      "completion_tokens": 63,
+      "total_tokens": 414
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1908.3513749974372,
+      "duration_ms": 1659.9229579987878,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 351,
+      "completion_tokens": 63,
+      "total_tokens": 414
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G2:1",
-      "duration_ms": 1650.3215829980036,
+      "duration_ms": 1532.1287090009719,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 343,
+      "completion_tokens": 60,
+      "total_tokens": 403
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G2:2",
-      "duration_ms": 1483.9792909988319,
+      "duration_ms": 1657.3657499975525,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 343,
+      "completion_tokens": 61,
+      "total_tokens": 404
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G2:3",
-      "duration_ms": 1499.7880829978385,
+      "duration_ms": 1526.7534999984491,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 343,
+      "completion_tokens": 59,
+      "total_tokens": 402
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 2283.1762499990873,
+      "duration_ms": 1666.8145000003278,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.05949999831500463,
+      "duration_ms": 0.06129100074758753,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.021792002371512353,
+      "duration_ms": 0.02433400004520081,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.3642500016430859,
+      "duration_ms": 1.5744590018584859,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-723B1BCE",
+      "case_id": "CASE-EF86EBBF",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.006458001735154539,
+      "duration_ms": 0.00758399983169511,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -1258,7 +1549,7 @@
   "response": "Grievance G1: This claim requires human review. Grievance G2: This claim requires human review."
 }
 {
-  "case_id": "CASE-6464A639",
+  "case_id": "CASE-A807E6FB",
   "customer_message": "I thought the delivery was late, but the app says the driver arrived before the promised time. Can you check?",
   "events": [
     {
@@ -1300,108 +1591,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "GET_ORDER",
-      "duration_ms": 0.3779580001719296,
+      "duration_ms": 0.37441699896589853,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.28995799948461354,
+      "duration_ms": 0.2623750006023329,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 2426.072207999823,
+      "duration_ms": 2420.7432080002036,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 512,
+      "completion_tokens": 163,
+      "total_tokens": 675
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 2427.7615000028163,
+      "duration_ms": 2423.6089160003758,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.03870799992000684,
+      "duration_ms": 0.08104099833872169,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1831.7171670023527,
+      "duration_ms": 1824.9513339978876,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 381,
+      "completion_tokens": 88,
+      "total_tokens": 469
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1837.5131669999973,
+      "duration_ms": 1731.9152079980995,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 381,
+      "completion_tokens": 58,
+      "total_tokens": 439
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1829.6059589993092,
+      "duration_ms": 1911.2579579996236,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 381,
+      "completion_tokens": 91,
+      "total_tokens": 472
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1840.7960000004095,
+      "duration_ms": 1920.3357500009588,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.0318750026053749,
+      "duration_ms": 0.06858300184831023,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.020541003323160112,
+      "duration_ms": 0.027750000299420208,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "SETTLE",
-      "duration_ms": 0.5765839996456634,
+      "duration_ms": 1.3382920005824417,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6464A639",
+      "case_id": "CASE-A807E6FB",
       "order_id": "ORD-124",
       "stage": "STOP",
-      "duration_ms": 0.00258299769484438,
+      "duration_ms": 0.005875001079402864,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -1431,7 +1761,7 @@
   "response": "Grievance G1: No refund was approved for this claim."
 }
 {
-  "case_id": "CASE-C76A19A0",
+  "case_id": "CASE-9937B6D8",
   "customer_message": "I think something from my order might be missing, but I am not sure. Can you check?",
   "events": [
     {
@@ -1473,108 +1803,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "GET_ORDER",
-      "duration_ms": 0.23816599787096493,
+      "duration_ms": 0.3937500005122274,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.6180839991429821,
+      "duration_ms": 0.2732499997364357,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1835.3525419988728,
+      "duration_ms": 2065.2459579978313,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 509,
+      "completion_tokens": 103,
+      "total_tokens": 612
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1836.4065829991887,
+      "duration_ms": 2067.883208001149,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.03195799945387989,
+      "duration_ms": 0.050833001296268776,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1739.129583002068,
+      "duration_ms": 1501.7869169969345,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 340,
+      "completion_tokens": 58,
+      "total_tokens": 398
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1737.8492499992717,
+      "duration_ms": 1475.1628330013773,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 340,
+      "completion_tokens": 58,
+      "total_tokens": 398
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1736.9782909991045,
+      "duration_ms": 1583.7866660003783,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 340,
+      "completion_tokens": 58,
+      "total_tokens": 398
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1743.1232500020997,
+      "duration_ms": 1591.4347079997242,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.053916999604552984,
+      "duration_ms": 0.053625000873580575,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.02112500078510493,
+      "duration_ms": 0.013500000932253897,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "SETTLE",
-      "duration_ms": 1.3511249999282882,
+      "duration_ms": 0.6269160003284924,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-C76A19A0",
+      "case_id": "CASE-9937B6D8",
       "order_id": "ORD-124",
       "stage": "STOP",
-      "duration_ms": 0.005375000910134986,
+      "duration_ms": 0.0033329997677356005,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -1604,7 +1973,7 @@
   "response": "Grievance G1: This claim requires human review."
 }
 {
-  "case_id": "CASE-DA7A590D",
+  "case_id": "CASE-CAE17AC3",
   "customer_message": "The raita was missing, so please refund its price.",
   "events": [
     {
@@ -1646,108 +2015,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.3947909972339403,
+      "duration_ms": 0.24245800159405917,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.32141599876922555,
+      "duration_ms": 0.1385829964419827,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1600.7809580005414,
+      "duration_ms": 1475.4100000027393,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 501,
+      "completion_tokens": 53,
+      "total_tokens": 554
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1602.52812500039,
+      "duration_ms": 1477.2692909973557,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.057792000006884336,
+      "duration_ms": 0.06533299892907962,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1869.2119579973223,
+      "duration_ms": 1912.9058750004333,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 396,
+      "completion_tokens": 95,
+      "total_tokens": 491
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1867.1909580007195,
+      "duration_ms": 1838.0407500008005,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 396,
+      "completion_tokens": 92,
+      "total_tokens": 488
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1871.4260829983687,
+      "duration_ms": 2015.8210840018,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 396,
+      "completion_tokens": 90,
+      "total_tokens": 486
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1877.5035420003405,
+      "duration_ms": 2022.0004170005268,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.050499998906161636,
+      "duration_ms": 0.04795799759449437,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.02245799987576902,
+      "duration_ms": 0.02712499917834066,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.3964579993626103,
+      "duration_ms": 1.2308750010561198,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-DA7A590D",
+      "case_id": "CASE-CAE17AC3",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.007000002369750291,
+      "duration_ms": 0.005750000127591193,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -1777,7 +2185,7 @@
   "response": "Grievance G1: No refund was approved for this claim."
 }
 {
-  "case_id": "CASE-19E16DC3",
+  "case_id": "CASE-853ED3B8",
   "customer_message": "Four biryanis were missing, but perhaps only two arrived. Please refund the missing food.",
   "events": [
     {
@@ -1819,108 +2227,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.5118329972901847,
+      "duration_ms": 0.378167002054397,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.46587500037276186,
+      "duration_ms": 0.20870799926342443,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 2851.3354169990635,
+      "duration_ms": 2686.419959001796,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 508,
+      "completion_tokens": 143,
+      "total_tokens": 651
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 2853.6307089998445,
+      "duration_ms": 2689.1875420005817,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.05116700049256906,
+      "duration_ms": 0.06104200292611495,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1674.9710829972173,
+      "duration_ms": 1834.1393340015202,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 403,
+      "completion_tokens": 77,
+      "total_tokens": 480
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1633.631417000288,
+      "duration_ms": 1937.4014169989096,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 403,
+      "completion_tokens": 92,
+      "total_tokens": 495
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 2550.7739999993646,
+      "duration_ms": 2281.127792000916,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 403,
+      "completion_tokens": 144,
+      "total_tokens": 547
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 2557.5567089981632,
+      "duration_ms": 2287.2697499988135,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.0551249977434054,
+      "duration_ms": 0.04816699947696179,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.05604200123343617,
+      "duration_ms": 0.04962499951943755,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.3160419985069893,
+      "duration_ms": 1.0904160008067265,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-19E16DC3",
+      "case_id": "CASE-853ED3B8",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.007208000170066953,
+      "duration_ms": 0.005290999979479238,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -1950,7 +2397,7 @@
   "response": "A refund of ₹640 has been approved. Grievance G1: ₹640 approved. Refund calculated from verified missing item quantities."
 }
 {
-  "case_id": "CASE-4BABC971",
+  "case_id": "CASE-816A6407",
   "customer_message": "Where is my order? I need help with its delivery.",
   "events": [
     {
@@ -1964,20 +2411,26 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-4BABC971",
+      "case_id": "CASE-816A6407",
       "order_id": "ORD-999",
       "stage": "GET_ORDER",
-      "duration_ms": 0.3617919974203687,
+      "duration_ms": 0.35525000203051604,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-4BABC971",
+      "case_id": "CASE-816A6407",
       "order_id": "ORD-999",
       "stage": "ESCALATE",
-      "duration_ms": 0.006665999535471201,
+      "duration_ms": 0.00695799826644361,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -1992,7 +2445,7 @@
   "response": null
 }
 {
-  "case_id": "CASE-E1B5E75C",
+  "case_id": "CASE-F636D94E",
   "customer_message": "My order was late. Please check the delivery and refund me.",
   "events": [
     {
@@ -2014,44 +2467,59 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-E1B5E75C",
+      "case_id": "CASE-F636D94E",
       "order_id": "ORD-126",
       "stage": "GET_ORDER",
-      "duration_ms": 0.2558330015745014,
+      "duration_ms": 0.1947090022440534,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-E1B5E75C",
+      "case_id": "CASE-F636D94E",
       "order_id": "ORD-126",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.2487090023350902,
+      "duration_ms": 0.15899999925750308,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-E1B5E75C",
+      "case_id": "CASE-F636D94E",
       "order_id": "ORD-126",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1428.03937500139,
+      "duration_ms": 1665.6133750002482,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 502,
+      "completion_tokens": 53,
+      "total_tokens": 555
     },
     {
-      "case_id": "CASE-E1B5E75C",
+      "case_id": "CASE-F636D94E",
       "order_id": "ORD-126",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1430.2253749992815,
+      "duration_ms": 1667.9890829982469,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-E1B5E75C",
+      "case_id": "CASE-F636D94E",
       "order_id": "ORD-126",
       "stage": "ESCALATE",
-      "duration_ms": 0.024832999770296738,
+      "duration_ms": 0.025624998670537025,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -2070,7 +2538,7 @@
   "response": "This case requires human review because the delivery record and required evidence are unavailable. No refund has been approved or issued."
 }
 {
-  "case_id": "CASE-EC726785",
+  "case_id": "CASE-DB1AA672",
   "customer_message": "My order was delivered late. Please create the refund proposal for this case.",
   "events": [
     {
@@ -2112,108 +2580,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.43458299842313863,
+      "duration_ms": 0.4339580009400379,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.19366700144018978,
+      "duration_ms": 0.21312500030035153,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 1532.8021250024904,
+      "duration_ms": 1556.5922089990636,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 504,
+      "completion_tokens": 54,
+      "total_tokens": 558
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 1534.6751670003869,
+      "duration_ms": 1559.0729579998879,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.07833299969206564,
+      "duration_ms": 0.06045900227036327,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1531.2104590011586,
+      "duration_ms": 2150.6749159998435,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 380,
+      "completion_tokens": 63,
+      "total_tokens": 443
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1528.7764589993458,
+      "duration_ms": 1536.5905830003612,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 380,
+      "completion_tokens": 84,
+      "total_tokens": 464
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1687.5648329987598,
+      "duration_ms": 1426.522166999348,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 380,
+      "completion_tokens": 62,
+      "total_tokens": 442
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1693.859999999404,
+      "duration_ms": 2153.8850420001836,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.049665999540593475,
+      "duration_ms": 0.07270900096045807,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.02695800139917992,
+      "duration_ms": 0.034500000765547156,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 1.0692500000004657,
+      "duration_ms": 1.6771660011727363,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-EC726785",
+      "case_id": "CASE-DB1AA672",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.004707999323727563,
+      "duration_ms": 0.009999999747378752,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -2243,7 +2750,7 @@
   "response": "A refund of ₹100 has been approved. Grievance G1: ₹100 approved. Late delivery grievance upheld."
 }
 {
-  "case_id": "CASE-6186E26E",
+  "case_id": "CASE-D5C3FAD9",
   "customer_message": "I am submitting the same late-delivery refund request again. Please do not create a duplicate refund.",
   "events": [
     {
@@ -2285,108 +2792,147 @@
   ],
   "timing_events": [
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "GET_ORDER",
-      "duration_ms": 0.3015000002051238,
+      "duration_ms": 0.45370799853117205,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "GET_DELIVERY",
-      "duration_ms": 0.274499998340616,
+      "duration_ms": 0.2190830018662382,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "LLM_EXTRACT_GRIEVANCES",
-      "duration_ms": 9355.674917002034,
+      "duration_ms": 2443.309333000798,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 509,
+      "completion_tokens": 141,
+      "total_tokens": 650
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "EXTRACT_GRIEVANCES",
-      "duration_ms": 9357.263792000595,
+      "duration_ms": 2445.4303329985123,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "GET_EVIDENCE",
-      "duration_ms": 0.06616600148845464,
+      "duration_ms": 0.06633399971178733,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:1",
-      "duration_ms": 1548.9712500020687,
+      "duration_ms": 1754.4778750016121,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 378,
+      "completion_tokens": 96,
+      "total_tokens": 474
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:2",
-      "duration_ms": 1675.0432920016465,
+      "duration_ms": 1948.8050420004583,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 378,
+      "completion_tokens": 62,
+      "total_tokens": 440
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "LLM_JUDGE:G1:3",
-      "duration_ms": 1546.3410000011208,
+      "duration_ms": 1570.5211669992423,
       "success": true,
-      "model": "gpt-5.6-luna"
+      "model": "gpt-5.6-luna",
+      "prompt_tokens": 378,
+      "completion_tokens": 59,
+      "total_tokens": 437
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "RUN_JUDGES",
-      "duration_ms": 1680.4271670007438,
+      "duration_ms": 1953.1651669967687,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "BUILD_CONSENSUS",
-      "duration_ms": 0.11708300007740036,
+      "duration_ms": 0.04620800245902501,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "APPLY_POLICY",
-      "duration_ms": 0.0596249992668163,
+      "duration_ms": 0.02154100002371706,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "SETTLE",
-      "duration_ms": 0.10937500337604433,
+      "duration_ms": 0.07087499761837535,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     },
     {
-      "case_id": "CASE-6186E26E",
+      "case_id": "CASE-D5C3FAD9",
       "order_id": "ORD-123",
       "stage": "STOP",
-      "duration_ms": 0.003707998985191807,
+      "duration_ms": 0.003999997716164216,
       "success": true,
-      "model": null
+      "model": null,
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "total_tokens": null
     }
   ],
   "actions": [
@@ -2444,3 +2990,29 @@ Refund Amount:          100%
 Escalation:             100%
 Refund Status:          100%
 Idempotency Key:        100%
+
+Performance
+  CASE-GOLDEN-001 end-to-end latency: 4714.99 ms
+  CASE-GOLDEN-002 end-to-end latency: 3380.79 ms
+  CASE-GOLDEN-003 end-to-end latency: 4910.09 ms
+  CASE-GOLDEN-004 end-to-end latency: 4797.77 ms
+  CASE-GOLDEN-005 end-to-end latency: 3531.37 ms
+  CASE-GOLDEN-006 end-to-end latency: 3866.80 ms
+  CASE-GOLDEN-007 end-to-end latency: 3965.04 ms
+  CASE-GOLDEN-008 end-to-end latency: 4347.49 ms
+  CASE-GOLDEN-009 end-to-end latency: 3662.38 ms
+  CASE-GOLDEN-010 end-to-end latency: 3502.07 ms
+  CASE-GOLDEN-011 end-to-end latency: 4979.51 ms
+  CASE-GOLDEN-012 end-to-end latency: 0.73 ms
+  CASE-GOLDEN-013 end-to-end latency: 1668.92 ms
+  CASE-GOLDEN-014 end-to-end latency: 3716.88 ms
+  CASE-GOLDEN-015 end-to-end latency: 4400.64 ms
+  Average latency:       3696.36 ms
+  P50 latency:           3866.80 ms
+  P95 latency:           4930.92 ms
+  Average LLM calls:     3.93
+  Average judge calls:   3.00
+  Average prompt tokens: 1587.20
+  Average completion tokens: 315.07
+  Average total tokens:  1902.27
+  Total retries:         0
