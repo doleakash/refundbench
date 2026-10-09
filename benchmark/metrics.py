@@ -28,6 +28,19 @@ class PerformanceMetrics(BaseModel):
 	average_total_token_count: float
 
 
+class BusinessImpactMetrics(BaseModel):
+	automation_rate: float
+	escalation_rate: float
+	escalation_count: int
+	estimated_human_review_minutes: float
+	total_input_tokens: int | None
+	total_output_tokens: int | None
+	estimated_input_cost: float | None
+	estimated_output_cost: float | None
+	estimated_llm_cost: float | None
+	estimated_llm_cost_per_case: float | None
+
+
 def calculate_metrics(
 	results: list[BenchmarkResult],
 ) -> BenchmarkMetrics:
@@ -77,6 +90,113 @@ def calculate_metrics(
 		),
 		idempotency_key_accuracy=optional_accuracy(
 			"settlement.idempotency_key"
+		),
+	)
+
+
+def calculate_business_impact_metrics(
+	results: list[BenchmarkResult],
+	review_minutes_per_escalation: float = 5,
+	input_cost_per_million_tokens: float | None = None,
+	output_cost_per_million_tokens: float | None = None,
+) -> BusinessImpactMetrics:
+	if review_minutes_per_escalation < 0:
+		raise ValueError("Review minutes per escalation cannot be negative.")
+	if (
+		input_cost_per_million_tokens is not None
+		and input_cost_per_million_tokens < 0
+	):
+		raise ValueError("Input token price cannot be negative.")
+	if (
+		output_cost_per_million_tokens is not None
+		and output_cost_per_million_tokens < 0
+	):
+		raise ValueError("Output token price cannot be negative.")
+
+	escalation_count = 0
+	automation_count = 0
+	for result in results:
+		actual_values = {
+			comparison.field: comparison.actual
+			for comparison in result.comparisons
+		}
+		try:
+			actual_escalation = actual_values["escalation"]
+		except KeyError as error:
+			raise ValueError(
+				f"Missing actual {error.args[0]} for case {result.case_id}."
+			) from error
+		actual_decision = actual_values.get("settlement.decision")
+
+		if actual_decision == "ESCALATE" or actual_escalation is True:
+			escalation_count += 1
+		if (
+			actual_decision == "AUTO_APPROVED"
+			and actual_escalation is False
+		):
+			automation_count += 1
+
+	total_cases = len(results)
+	has_token_data = bool(results) and all(
+		result.performance is not None
+		and result.performance.prompt_token_count is not None
+		and result.performance.completion_token_count is not None
+		for result in results
+	)
+	total_input_tokens = None
+	total_output_tokens = None
+	if has_token_data:
+		total_input_tokens = sum(
+			result.performance.prompt_token_count
+			for result in results
+			if result.performance is not None
+			and result.performance.prompt_token_count is not None
+		)
+		total_output_tokens = sum(
+			result.performance.completion_token_count
+			for result in results
+			if result.performance is not None
+			and result.performance.completion_token_count is not None
+		)
+
+	estimated_input_cost = None
+	estimated_output_cost = None
+	estimated_llm_cost = None
+	if (
+		input_cost_per_million_tokens is not None
+		and output_cost_per_million_tokens is not None
+		and has_token_data
+	):
+		estimated_input_cost = (
+			total_input_tokens * input_cost_per_million_tokens
+		) / 1_000_000
+		estimated_output_cost = (
+			total_output_tokens * output_cost_per_million_tokens
+		) / 1_000_000
+		estimated_llm_cost = estimated_input_cost + estimated_output_cost
+
+	return BusinessImpactMetrics(
+		automation_rate=(
+			automation_count / total_cases
+			if total_cases
+			else 0.0
+		),
+		escalation_rate=(
+			escalation_count / total_cases if total_cases else 0.0
+		),
+		escalation_count=escalation_count,
+		estimated_human_review_minutes=(
+			escalation_count * review_minutes_per_escalation
+		),
+		total_input_tokens=total_input_tokens,
+		total_output_tokens=total_output_tokens,
+		estimated_input_cost=estimated_input_cost,
+		estimated_output_cost=estimated_output_cost,
+		estimated_llm_cost=estimated_llm_cost,
+		estimated_llm_cost_per_case=(
+			estimated_llm_cost / total_cases
+			if estimated_llm_cost is not None and total_cases
+			else None
 		),
 	)
 
@@ -133,12 +253,13 @@ def calculate_performance_metrics(
 		),
 		total_retry_count=sum(item.retry_count for item in performance),
 		average_prompt_token_count=(
-			sum(item.prompt_token_count for item in performance) / total
+			sum(item.prompt_token_count or 0 for item in performance) / total
 			if total
 			else 0.0
 		),
 		average_completion_token_count=(
-			sum(item.completion_token_count for item in performance) / total
+			sum(item.completion_token_count or 0 for item in performance)
+			/ total
 			if total
 			else 0.0
 		),

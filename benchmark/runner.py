@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -10,6 +11,7 @@ from app.policy.engine import PolicyAction
 from app.settlement.refund_ledger import RefundRecord
 from benchmark.comparator import compare_outcomes
 from benchmark.metrics import (
+	calculate_business_impact_metrics,
 	calculate_metrics,
 	calculate_performance_metrics,
 )
@@ -22,7 +24,11 @@ from benchmark.models import (
 	CasePerformance,
 	GoldenCase,
 )
+from config.settings import get_settings
 
+PRICED_OPENAI_MODEL = "gpt-5.6-luna"
+PRICED_OPENAI_INPUT_COST_PER_MILLION_TOKENS = 0.20
+PRICED_OPENAI_OUTPUT_COST_PER_MILLION_TOKENS = 1.20
 GOLDEN_SET_PATH = (
 	Path(__file__).resolve().parent.parent
 	/ "data"
@@ -184,6 +190,14 @@ def _run_case(
 		for event in state.timing_events
 		if event.model is not None
 	]
+
+	def total_tokens(values: list[int | None]) -> int | None:
+		if not values:
+			return 0 if state.timing_events else None
+		if any(value is None for value in values):
+			return None
+		return sum(value for value in values if value is not None)
+
 	result.performance = CasePerformance(
 		latency_ms=(
 			total_event.duration_ms if total_event is not None else None
@@ -194,11 +208,11 @@ def _run_case(
 			for event in llm_events
 		),
 		retry_count=sum(state.tool_retry_count.values()),
-		prompt_token_count=sum(
-			event.prompt_tokens or 0 for event in llm_events
+		prompt_token_count=total_tokens(
+			[event.prompt_tokens for event in llm_events]
 		),
-		completion_token_count=sum(
-			event.completion_tokens or 0 for event in llm_events
+		completion_token_count=total_tokens(
+			[event.completion_tokens for event in llm_events]
 		),
 		total_token_count=sum(
 			event.total_tokens or 0 for event in llm_events
@@ -243,10 +257,74 @@ def run_benchmark(
 
 
 def main() -> None:
+	settings = get_settings()
+	openai_model_pricing_matches = (
+		settings.llm_provider == "OPENAI"
+		and settings.open_ai_model == PRICED_OPENAI_MODEL
+		and settings.llm_base_url in {
+			None,
+			"https://api.openai.com/v1",
+		}
+	)
+	default_input_price = (
+		os.getenv("REFUNDBENCH_INPUT_COST_PER_MILLION_TOKENS")
+		or (
+			str(PRICED_OPENAI_INPUT_COST_PER_MILLION_TOKENS)
+			if openai_model_pricing_matches
+			else None
+		)
+	)
+	default_output_price = (
+		os.getenv("REFUNDBENCH_OUTPUT_COST_PER_MILLION_TOKENS")
+		or (
+			str(PRICED_OPENAI_OUTPUT_COST_PER_MILLION_TOKENS)
+			if openai_model_pricing_matches
+			else None
+		)
+	)
+
 	parser = argparse.ArgumentParser()
 	parser.add_argument(
 		"--case",
 		help="Run only the golden case with this case ID.",
+	)
+	parser.add_argument(
+		"--review-minutes-per-escalation",
+		type=float,
+		default=5,
+		help="Estimated human-review minutes per escalated case (default: 5).",
+	)
+	parser.add_argument(
+		"--input-cost-per-million-tokens",
+		type=float,
+		default=default_input_price,
+		help=(
+			"Input token price per million tokens, in the currency "
+			"selected by --cost-currency. Also configurable with "
+			"REFUNDBENCH_INPUT_COST_PER_MILLION_TOKENS; defaults to "
+			"USD 0.20 for configured OpenAI gpt-5.6-luna standard "
+			"short-context pricing (up to 272K input tokens per request)."
+		),
+	)
+	parser.add_argument(
+		"--output-cost-per-million-tokens",
+		type=float,
+		default=default_output_price,
+		help=(
+			"Output token price per million tokens, in the currency "
+			"selected by --cost-currency. Also configurable with "
+			"REFUNDBENCH_OUTPUT_COST_PER_MILLION_TOKENS; defaults to "
+			"USD 1.20 for configured OpenAI gpt-5.6-luna standard "
+			"short-context pricing (up to 272K input tokens per request)."
+		),
+	)
+	parser.add_argument(
+		"--cost-currency",
+		default=os.getenv("REFUNDBENCH_COST_CURRENCY", "USD"),
+		help=(
+			"Currency label for token prices and estimated cost "
+			"(default: USD; also configurable with REFUNDBENCH_COST_CURRENCY)."
+		),
 	)
 	args = parser.parse_args()
 
@@ -272,6 +350,18 @@ def main() -> None:
 
 	metrics = calculate_metrics(results)
 	performance = calculate_performance_metrics(results)
+	business_impact = calculate_business_impact_metrics(
+		results,
+		review_minutes_per_escalation=(
+			args.review_minutes_per_escalation
+		),
+		input_cost_per_million_tokens=(
+			args.input_cost_per_million_tokens
+		),
+		output_cost_per_million_tokens=(
+			args.output_cost_per_million_tokens
+		),
+	)
 
 	print()
 	print(f"Cases:                  {len(results)}")
@@ -332,6 +422,89 @@ def main() -> None:
 		f"{performance.average_total_token_count:.2f}"
 	)
 	print(f"  Total retries:         {performance.total_retry_count}")
+	print()
+	print("Business Impact")
+	print(f"  Automation rate:       {business_impact.automation_rate:.0%}")
+	print(f"  Escalation rate:       {business_impact.escalation_rate:.0%}")
+	print(f"  Escalation count:      {business_impact.escalation_count}")
+	print(
+		f"  Review-time assumption: "
+		f"{args.review_minutes_per_escalation:.2f} minutes/escalation"
+	)
+	print(
+		f"  Estimated review time: "
+		f"{business_impact.estimated_human_review_minutes:.2f} minutes"
+	)
+	print(
+		"  Total benchmark input tokens: "
+		+ (
+			str(business_impact.total_input_tokens)
+			if business_impact.total_input_tokens is not None
+			else "N/A (incomplete token telemetry)"
+		)
+	)
+	print(
+		"  Total benchmark output tokens: "
+		+ (
+			str(business_impact.total_output_tokens)
+			if business_impact.total_output_tokens is not None
+			else "N/A (incomplete token telemetry)"
+		)
+	)
+	print(
+		"  Input price assumption: "
+		+ (
+			f"{args.cost_currency} "
+			f"{args.input_cost_per_million_tokens:.6f} per million tokens"
+			if args.input_cost_per_million_tokens is not None
+			else "N/A (not configured)"
+		)
+	)
+	print(
+		"  Output price assumption: "
+		+ (
+			f"{args.cost_currency} "
+			f"{args.output_cost_per_million_tokens:.6f} per million tokens"
+			if args.output_cost_per_million_tokens is not None
+			else "N/A (not configured)"
+		)
+	)
+	print(
+		"  Estimated input cost:  "
+		+ (
+			f"{args.cost_currency} "
+			f"{business_impact.estimated_input_cost:.6f}"
+			if business_impact.estimated_input_cost is not None
+			else "N/A (requires token data and both token prices)"
+		)
+	)
+	print(
+		"  Estimated output cost: "
+		+ (
+			f"{args.cost_currency} "
+			f"{business_impact.estimated_output_cost:.6f}"
+			if business_impact.estimated_output_cost is not None
+			else "N/A (requires token data and both token prices)"
+		)
+	)
+	print(
+		"  Estimated LLM cost:    "
+		+ (
+			f"{args.cost_currency} "
+			f"{business_impact.estimated_llm_cost:.6f}"
+			if business_impact.estimated_llm_cost is not None
+			else "N/A (requires token data and both token prices)"
+		)
+	)
+	print(
+		"  Estimated cost per case: "
+		+ (
+			f"{args.cost_currency} "
+			f"{business_impact.estimated_llm_cost_per_case:.6f}"
+			if business_impact.estimated_llm_cost_per_case is not None
+			else "N/A (requires token data and both token prices)"
+		)
+	)
 
 
 if __name__ == "__main__":

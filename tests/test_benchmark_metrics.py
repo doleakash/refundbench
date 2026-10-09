@@ -1,4 +1,8 @@
+from types import SimpleNamespace
+
+from benchmark import runner
 from benchmark.metrics import (
+	calculate_business_impact_metrics,
 	calculate_metrics,
 	calculate_performance_metrics,
 )
@@ -183,3 +187,272 @@ def test_performance_metrics_empty_results_are_zero():
 	assert metrics.average_prompt_token_count == 0
 	assert metrics.average_completion_token_count == 0
 	assert metrics.average_total_token_count == 0
+
+
+def make_business_result(
+	case_id: str,
+	actual_decision: str | None,
+	actual_escalation: bool,
+	prompt_tokens: int | None = 0,
+	completion_tokens: int | None = 0,
+) -> BenchmarkResult:
+	comparisons = [
+		FieldComparison(
+			field="escalation",
+			expected=True,
+			actual=actual_escalation,
+			passed=False,
+		),
+	]
+	if actual_decision is not None:
+		comparisons.insert(
+			0,
+			FieldComparison(
+				field="settlement.decision",
+				expected="ESCALATE",
+				actual=actual_decision,
+				passed=False,
+			),
+		)
+	return BenchmarkResult(
+		case_id=case_id,
+		passed=True,
+		comparisons=comparisons,
+		performance=CasePerformance(
+			prompt_token_count=prompt_tokens,
+			completion_token_count=completion_tokens,
+		),
+	)
+
+
+def test_business_impact_metrics_use_actual_outcomes_and_configured_prices():
+	results = [
+		make_business_result(
+			"CASE-001",
+			"ESCALATE",
+			False,
+			prompt_tokens=1_000_000,
+			completion_tokens=500_000,
+		),
+		make_business_result(
+			"CASE-002",
+			"AUTO_APPROVED",
+			True,
+			prompt_tokens=500_000,
+			completion_tokens=250_000,
+		),
+		make_business_result(
+			"CASE-003",
+			"AUTO_APPROVED",
+			False,
+			prompt_tokens=500_000,
+			completion_tokens=250_000,
+		),
+	]
+
+	metrics = calculate_business_impact_metrics(
+		results,
+		review_minutes_per_escalation=8,
+		input_cost_per_million_tokens=2,
+		output_cost_per_million_tokens=4,
+	)
+
+	assert metrics.automation_rate == 1 / 3
+	assert metrics.escalation_rate == 2 / 3
+	assert metrics.escalation_count == 2
+	assert metrics.estimated_human_review_minutes == 16
+	assert metrics.total_input_tokens == 2_000_000
+	assert metrics.total_output_tokens == 1_000_000
+	assert metrics.estimated_input_cost == 4
+	assert metrics.estimated_output_cost == 4
+	assert metrics.estimated_llm_cost == 8
+	assert metrics.estimated_llm_cost_per_case == 8 / 3
+
+
+def test_business_impact_metrics_with_zero_escalations():
+	results = [
+		make_business_result("CASE-001", "AUTO_APPROVED", False),
+		make_business_result("CASE-002", "AUTO_APPROVED", False),
+	]
+
+	metrics = calculate_business_impact_metrics(results)
+
+	assert metrics.automation_rate == 1
+	assert metrics.escalation_rate == 0
+	assert metrics.escalation_count == 0
+	assert metrics.estimated_human_review_minutes == 0
+	assert metrics.estimated_llm_cost is None
+
+
+def test_business_impact_metrics_missing_or_invalid_decision_is_not_automated():
+	results = [
+		make_business_result("CASE-001", None, False),
+		make_business_result("CASE-002", "UNKNOWN", False),
+	]
+
+	metrics = calculate_business_impact_metrics(results)
+
+	assert metrics.automation_rate == 0
+	assert metrics.escalation_rate == 0
+	assert metrics.escalation_count == 0
+
+
+def test_business_impact_metrics_empty_results_are_zero():
+	metrics = calculate_business_impact_metrics(
+		[],
+		input_cost_per_million_tokens=2,
+		output_cost_per_million_tokens=4,
+	)
+
+	assert metrics.automation_rate == 0
+	assert metrics.escalation_rate == 0
+	assert metrics.escalation_count == 0
+	assert metrics.estimated_human_review_minutes == 0
+	assert metrics.total_input_tokens is None
+	assert metrics.total_output_tokens is None
+	assert metrics.estimated_input_cost is None
+	assert metrics.estimated_output_cost is None
+	assert metrics.estimated_llm_cost is None
+	assert metrics.estimated_llm_cost_per_case is None
+
+
+def test_business_impact_metrics_cost_is_unavailable_without_both_prices():
+	result = make_business_result(
+		"CASE-001",
+		"AUTO_APPROVED",
+		False,
+		prompt_tokens=1000,
+		completion_tokens=500,
+	)
+
+	metrics = calculate_business_impact_metrics(
+		[result],
+		input_cost_per_million_tokens=2,
+	)
+
+	assert metrics.estimated_llm_cost is None
+	assert metrics.estimated_input_cost is None
+	assert metrics.estimated_output_cost is None
+	assert metrics.estimated_llm_cost_per_case is None
+
+
+def test_business_impact_metrics_cost_is_unavailable_without_token_data():
+	for result in (
+		make_business_result(
+			"CASE-PROMPT-MISSING",
+			"AUTO_APPROVED",
+			False,
+			prompt_tokens=None,
+			completion_tokens=500,
+		),
+		make_business_result(
+			"CASE-COMPLETION-MISSING",
+			"AUTO_APPROVED",
+			False,
+			prompt_tokens=1000,
+			completion_tokens=None,
+		),
+	):
+		metrics = calculate_business_impact_metrics(
+			[result],
+			input_cost_per_million_tokens=2,
+			output_cost_per_million_tokens=4,
+		)
+
+		assert metrics.estimated_llm_cost is None
+
+
+def test_business_impact_metrics_zero_token_usage_has_zero_cost():
+	result = make_business_result(
+		"CASE-ZERO-TOKENS",
+		"AUTO_APPROVED",
+		False,
+		prompt_tokens=0,
+		completion_tokens=0,
+	)
+
+	metrics = calculate_business_impact_metrics(
+		[result],
+		input_cost_per_million_tokens=2,
+		output_cost_per_million_tokens=4,
+	)
+
+	assert metrics.estimated_llm_cost == 0
+	assert metrics.estimated_input_cost == 0
+	assert metrics.estimated_output_cost == 0
+	assert metrics.estimated_llm_cost_per_case == 0
+
+
+def run_fake_case(monkeypatch, timing_events):
+	case = SimpleNamespace(
+		case_id="CASE-001",
+		order_id="ORDER-001",
+		customer_message="A test case",
+		preconditions=None,
+		expected=None,
+	)
+	service = SimpleNamespace(
+		process_case=lambda **kwargs: SimpleNamespace(
+			timing_events=timing_events,
+			tool_retry_count={},
+		)
+	)
+	monkeypatch.setattr(runner, "_actual_outcome", lambda state, service: None)
+	monkeypatch.setattr(
+		runner,
+		"compare_outcomes",
+		lambda **kwargs: BenchmarkResult(
+			case_id="CASE-001",
+			passed=True,
+			comparisons=[],
+		),
+	)
+
+	return runner._run_case(case, service)
+
+
+def test_run_case_without_llm_events_preserves_unknown_token_usage(monkeypatch):
+	result = run_fake_case(monkeypatch, [])
+
+	assert result.performance.prompt_token_count is None
+	assert result.performance.completion_token_count is None
+
+
+def test_run_case_with_instrumented_no_llm_events_records_zero_tokens(
+	monkeypatch,
+):
+	result = run_fake_case(
+		monkeypatch,
+		[
+			SimpleNamespace(
+				model=None,
+				stage="GET_ORDER",
+				prompt_tokens=None,
+				completion_tokens=None,
+				total_tokens=None,
+			)
+		],
+	)
+
+	assert result.performance.prompt_token_count == 0
+	assert result.performance.completion_token_count == 0
+
+
+def test_run_case_with_missing_event_tokens_preserves_unknown_counts(
+	monkeypatch,
+):
+	result = run_fake_case(
+		monkeypatch,
+		[
+			SimpleNamespace(
+				model="test-model",
+				stage="LLM_CALL",
+				prompt_tokens=None,
+				completion_tokens=0,
+				total_tokens=0,
+			)
+		],
+	)
+
+	assert result.performance.prompt_token_count is None
+	assert result.performance.completion_token_count == 0

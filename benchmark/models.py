@@ -84,8 +84,8 @@ class CasePerformance(BaseModel):
 	llm_call_count: int = 0
 	judge_call_count: int = 0
 	retry_count: int = 0
-	prompt_token_count: int = 0
-	completion_token_count: int = 0
+	prompt_token_count: int | None = None
+	completion_token_count: int | None = None
 	total_token_count: int = 0
 
 
