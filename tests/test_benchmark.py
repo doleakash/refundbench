@@ -33,7 +33,7 @@ def test_comparator_reports_field_level_pass_and_fail():
 		],
 		settlement=ExpectedSettlement(
 			decision="AUTO_APPROVED",
-			refund_amount=100,
+			refund_amount=640,
 		),
 		escalation=False,
 		answer="A refund was approved.",
@@ -49,7 +49,7 @@ def test_comparator_reports_field_level_pass_and_fail():
 		],
 		settlement=ActualSettlement(
 			decision="AUTO_APPROVED",
-			refund_amount=80,
+			refund_amount=320,
 		),
 		escalation=False,
 	)
@@ -66,8 +66,9 @@ def test_comparator_reports_field_level_pass_and_fail():
 		False,
 		True,
 	]
-	assert result.comparisons[4].expected == 100
-	assert result.comparisons[4].actual == 80
+	assert result.comparisons[4].field == "settlement.refund_amount"
+	assert result.comparisons[4].expected == 640
+	assert result.comparisons[4].actual == 320
 
 
 def test_loader_accepts_case_level_golden_set():
@@ -85,7 +86,10 @@ def test_run_benchmark_selects_only_requested_case(monkeypatch):
 	class FakeService:
 		def process_case(self, order_id, customer_message):
 			processed.append((order_id, customer_message))
-			return SimpleNamespace()
+			return SimpleNamespace(
+				timing_events=[],
+				tool_retry_count={},
+			)
 
 	monkeypatch.setattr(
 		runner,

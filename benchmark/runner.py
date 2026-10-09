@@ -68,7 +68,7 @@ def _actual_outcome(
 				else (
 					"ESCALATE"
 					if state.actions
-					and state.actions[-1] == "ESCALATE"
+					   and state.actions[-1] == "ESCALATE"
 					else None
 				)
 			),
@@ -93,9 +93,9 @@ def _actual_outcome(
 				and state.actions[-1] == "ESCALATE"
 			)
 			or any(
-				decision.action is PolicyAction.ESCALATE
-				for decision in state.policy_decisions.values()
-			)
+			decision.action is PolicyAction.ESCALATE
+			for decision in state.policy_decisions.values()
+		)
 			or (
 				settlement is not None
 				and settlement.status.value == "ESCALATE"
@@ -152,7 +152,7 @@ def _apply_preconditions(
 		raise ValueError(
 			f"Existing refund status {existing_refund.status} cannot be "
 			f"seeded for order {golden_case.order_id}."
-	)
+		)
 
 
 def _run_case(
@@ -262,7 +262,13 @@ def main() -> None:
 		)
 
 		if not result.passed:
-			print(result)
+			for comparison in result.comparisons:
+				if not comparison.passed:
+					print(
+						f"  MISMATCH | {comparison.field} | "
+						f"expected={comparison.expected!r} | "
+						f"actual={comparison.actual!r}"
+					)
 
 	metrics = calculate_metrics(results)
 	performance = calculate_performance_metrics(results)
