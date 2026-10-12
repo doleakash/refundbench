@@ -1,9 +1,13 @@
 import json
 from threading import Barrier
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
 
 from app.agent.orchestrator import run_agent
-from app.agent.state import Action, AgentDecision, AgentModel
+from app.agent.state import Action, AgentDecision, AgentModel, AgentState
+from app.domain.models import Order
 from app.domain.models import CustomerIntent, Grievance, GrievanceType
 from app.evaluation.extractor import RawClaim
 from app.evaluation.judge import Judgment
@@ -103,6 +107,70 @@ def load_test_cases():
 		return json.load(f)
 
 
+@pytest.mark.parametrize(
+	("terminal_action", "order_status", "expected_outcome"),
+	[
+		(Action.STOP.value, "DELIVERED", "RESOLVED"),
+		(Action.ESCALATE.value, "DELIVERED", "ESCALATED"),
+		(Action.GET_ORDER.value, "CANCELLED", "DEFLECTED"),
+	],
+)
+def test_run_agent_classifies_before_serializing_terminal_trace(
+	monkeypatch,
+	capsys,
+	terminal_action,
+	order_status,
+	expected_outcome,
+):
+	state = AgentState(
+		case_id="CASE-OUTCOME",
+		customer_message="A test request",
+		order_id="ORD-OUTCOME",
+		actions=[terminal_action],
+		order=Order(
+			order_id="ORD-OUTCOME",
+			customer_id="CUSTOMER-1",
+			expected_delivery_at="2025-01-01T00:00:00Z",
+			status=order_status,
+			total_amount=10,
+			order_weight=1,
+			items=[],
+		),
+	)
+	monkeypatch.setattr(
+		"app.agent.orchestrator._run_agent",
+		lambda **kwargs: state,
+	)
+
+	returned_state = run_agent(
+		customer_message=state.customer_message,
+		order_id=state.order_id,
+		case_id=state.case_id,
+	)
+	trace = json.loads(capsys.readouterr().out)
+
+	assert returned_state.outcome == expected_outcome
+	assert trace["outcome"] == expected_outcome
+	assert trace["timing_events"][-1]["stage"] == "TOTAL_AGENT"
+
+
+def test_run_agent_keeps_execution_failure_outside_terminal_outcomes(
+	monkeypatch,
+	capsys,
+):
+	def fail_before_state_return(**kwargs):
+		raise RuntimeError("workflow execution failed")
+
+	monkeypatch.setattr(
+		"app.agent.orchestrator._run_agent",
+		fail_before_state_return,
+	)
+	with pytest.raises(RuntimeError, match="workflow execution failed"):
+		run_agent("A test request", "ORD-OUTCOME", case_id="CASE-FAIL")
+
+	assert capsys.readouterr().out == ""
+
+
 def test_agent_cases(monkeypatch):
 	test_cases = load_test_cases()
 
@@ -175,10 +243,15 @@ def test_agent_cases(monkeypatch):
 		)
 
 		assert state.actions
-		assert state.actions[-1] in {
-			Action.STOP.value,
-			Action.ESCALATE.value,
-		}
+
+		if state.outcome == "DEFLECTED":
+			assert state.actions == [Action.GET_ORDER.value]
+			assert state.settlement is None
+		else:
+			assert state.actions[-1] in {
+				Action.STOP.value,
+				Action.ESCALATE.value,
+			}
 
 		if Action.SETTLE.value in state.actions:
 			assert state.settlement is not None

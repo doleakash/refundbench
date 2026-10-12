@@ -34,9 +34,10 @@ class ExpectedOutcome(BaseModel):
 	intent: str
 	grievances: list[ExpectedGrievance]
 	judgements: list[ExpectedJudgement]
-	settlement: ExpectedSettlement
+	settlement: ExpectedSettlement | None = None
 	escalation: bool
 	answer: str
+	outcome: str | None = None
 
 
 class GoldenCase(BaseModel):
@@ -68,8 +69,10 @@ class ActualOutcome(BaseModel):
 	intent: str
 	grievances: list[ActualGrievance]
 	judgements: list[ActualJudgement]
-	settlement: ActualSettlement
+	settlement: ActualSettlement | None = None
 	escalation: bool
+	outcome: str | None = None
+
 
 
 class FieldComparison(BaseModel):
@@ -81,12 +84,14 @@ class FieldComparison(BaseModel):
 
 class CasePerformance(BaseModel):
 	latency_ms: float | None = None
-	llm_call_count: int = 0
-	judge_call_count: int = 0
-	retry_count: int = 0
+	llm_call_count: int | None = None
+	failed_llm_call_count: int | None = None
+	judge_call_count: int | None = None
+	llm_retry_count: int | None = None
+	retry_count: int | None = None
 	prompt_token_count: int | None = None
 	completion_token_count: int | None = None
-	total_token_count: int = 0
+	total_token_count: int | None = None
 
 
 class BenchmarkResult(BaseModel):
@@ -94,3 +99,8 @@ class BenchmarkResult(BaseModel):
 	passed: bool
 	comparisons: list[FieldComparison]
 	performance: CasePerformance | None = None
+	execution_status: str = "completed"
+	execution_error: str | None = None
+	category: str | None = None
+	customer_message: str | None = None
+	actual_response: str | None = None

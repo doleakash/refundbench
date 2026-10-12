@@ -113,12 +113,14 @@ def test_llm_retries_transient_failure_once(monkeypatch):
 
     assert result.action is Action.GET_ORDER
     assert calls == 2
-    assert len(retry_events) == 2
+    assert len(retry_events) == 3
     assert retry_events[0].case_id == "CASE-RETRY"
     assert retry_events[0].order_id == "ORD-123"
-    assert retry_events[0].stage == "LLM_RETRY:1"
-    assert retry_events[1].stage == "LLM_CALL"
-    assert retry_events[1].prompt_tokens is None
+    assert retry_events[0].stage == "LLM_CALL"
+    assert retry_events[0].success is False
+    assert retry_events[1].stage == "LLM_RETRY:1"
+    assert retry_events[2].stage == "LLM_CALL"
+    assert retry_events[2].prompt_tokens is None
 
 
 def test_llm_invalid_decision_output_is_not_retried(monkeypatch):

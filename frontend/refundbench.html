@@ -1,0 +1,1006 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RefundBench</title>
+<style>
+:root{--nav:#11182b;--nav-muted:#9aa8bf;--ink:#172036;--muted:#6b7b95;--line:#e1e7f0;--page:#f5f7fb;--accent:#5548ff}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--page)}
+.shell{display:flex;min-height:100vh;width:100%;}.sidebar{width:260px;flex:0 0 260px;background:var(--nav);color:#fff;display:flex;flex-direction:column;border-right:1px solid #202a40}
+.brand{height:68px;display:flex;align-items:center;padding:0 24px;font-size:21px;font-weight:750;border-bottom:1px solid #293247;letter-spacing:-.3px}.brand span{font-size:11px;color:#46d7b0;background:#103d3a;padding:4px 8px;border-radius:20px;margin-left:9px}
+.nav{padding:22px 12px;display:grid;gap:7px}.nav button{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:14px 13px;border:0;border-radius:9px;background:transparent;color:var(--nav-muted);font:inherit;font-size:15px;cursor:pointer}
+.nav button:hover{background:#222c41;color:#fff}.nav button.active{background:#30394b;color:#fff;box-shadow:inset 0 0 0 1px #3a455b}.nav-icon{width:18px;text-align:center;font-size:17px}
+.workspace{min-width:0;flex:1;display:flex;flex-direction:column}.topbar{min-height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:20px}
+.search{border:1px solid var(--line);background:#fbfcfe;color:#93a0b6;border-radius:7px;padding:12px 15px;width:min(440px,55vw);font-size:15px}.profile{display:flex;align-items:center;gap:10px;font-size:14px;color:#33415a}.avatar{width:36px;height:36px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;background:#f4f7fb}
+main{width:100%;max-width:none;margin:0;padding:34px clamp(22px,3vw,52px) 48px;min-width:0}.view{display:none}.view.active{display:block}.page-heading{display:flex;align-items:flex-start;gap:13px;margin-bottom:24px}.page-icon{font-size:27px;color:var(--accent);line-height:1.25}.page-heading h1{font-size:30px;margin:0 0 7px;letter-spacing:-.55px}.page-heading p{font-size:16px;color:var(--muted);margin:0;line-height:1.55}
+.document{height:auto;min-height:0;overflow:visible;background:#fff;border:1px solid var(--line);border-radius:13px;padding:clamp(24px,3vw,44px);box-shadow:0 1px 2px #17203608;line-height:1.8;color:#3c4961}.document h2{font-size:25px;color:#18223a;margin:26px 0 10px}.document h3{font-size:19px;color:#202c45;margin:24px 0 8px}.document p,.document li{font-size:16px}.document ul{padding-left:24px}.document hr{border:0;border-top:1px solid #e9edf4;margin:26px 0}.callout{background:#f4f6ff;border:1px solid #e0e5ff;border-radius:9px;padding:17px 19px;margin:20px 0}
+.workflow-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:clamp(18px,2.2vw,30px);box-shadow:0 1px 2px #17203608}
+.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}.node{border:1px solid #dfe5ef;border-radius:10px;padding:20px;background:#fff;min-height:132px;position:relative}.node h3{font-size:17px;margin:0 0 8px}.node p{font-size:15px;color:var(--muted);line-height:1.55;margin:0}.node .num{display:inline-grid;place-items:center;width:29px;height:29px;border-radius:7px;background:#eeedff;color:var(--accent);font-size:14px;font-weight:700;margin-bottom:10px}
+.node.primary{border-color:#c9c5ff;background:#f8f7ff}.node.success{border-color:#bcebd5;background:#f2fcf7}.node.warning{border-color:#ffdfb0;background:#fffaf1}.flow-arrow{display:flex;justify-content:center;align-items:center;color:#8794ab;font-size:22px;min-height:20px}.flow-branches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:8px}.workflow-note{color:var(--muted);font-size:14px;line-height:1.55;margin-top:20px}
+
+.workflow-tabs{display:flex;gap:8px;margin:0 0 16px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.workflow-tab{border:1px solid var(--line);background:#fff;color:#5f6f88;border-radius:8px;padding:12px 16px;font:inherit;font-size:15px;cursor:pointer}
+.workflow-tab.active{background:#eeedff;color:#4c43df;border-color:#d7d3ff;font-weight:650}
+.workflow-panel{display:none}.workflow-panel.active{display:block}
+.lowflow-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 12px}.lowflow-toolbar strong{font-size:17px}.lowflow-toolbar p{font-size:14px;color:var(--muted);margin:4px 0 0}
+.flow-legend{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);white-space:nowrap}.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-left:6px}.legend-dot.approve{background:#16b981}.legend-dot.review{background:#f59e0b}.legend-dot.reject{background:#f87171}
+.decision-canvas{height:960px;max-width:100%;overflow:auto;border:1px solid #dfe6ef;border-radius:12px;background-color:#fbfcfe;background-image:radial-gradient(#dce3ed .8px,transparent .8px);background-size:16px 16px;padding:22px}
+.decision-map{position:relative;min-width:900px;max-width:1200px;height:910px;margin:0 auto}
+.decision-edges{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.decision-edges path{fill:none;stroke:#aab5c4;stroke-width:1.15;vector-effect:non-scaling-stroke}
+.decision-node{position:absolute;transform:translateX(-50%);width:var(--w,185px);min-height:34px;padding:9px 11px;display:flex;align-items:center;justify-content:center;text-align:center;border:1px solid #e1e7f0;border-radius:5px;background:#fff;color:#28354a;font-size:13px;line-height:1.4;box-shadow:0 1px 2px #17203608}
+.decision-node.trigger{background:#202b3f;border-color:#202b3f;color:#fff;min-height:40px;border-radius:6px}
+.decision-node.approve{background:#ecfdf5;border-color:#86efc2;color:#07845b;min-height:34px}
+.decision-node.review{background:#fffbeb;border-color:#fcd575;color:#b45309;min-height:38px}
+.decision-node.reject{background:#fff1f2;border-color:#fda4af;color:#dc2626;min-height:34px}
+.edge-label{position:absolute;transform:translateX(-50%);font-size:12px;color:#536176;background:#fbfcfe;padding:2px 4px}
+.workspace,.view{min-width:0;max-width:100%}
+.refund-dashboard-frame{display:block;width:100%;max-width:100%;height:var(--dashboard-height,1000px)!important;min-height:0!important;border:0;border-radius:12px;background:#f5f8fc}
+.dataset-page{--ds-blue:#3978c8;--ds-green:#13845a;--ds-amber:#b86c12;--ds-red:#bf3d47;--ds-gray:#708098;color:#26354c}
+.dataset-meta,.dataset-actions,.dataset-card-head,.dataset-tabs,.dataset-lineage{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.dataset-meta{color:#718096;font-size:13px;margin:-12px 0 18px}.dataset-page button,.dataset-page input{font:inherit}.dataset-button{border:1px solid #dce4ef;background:#fff;color:#34445f;border-radius:8px;padding:9px 13px;cursor:pointer}.dataset-button.primary{background:#286dc3;border-color:#286dc3;color:white}.dataset-button:disabled{opacity:.6;cursor:wait}.dataset-summary,.dataset-main-grid,.dataset-detail-grid{display:grid;gap:14px;margin-bottom:14px}.dataset-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.dataset-main-grid{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}.dataset-detail-grid{grid-template-columns:minmax(250px,.7fr) minmax(0,1.8fr)}.dataset-card{background:#fff;border:1px solid #e1e7f0;border-radius:12px;padding:18px;min-width:0;box-shadow:0 1px 2px #17203608}.dataset-summary .dataset-card{min-height:112px}.dataset-label{color:#6e7d94;font-size:13px}.dataset-number{font-size:28px;font-weight:740;letter-spacing:-.4px;margin:7px 0 3px}.dataset-help,.dataset-subtle{font-size:12px;color:#77859a;line-height:1.5}.dataset-card h2{font-size:17px;margin:0 0 5px;color:#1b2941}.dataset-card h3{font-size:14px;margin:0;color:#25354c}.dataset-status{font-size:13px;font-weight:650}.dataset-status.passed{color:var(--ds-green)}.dataset-status.warning{color:var(--ds-amber)}.dataset-status.failed{color:var(--ds-red)}.dataset-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}.dataset-search{border:1px solid #dce4ef;border-radius:8px;padding:9px 11px;min-width:190px;max-width:100%;color:#26354c;background:#fff}.dataset-table-wrap{overflow:auto;max-width:100%;border:1px solid #e5eaf1;border-radius:8px}.dataset-table{border-collapse:collapse;width:100%;font-size:13px}.dataset-table th,.dataset-table td{text-align:left;padding:10px 11px;vertical-align:top;border-bottom:1px solid #edf0f5}.dataset-table th{position:sticky;top:0;background:#f6f8fb;color:#53627a;font-weight:650}.dataset-table tr:last-child td{border-bottom:0}.dataset-table code{white-space:nowrap;color:#43516a}.dataset-empty,.dataset-error{padding:13px;border-radius:8px;background:#f6f8fb;color:#65748a;font-size:13px}.dataset-error{background:#fff1f1;color:#a53640}.dataset-catalog{display:grid;gap:8px}.dataset-source{display:flex;width:100%;text-align:left;justify-content:space-between;gap:8px;border:1px solid #e0e6ef;border-radius:9px;background:#fff;padding:12px;cursor:pointer;color:#2b3a52}.dataset-source.selected{border-color:#8eb3e3;background:#f1f7ff;box-shadow:inset 3px 0 #3978c8}.dataset-source small{display:block;color:#7a8799;margin-top:4px;line-height:1.4}.dataset-tabs{border-bottom:1px solid #e4e9f1;margin:12px 0}.dataset-tab{border:0;border-bottom:2px solid transparent;background:transparent;padding:9px 10px;color:#6a7890;cursor:pointer}.dataset-tab.active{color:#286dc3;border-color:#286dc3;font-weight:650}.dataset-tab-panel[hidden]{display:none}.dataset-lineage{justify-content:space-between;align-items:stretch}.lineage-node{border:1px solid #dfe6ef;border-radius:9px;background:#fbfcfe;padding:13px;flex:1;min-width:160px}.lineage-arrow{align-self:center;color:#7b8aa1;font-size:20px}.dataset-donut-layout{display:grid;grid-template-columns:minmax(150px,.75fr) minmax(0,1.5fr);gap:16px;align-items:center}.dataset-donut{width:min(100%,210px);aspect-ratio:1;margin:auto;border-radius:50%;display:grid;place-items:center}.dataset-donut-hole{width:56%;height:56%;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 1px #edf0f4}.dataset-donut-hole strong{font-size:25px;color:#23344e}.dataset-donut-hole span{font-size:11px;color:#76849a}.dataset-legend{display:grid;gap:5px;min-width:0}.dataset-legend button{border:0;background:transparent;padding:6px 4px;display:grid;grid-template-columns:12px minmax(0,1fr) max-content;gap:8px;align-items:center;text-align:left;color:#40516c;cursor:pointer;border-radius:5px;min-width:0}.dataset-legend button span{min-width:0;overflow-wrap:anywhere;line-height:1.35}.dataset-legend button strong{white-space:nowrap;font-size:12px}.dataset-legend button:hover{background:#f3f7fc}.dataset-dot{width:10px;height:10px;border-radius:50%}.dataset-report{margin-top:12px}.dataset-report summary{cursor:pointer;color:#286dc3;font-size:13px;font-weight:600}.dataset-nowrap{white-space:nowrap}
+@media(max-width:1000px){.dataset-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.dataset-main-grid{grid-template-columns:1fr}.dataset-detail-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.dataset-summary{grid-template-columns:1fr 1fr}.dataset-lineage{flex-direction:column}.lineage-arrow{transform:rotate(90deg);align-self:center}.dataset-donut-layout{grid-template-columns:1fr 1.4fr;gap:8px}.dataset-card{padding:14px}}
+@media(max-width:420px){.dataset-summary{grid-template-columns:1fr}.dataset-donut-layout{grid-template-columns:1fr}.dataset-donut{width:170px}.dataset-meta{margin-top:-5px}.dataset-table{min-width:670px}}
+@media(max-width:1000px){.sidebar{width:220px;flex-basis:220px}.topbar{padding:0 22px}main{padding:28px 24px 40px}.flow,.flow-branches{grid-template-columns:repeat(2,minmax(0,1fr))}.document{padding:28px}}
+@media(max-width:700px){.nav{grid-template-columns:repeat(2,minmax(0,1fr))}.shell{display:flex;flex-direction:column}.sidebar{width:100%;flex:0 0 auto;border-right:0;border-bottom:1px solid #202a40}.brand{height:56px;padding:0 18px;font-size:19px}.nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:8px}.nav button{justify-content:center;gap:7px;padding:11px 8px;font-size:13px;text-align:center;min-width:0}.nav-icon{width:auto;flex:0 0 auto}.topbar{min-height:58px;padding:8px 16px}.search{width:min(65vw,440px);font-size:13px}.profile{font-size:12px}main{padding:24px 18px 36px}.page-heading{margin-bottom:18px}.page-heading h1{font-size:26px}.document{padding:24px}.flow,.flow-branches{grid-template-columns:1fr}.flow-arrow{min-height:30px}.decision-canvas{height:760px;padding:12px}.decision-map{height:910px}.lowflow-toolbar{align-items:flex-start;flex-direction:column}.workflow-tabs{flex-wrap:wrap}}
+@media(max-width:420px){.nav{gap:4px;padding:7px 6px}.nav button{flex-direction:column;gap:4px;padding:8px 3px;font-size:11px;line-height:1.2}.nav-icon{font-size:17px}.topbar{align-items:flex-start}.search{width:100%;font-size:12px;padding:10px}.profile{flex:0 0 auto}.page-heading h1{font-size:23px}.page-heading p{font-size:14px}main{padding:20px 12px 30px}.document{padding:18px}.document h2{font-size:21px}.document h3{font-size:17px}.document p,.document li{font-size:15px}.workflow-card{padding:14px}.node{padding:17px}.workflow-tabs{display:grid;grid-template-columns:1fr;width:100%}.workflow-tab{width:100%}.flow-legend{white-space:normal}}
+
+/* Implemented low-level agent flow */
+.actual-flow-canvas{height:auto;max-height:none;min-height:0;overflow:visible;border:0;border-radius:0;background:none;padding:0}
+.actual-flow{max-width:1120px;margin:0 auto;display:grid;gap:12px}
+.actual-flow-intro{margin:0;color:#5c6d8e;font-size:14px;line-height:1.55}
+.actual-step{background:#fff;border:1px solid #dfe6ef;border-radius:11px;padding:16px 18px;box-shadow:0 1px 2px #17203608;min-width:0}
+.actual-step-head{display:flex;align-items:flex-start;gap:12px}.actual-step-num{width:30px;height:30px;flex:0 0 30px;border-radius:8px;background:#eeedff;color:#4c43df;display:grid;place-items:center;font-weight:750;font-size:12px}
+.actual-step h3,.actual-branch h4{font-size:15px;margin:0 0 5px;color:#1b2940}.actual-step p,.actual-branch p{font-size:13px;color:#5f6f86;line-height:1.5;margin:0}.actual-step small{display:block;color:#6b7b95;font-size:11px;line-height:1.45;margin-top:7px}
+.actual-connector{text-align:center;height:16px;color:#8996aa;font-size:17px;line-height:16px}
+.actual-branches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:13px 0 0 42px}
+.actual-branch{border:1px solid #e1e7ef;background:#fafbfd;border-radius:9px;padding:12px;min-width:0}
+.actual-branch.success{background:#f2fbf6;border-color:#ccebd9}.actual-branch.info{background:#f2f7ff;border-color:#d5e4fc}.actual-branch.review{background:#fff8ed;border-color:#f7dfb7}.actual-branch.failure{background:#fff2f2;border-color:#f2d0d0}
+.actual-branch h4{font-size:13px;display:flex;align-items:center;gap:6px}.flow-tag{display:inline-flex;border-radius:20px;padding:3px 8px;font-size:10px;font-weight:700;letter-spacing:.02em;background:#e7edf5;color:#46566c;white-space:nowrap}.flow-tag.resolved{background:#dcf5e8;color:#11724b}.flow-tag.deflected{background:#e4efff;color:#295eaa}.flow-tag.escalated{background:#fff0d9;color:#9d5b00}.flow-tag.failed{background:#ffe3e3;color:#a62f38}
+.actual-policy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:13px 0 0 42px}.actual-policy{border:1px solid #e1e7ef;border-radius:9px;padding:12px;background:#fafbfd}.actual-policy strong{display:block;font-size:12px;margin-bottom:4px;color:#2b3b54}.actual-policy p{font-size:12px}.actual-terminal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:13px 0 0 42px}.flow-caveat{border:1px solid #f2d9a9;border-left:4px solid #d97706;border-radius:8px;background:#fff9ed;padding:13px 15px;color:#674b1b;font-size:12px;line-height:1.55}.flow-caveat strong{display:block;margin-bottom:3px;color:#583c0b}.flow-execution-note{border:1px solid #f0d0d0;border-radius:9px;padding:12px 14px;background:#fff6f6;color:#803b40;font-size:12px;line-height:1.55}.flow-lifecycle{border:1px dashed #bfcadd;border-radius:10px;padding:14px 16px;background:#f8fafd;color:#53637a;font-size:12px;line-height:1.55}.flow-lifecycle strong{color:#283951}
+@media(max-width:700px){.actual-step{padding:14px}.actual-branches,.actual-policy-grid,.actual-terminal-grid{grid-template-columns:1fr;margin-left:0}.actual-step-head{gap:9px}.actual-flow{gap:9px}.actual-branch{padding:11px}}
+
+
+/* LLD decision tree: SVG connectors keep the implemented branches explicit. */
+.implemented-hld{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:stretch}
+.implemented-hld .node{min-height:150px}.implemented-hld .node h3{font-size:15px}.implemented-hld .node p{font-size:13px}
+.implemented-outcomes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.implemented-outcomes .node{min-height:0;padding:14px}.implemented-outcomes .node h3{font-size:14px}
+.lld-legend{display:flex;align-items:center;gap:7px;flex-wrap:wrap;font-size:11px;color:#475569}.lld-legend i{display:inline-block;width:12px;height:12px;border:2px solid;border-radius:3px;margin-left:8px}.lld-legend .legend-action{border-color:#2563eb;background:#eff6ff}.lld-legend .legend-decision{border-color:#c2410c;background:#fff7ed;transform:rotate(45deg);border-radius:1px}.lld-legend .legend-terminal{border-color:#15803d;background:#f0fdf4}.lld-legend .legend-failure{border-color:#b91c1c;background:#fef2f2}
+.lld-diagram-scroll,.lld-recovery-scroll{overflow:auto;max-width:100%;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc;margin:12px 0 16px}.lld-diagram{display:block;width:100%;min-width:1100px;max-width:1500px;height:auto;margin:0 auto;font-family:inherit}.lld-recovery{border:1px solid #cbd5e1;border-radius:12px;background:#fff;padding:16px;margin:14px 0}.lld-recovery h3{margin:0 0 4px;font-size:15px;color:#172b4d}.lld-recovery>p{margin:0;color:#475569;font-size:12px;line-height:1.5}.lld-recovery-diagram{display:block;width:100%;min-width:900px;max-width:1120px;height:auto;margin:auto;font-family:inherit}.lld-connectors path{fill:none;stroke:#64748b;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}.lld-connectors .lld-outcome-route{stroke:#b45309;stroke-dasharray:7 6}.lld-arrowhead{fill:#64748b}.lld-labels text{font-size:14px;font-weight:650;fill:#475569}.lld-node rect,.lld-node polygon{fill:#eff6ff;stroke:#2563eb;stroke-width:2}.lld-node .lld-title{font-size:17px;font-weight:750;fill:#172b4d}.lld-node .lld-detail{font-size:13px;font-weight:500;fill:#475569}.lld-root rect{fill:#172b4d;stroke:#172b4d}.lld-root .lld-title,.lld-root .lld-detail{fill:#fff}.lld-decision polygon{fill:#fff7ed;stroke:#c2410c}.lld-judge rect,.lld-consensus polygon{fill:#f5f3ff;stroke:#7c3aed}.lld-review rect,.lld-escalated rect{fill:#fffbeb;stroke:#b45309}.lld-deflected rect{fill:#eff6ff;stroke:#2563eb}.lld-resolved rect{fill:#f0fdf4;stroke:#15803d}.lld-policy rect,.lld-policy-output rect,.lld-settlement rect{fill:#fff7ed;stroke:#ea580c}.lld-note rect{fill:#f8fafc;stroke:#94a3b8}.lld-retry rect,.lld-execution-failure rect{fill:#fef2f2;stroke:#b91c1c}.lld-recovery{box-shadow:0 1px 3px #172b4d0d}.flow-caveat{margin-top:14px}
+@media(max-width:900px){.implemented-hld{grid-template-columns:repeat(2,minmax(0,1fr))}.implemented-outcomes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.implemented-hld,.implemented-outcomes{grid-template-columns:1fr}.implemented-hld .node{min-height:0}.lld-diagram{min-width:1040px}.lld-recovery-diagram{min-width:900px}.lld-recovery{padding:12px}}
+
+/* Portfolio HLD: grouped runtime architecture, with evaluation kept outside the control plane. */
+.hld-card{padding:clamp(18px,2.5vw,30px);background:linear-gradient(180deg,#fff,#fbfcfe)}
+.hld-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:20px}
+.hld-header h2{margin:0;color:#17253d;font-size:22px;letter-spacing:-.3px;line-height:1.3}
+.hld-header p{margin:6px 0 0;color:#697991;font-size:13px;line-height:1.5}
+.hld-legend{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px 14px;color:#68778c;font-size:11px}
+.hld-legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.hld-legend i{width:9px;height:9px;border-radius:3px;background:#f3d8bd;border:1px solid #eac6a3}
+.hld-legend .legend-data{background:#dce9fb;border-color:#c7daf5}.hld-legend .legend-feedback{width:16px;height:0;border:0;border-top:2px dashed #6d91c5;border-radius:0;background:none}
+.hld-diagram{display:grid;gap:0;max-width:1180px;margin:auto}
+.hld-layer{position:relative;border:1px solid #e0e6ef;border-radius:13px;background:#fff;padding:16px;min-width:0;box-shadow:0 2px 5px #26364b08}
+.hld-layer-label{display:flex;align-items:center;gap:8px;margin-bottom:11px;color:#586981;font-size:10px;font-weight:750;letter-spacing:.09em;text-transform:uppercase}
+.hld-layer-label span{display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#eef2f7;color:#51627b;font-size:10px;letter-spacing:0}
+.hld-flow-down{height:25px;display:grid;place-items:center;color:#98a5b7;font-size:18px;line-height:1}
+.hld-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.hld-input{background:#f4f7fb;border:1px solid #e3e9f1;border-radius:9px;padding:10px 12px;color:#31415a;font-size:12px;font-weight:650}
+.hld-input small{display:block;margin-top:3px;color:#718098;font-size:10px;font-weight:450}
+.hld-normalize{margin-top:9px;text-align:center;color:#687991;font-size:11px}
+.hld-runtime{border:1px solid #e9c9a9;background:#fffaf5;box-shadow:0 5px 16px #5737160d;padding:18px}
+.hld-runtime>.hld-layer-label{color:#9b5f2d}.hld-runtime>.hld-layer-label span{background:#f8e6d6;color:#9b5f2d}
+.hld-harness-heading{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:13px}
+.hld-harness-heading strong{font-size:16px;color:#29374b}.hld-harness-heading p{margin:4px 0 0;color:#718096;font-size:11px;line-height:1.45}
+.hld-badge{flex:0 0 auto;border:1px solid #ead6c4;background:#fff;color:#8a603d;border-radius:30px;padding:5px 9px;font-size:10px;font-weight:650}
+.hld-harness-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.hld-module{border:1px solid #e8d9cb;background:#fff;border-radius:10px;padding:12px;min-width:0}
+.hld-module-top{display:flex;align-items:center;gap:8px;margin-bottom:5px;color:#36445a;font-size:12px;font-weight:700}
+.hld-module-icon{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;border-radius:7px;background:#f9eddf;color:#a66632;font-size:11px}
+.hld-module p{margin:0;color:#6d7b90;font-size:10px;line-height:1.5}
+.hld-module code{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:#795737}
+.hld-feedback{position:relative;margin:11px auto 0;max-width:660px;border:1px dashed #d5a875;background:#fffdf9;border-radius:8px;padding:8px 12px;text-align:center;color:#805d3d;font-size:10px;line-height:1.45}
+.hld-feedback:before{content:"↶";font-size:16px;font-weight:700;margin-right:7px;color:#bd8651}
+.hld-split{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(220px,.8fr);gap:10px;align-items:stretch}
+.hld-tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.hld-tool{border:1px solid #d6e2f2;background:#f7faff;border-radius:9px;padding:10px;min-width:0}
+.hld-tool code{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:750;color:#345e98;white-space:normal;overflow-wrap:anywhere}
+.hld-tool small{display:block;margin-top:5px;color:#718198;font-size:10px;line-height:1.4}
+.hld-data-source{border:1px solid #d6e2f2;background:#f5f8fd;border-radius:10px;padding:12px;min-width:0}
+.hld-data-source strong{display:block;font-size:11px;color:#355078;margin-bottom:6px}.hld-data-source p{margin:0;color:#718198;font-size:10px;line-height:1.5}.hld-data-source code{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:#456184}
+.hld-evidence{margin-top:9px;border-left:3px solid #8aa9d5;border-radius:5px;background:#f7faff;padding:9px 11px;color:#536781;font-size:10px;line-height:1.5}
+.hld-judges{background:#f8fbff;border-color:#d7e3f3}
+.hld-judge-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.hld-judge{border:1px solid #dae4f1;background:#fff;border-radius:9px;padding:10px;text-align:center;color:#34435a;font-size:11px;font-weight:700}
+.hld-judge small{display:block;margin-top:4px;color:#78869a;font-size:10px;font-weight:450;line-height:1.4}
+.hld-judge-note{text-align:center;margin:9px 0 0;color:#718198;font-size:10px}
+.hld-decision-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.hld-decision{border:1px solid #dfe6ef;border-radius:10px;background:#fff;padding:13px;min-width:0}
+.hld-decision.consensus{background:#f8fbff;border-color:#d6e3f4}.hld-decision.policy{background:#fffaf5;border-color:#ebddce}
+.hld-decision strong{display:block;font-size:12px;color:#2f4058}.hld-decision p{margin:5px 0 0;color:#6b7a90;font-size:10px;line-height:1.5}
+.hld-outcomes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px}
+.hld-outcome{border:1px solid #dce5ef;border-radius:8px;padding:8px 10px;background:#fff;color:#4d5c72}.hld-outcome strong{display:block;font-size:10px;font-weight:750}.hld-outcome small{display:block;margin-top:3px;color:#718096;font-size:9px;font-weight:450;line-height:1.4}
+.hld-outcome.resolved{background:#f2faf5;border-color:#d4eadc;color:#327452}.hld-outcome.escalated{background:#fff8ec;border-color:#efdfc1;color:#946522}.hld-outcome.deflected{background:#f2f7ff;border-color:#d9e5f7;color:#426b9f}
+.hld-workflow-note{margin-top:8px;color:#7a8799;font-size:9px;line-height:1.45}
+.hld-settlement{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center;border:1px dashed #cbd5e2;border-radius:11px;background:#f8fafd;padding:12px}
+.hld-settlement-card{border:1px solid #dfe6ef;border-radius:8px;background:#fff;padding:10px 12px;min-width:0}
+.hld-settlement-card strong{display:block;color:#34445b;font-size:11px}.hld-settlement-card p{margin:4px 0 0;color:#718096;font-size:10px;line-height:1.45}
+.hld-settle-arrow{color:#8492a7;font-size:17px}.hld-review-path{border:1px solid #efdfc1;border-radius:8px;background:#fffaf0;padding:10px 12px;color:#8b672e;font-size:10px;line-height:1.45}
+.hld-support{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hld-support-card{border:1px solid #dbe5f3;border-radius:10px;background:#f7faff;padding:13px;min-width:0}
+.hld-support-card strong{display:block;font-size:11px;color:#385a86}.hld-support-card p{margin:5px 0 0;color:#6d7c92;font-size:10px;line-height:1.5}
+.hld-sources{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.hld-sources code{border:1px solid #dfe6ef;border-radius:5px;background:#fff;padding:4px 6px;color:#53647b;font:9px ui-monospace,SFMono-Regular,Menlo,monospace}
+.hld-observe{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}.hld-observe span{border-radius:6px;background:#fff;padding:6px;color:#627188;font-size:9px;line-height:1.35}
+.hld-notes{margin-top:12px;border:1px solid #f0dfbf;border-left:4px solid #d79a3b;border-radius:8px;background:#fffaf0;padding:10px 12px;color:#70562c;font-size:10px;line-height:1.5}
+.hld-icon{display:inline-grid;place-items:center;width:24px;height:24px;flex:0 0 24px;margin-right:2px;border-radius:7px;background:#edf3fc;color:#426da9;font-size:14px;font-weight:700;letter-spacing:0;text-transform:none}
+.hld-layer-label.runtime-label .hld-icon{background:#f9eadb;color:#a9652d}.hld-layer-label.decision-label .hld-icon{background:#f1edff;color:#6452ad}.hld-layer-label.outcome-label .hld-icon{background:#e7f4ec;color:#38805a}.hld-layer-label.data-label .hld-icon{background:#e8f0fc;color:#416da9}
+.hld-input{position:relative;padding-left:39px}.hld-input:before{position:absolute;left:12px;top:12px;color:#6482a9;font-size:15px;font-weight:700}.hld-input.message:before{content:"✉"}.hld-input.case-id:before{content:"⌗"}.hld-input.order-id:before{content:"▤"}
+.hld-module-icon{font-size:14px}.hld-tool{position:relative;padding-left:31px}.hld-tool:before{content:"↗";position:absolute;left:10px;top:10px;color:#5682bd;font-size:13px;font-weight:750}
+.hld-judge{position:relative;padding-top:12px}.hld-judge:before{content:"✦";display:block;color:#6789ba;font-size:15px;margin-bottom:3px}
+.hld-decision.consensus{box-shadow:inset 3px 0 #7197cc}.hld-decision.policy{box-shadow:inset 3px 0 #d7955c}
+.hld-settlement-card:first-child{border-color:#eddbc8;background:#fffaf5}.hld-settlement-card:last-child{border-color:#d6e3f4;background:#f7faff}
+.hld-support-card{position:relative;padding-left:42px}.hld-support-card:before{position:absolute;left:13px;top:13px;display:grid;place-items:center;width:21px;height:21px;border-radius:6px;background:#e8f0fc;color:#416da9;font-size:12px;font-weight:750}.hld-support-card.review-support{border-color:#efdfc1;background:#fffaf0}.hld-support-card.review-support:before{content:"!";background:#fff0d4;color:#a56b13}.hld-support-card.failure-support{border-color:#efd6d6;background:#fff7f7}.hld-support-card.failure-support:before{content:"×";background:#fde5e5;color:#aa4248}.hld-support-card.eval-support:before{content:"✓";background:#e6f4eb;color:#32805a}.hld-support-card.observe-support:before{content:"◷"}
+/* HLD contrast, responsive sizing, and consistent vector icon treatment. */
+.hld-card{background:#f8fafc;border-color:#cbd5e1;color:#172b4d}
+.hld-header{padding-bottom:16px;border-bottom:1px solid #cbd5e1}
+.hld-header h2{color:#172b4d;font-size:23px;font-weight:750}.hld-header p,.hld-harness-heading p,.hld-module p,.hld-tool small,.hld-data-source p,.hld-evidence,.hld-judge small,.hld-judge-note,.hld-decision p,.hld-settlement-card p,.hld-support-card p,.hld-workflow-note{color:#475569}
+.hld-legend{color:#475569}.hld-diagram{gap:2px}
+.hld-layer{border:1.5px solid #cbd5e1;border-radius:14px;background:#fff;padding:18px;box-shadow:0 2px 5px #172b4d0a}
+.hld-layer.hld-data-layer{background:#f8fbff;border-color:#93b4df}
+.hld-layer-label{gap:9px;color:#172b4d;font-size:12px;letter-spacing:.055em;margin-bottom:14px}.hld-layer-label>span{width:26px;height:26px;background:#e2e8f0;color:#172b4d;font-size:11px}
+.hld-normalize{color:#475569;font-size:12px}
+.hld-flow-down{height:29px;color:#475569;font-size:20px;font-weight:700}
+.hld-runtime{border:2px solid #ea580c;background:#fff7ed;box-shadow:0 4px 13px #9a34120f;padding:19px}.hld-runtime>.hld-layer-label{color:#9a3412}.hld-runtime>.hld-layer-label>span{background:#ffedd5;color:#9a3412}
+.hld-harness-heading strong{color:#172b4d;font-size:17px}.hld-badge{border-color:#fdba74;background:#ffedd5;color:#9a3412;font-size:11px}
+.hld-module{border:1.5px solid #d6a16f;background:#fff;border-radius:11px;padding:13px;transition:border-color .16s ease,box-shadow .16s ease}.hld-module:hover,.hld-tool:hover,.hld-judge:hover{border-color:#ea580c;box-shadow:0 3px 10px #172b4d12}
+.hld-module-top{color:#172b4d;font-size:13px}.hld-module p{font-size:11px;line-height:1.55}.hld-module code{color:#9a3412;font-size:10px;overflow-wrap:anywhere}
+.hld-feedback{border:2px dashed #ea580c;background:#ffedd5;color:#7c2d12;font-size:11px;max-width:760px;padding:9px 14px}.hld-feedback:before{display:none;content:""}
+.hld-split{grid-template-columns:minmax(0,1.65fr) minmax(220px,.8fr)}.hld-tool-grid{gap:9px}
+.hld-tool{display:flex;align-items:flex-start;gap:9px;border:1.5px solid #bfcee0;background:#fff;border-radius:10px;padding:11px;transition:border-color .16s ease,box-shadow .16s ease}.hld-tool:before{content:none}
+.hld-tool code{color:#1d4ed8;font-size:10px;overflow-wrap:anywhere}.hld-tool small{font-size:11px}
+.hld-data-source{border:1.5px solid #93b4df;background:#eff6ff;border-radius:11px;padding:14px}.hld-data-source strong{color:#172b4d;font-size:12px}.hld-data-source code,.hld-sources code{color:#1e40af;overflow-wrap:anywhere;white-space:normal}
+.hld-evidence{border-left-color:#2563eb;background:#eff6ff;color:#334155;font-size:11px}.hld-evidence strong{display:inline-flex;align-items:center;gap:6px;color:#172b4d}.hld-evidence .hld-svg{width:16px;height:16px;color:#2563eb}
+.hld-data-source-title{display:flex;align-items:center;gap:7px;margin-bottom:7px;color:#172b4d;font-size:12px;font-weight:700}.hld-data-source-title svg{width:18px;height:18px;color:#2563eb}
+.hld-judges{background:#eff6ff;border-color:#93b4df}.hld-judge-grid{gap:10px}.hld-judge{border:1.5px solid #bfcee0;background:#fff;border-radius:10px;color:#172b4d;font-size:12px;transition:border-color .16s ease,box-shadow .16s ease}.hld-judge small{font-size:11px}
+.hld-decision{border:1.5px solid #cbd5e1;border-radius:12px;background:#fff;padding:15px}.hld-decision.consensus{background:#eff6ff;border-color:#93b4df;box-shadow:inset 4px 0 #2563eb}.hld-decision.policy{background:#fff7ed;border-color:#fdba74;box-shadow:inset 4px 0 #ea580c}.hld-decision strong{color:#172b4d;font-size:13px}.hld-decision p{font-size:11px;line-height:1.55}
+.hld-outcomes{border:1.5px solid #cbd5e1;border-radius:12px;background:#fff;padding:12px;gap:9px}.hld-outcome-title{grid-column:1/-1}.hld-outcome{border-width:1.5px;padding:10px 12px}.hld-outcome.resolved{background:#f0fdf4;border-color:#86efac;color:#15803d}.hld-outcome.deflected{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8}.hld-outcome.escalated{background:#fffbeb;border-color:#fcd34d;color:#b45309}.hld-outcome small{color:#475569}
+.hld-settlement{border:1.5px solid #cbd5e1;border-radius:12px;background:#fff;padding:14px}.hld-settlement-card{border:1.5px solid #cbd5e1;border-radius:10px;padding:12px}.hld-settlement-card strong{color:#172b4d;font-size:12px}.hld-settlement-card p{font-size:11px}.hld-settle-arrow{color:#475569;font-weight:750}
+.hld-support-card{border:1.5px solid #cbd5e1;border-radius:11px;background:#fff;padding:14px;transition:border-color .16s ease}.hld-support-card strong{color:#172b4d;font-size:12px}.hld-support-card p{font-size:11px;line-height:1.55}.hld-support-card.review-support{border-color:#fcd34d;background:#fffbeb}.hld-support-card.failure-support{border-color:#fca5a5;background:#fef2f2}.hld-support-card.eval-support{border-color:#93b4df;background:#eff6ff}.hld-support-card.observe-support{border-color:#93b4df;background:#f8fafc}
+.hld-sources code{background:#fff;border-color:#cbd5e1;font-size:10px}.hld-observe span{display:flex;align-items:center;gap:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-size:10px}.hld-observe svg{width:15px;height:15px;flex:0 0 15px;color:#2563eb}.hld-notes{border:1.5px solid #fcd34d;border-left:4px solid #b45309;background:#fffbeb;color:#713f12;font-size:11px}
+.hld-icon-sprite{position:absolute;width:0;height:0;overflow:hidden}.hld-icon,.hld-module-icon{display:inline-grid;place-items:center;flex:0 0 auto;border-radius:7px;padding:4px;background:#dbeafe;color:#2563eb;width:26px;height:26px}.hld-icon{display:block;margin:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.runtime-label .hld-icon{background:#ffedd5;color:#ea580c}.decision-label .hld-icon{background:#ede9fe;color:#6d28d9}.outcome-label .hld-icon{background:#dcfce7;color:#15803d}.hld-module-icon{width:28px;height:28px;background:#ffedd5;color:#c2410c}
+.hld-svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.hld-input{display:flex;align-items:flex-start;gap:9px;border:1.5px solid #cbd5e1;background:#fff;color:#172b4d;padding:12px;font-size:13px}.hld-input>div{min-width:0}.hld-input small{color:#475569;font-size:11px}.hld-input:before{content:none!important}.hld-input-icon{width:19px;height:19px;flex:0 0 19px;color:#2563eb}
+.hld-tool-icon{width:20px;height:20px;flex:0 0 20px;color:#2563eb}.hld-judge{padding:12px;text-align:left}.hld-judge:before{content:none}.hld-judge-head{display:flex;align-items:center;gap:8px;color:#172b4d;font-size:12px;font-weight:700}.hld-judge-icon{width:20px;height:20px;color:#2563eb}.hld-judge small{margin:5px 0 0 28px}
+.hld-section-title{display:flex;align-items:center;gap:9px;margin-bottom:8px;color:#172b4d;font-size:12px;font-weight:750;letter-spacing:.05em;text-transform:uppercase}.hld-status-icon{width:18px;height:18px;vertical-align:middle;margin-right:4px}.hld-support-head{display:flex;align-items:center;gap:8px;color:#172b4d;font-size:12px;font-weight:700}.hld-support-head svg{width:20px;height:20px;flex:0 0 20px;color:#2563eb}.review-support .hld-support-head svg{color:#b45309}.failure-support .hld-support-head svg{color:#b91c1c}
+.hld-support-card:before{content:none!important}.hld-evaluation-layer{border:1.5px solid #93b4df;border-radius:14px;background:#eff6ff;padding:16px}.hld-evaluation-layer>.hld-layer-label{color:#1e40af}.hld-evaluation-layer .hld-support-card{background:#fff}.hld-evaluation-layer .hld-flow-down{color:#1d4ed8}
+.hld-layer,.hld-decision,.hld-settlement,.hld-support-card,.hld-tool,.hld-module,.hld-judge{min-width:0;max-width:100%}
+@media(max-width:900px){.hld-layer{padding:15px}.hld-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hld-split{grid-template-columns:1fr}.hld-data-source{min-width:0}.hld-support{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.hld-card{padding:14px}.hld-layer{padding:13px}.hld-layer-label{font-size:11px;flex-wrap:wrap}.hld-inputs{grid-template-columns:minmax(0,1fr)}.hld-harness-heading{flex-direction:column}.hld-harness-grid,.hld-decision-grid,.hld-support,.hld-settlement{grid-template-columns:minmax(0,1fr)}.hld-tool-grid{grid-template-columns:minmax(0,1fr)}.hld-tool{align-items:center}.hld-judge-grid,.hld-outcomes{grid-template-columns:minmax(0,1fr)}.hld-judge small{display:block;margin:5px 0 0 28px}.hld-settle-arrow{transform:rotate(90deg);justify-self:center}.hld-observe{grid-template-columns:repeat(2,minmax(0,1fr))}.hld-evaluation-layer{padding:12px}.hld-workflow-note{font-size:11px}}
+@media(max-width:380px){.hld-header h2{font-size:19px}.hld-legend{display:grid;grid-template-columns:1fr;justify-content:start}.hld-badge{white-space:normal}.hld-icon{width:23px;height:23px}.hld-layer-label{gap:6px}.hld-sources{display:grid;grid-template-columns:minmax(0,1fr)}.hld-observe{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){.hld-header{flex-direction:column}.hld-legend{justify-content:flex-start}.hld-split{grid-template-columns:1fr}.hld-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hld-support{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.hld-header h2{font-size:19px}.hld-legend{gap:7px 10px}.hld-inputs{grid-template-columns:1fr}.hld-input small{display:inline;margin-left:5px}.hld-harness-grid,.hld-decision-grid,.hld-support{grid-template-columns:1fr}.hld-judge-grid{grid-template-columns:1fr}.hld-judge{text-align:left}.hld-judge small{display:inline;margin-left:5px}.hld-outcomes{grid-template-columns:1fr}.hld-settlement{grid-template-columns:1fr}.hld-settle-arrow{transform:rotate(90deg);justify-self:center}.hld-observe{grid-template-columns:repeat(2,minmax(0,1fr))}.hld-runtime{padding:13px}.hld-layer{padding:13px}}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">RefundBench <span>ADMIN</span></div>
+    <nav class="nav" aria-label="Main navigation">
+      <button class="active" data-view="prd"><span class="nav-icon">▣</span>Product Story (PRD)</button>
+      <button data-view="dashboard"><span class="nav-icon">▦</span>Dashboard</button>
+      <button data-view="dataset"><span class="nav-icon">▤</span>Dataset Analysis</button>
+      <button data-view="workflow"><span class="nav-icon">⑂</span>AI Agent Workflow</button>
+    </nav>
+  </aside>
+  <section class="workspace">
+    <header class="topbar">
+      <div class="search">⌕ &nbsp; Search bookings, customers, or refund IDs...</div>
+      <div class="profile"><div class="avatar">♙</div><div class="profile-copy"><strong>Admin User</strong><br><span style="color:#8794ab">Head of Ops</span></div></div>
+    </header>
+    <main>
+      <section id="view-prd" class="view active">
+        <div class="page-heading"><div class="page-icon">▣</div><div><h1>Product Story (PRD)</h1><p>The vision, problem, and solution behind the Refund Abuse Detection System.</p></div></div>
+        <article class="document">
+          <h2>The Product Story: Automated Refund Decision System</h2>
+          <h3>1. Introduction</h3>
+          <p>Imagine a busy marketplace where refund requests arrive every day. Cancellations, late deliveries, missing items, damaged goods, and vendor issues all require a decision.</p>
+          <p>For operations teams, every refund is a decision point: approve an unjustified refund and lose revenue, or reject a legitimate claim and risk customer trust.</p>
+          <p>This product uses evidence, policy, and an AI agent workflow to make refund decisions more consistent and observable.</p>
+          <hr>
+          <h3>2. The Persona</h3>
+          <p><strong>Role:</strong> Operations Manager</p>
+          <p><strong>Mindset:</strong> Efficiency-focused while remaining customer-centric.</p>
+          <p><strong>Pain:</strong> Agents must inspect order details, delivery records, customer claims, and refund policy across multiple sources. Manual review takes time and can lead to inconsistent decisions.</p>
+          <p><strong>Goal:</strong> A command center that summarizes operational health and helps automate straightforward decisions while surfacing ambiguous cases for human review.</p>
+          <hr>
+          <h3>3. The Problem</h3>
+          <ul><li><strong>Operational cost:</strong> Manual investigation consumes support-team time.</li><li><strong>Decision quality:</strong> Inconsistent evidence assessment can lead to incorrect approvals or rejections.</li><li><strong>Customer experience:</strong> Slow or incorrect resolutions reduce customer trust.</li><li><strong>Visibility:</strong> Teams need to understand automation, escalation, latency, and decision outcomes.</li></ul>
+          <hr>
+          <h3>4. Proposed Solution</h3>
+          <p>RefundBench evaluates an agent-assisted refund workflow against a set of cases. The dashboard presents saved benchmark results, decision quality, latency, case outcomes, and recommended operational follow-ups.</p>
+          <div class="callout"><strong>Product principle</strong><br>Automate only when evidence and policy support a confident decision. Ask for clarification or escalate when evidence is missing, conflicting, or ambiguous.</div>
+          <h3>5. Success Metrics</h3>
+          <ul><li>Automation and escalation rates</li><li>Incorrect refund decisions, with the evaluated denominator clearly stated</li><li>Resolution latency (P50/P95)</li><li>Human-review workload estimates</li><li>Customer satisfaction, clearly distinguished from simulated benchmark proxies</li></ul>
+          <div class="callout"><strong>How to interpret CSAT</strong><br>RefundBench reports a simulated 1–5 CSAT score as a benchmark evaluation metric. It is derived from rubric-based proxies for decision correctness, fairness, completeness, and response clarity, then summarized across scored cases. It is not a survey, live customer feedback, or evidence of production satisfaction. Cases without sufficient evaluation data remain unscored.</div>
+          <h3>6. Scope and Limitations</h3>
+          <p>The current dashboard is a benchmark view, not proof of production performance. Estimates and simulated metrics must be labeled. Historical trends should appear only when actual dated runs are available.</p>
+        </article>
+      </section>
+
+      <section id="view-dashboard" class="view">
+        <div class="page-heading"><div class="page-icon">▦</div><div><h1>Refund Operations Dashboard</h1><p>Performance, decision quality, and customer impact of the AI refund agent.</p></div></div>
+        <iframe id="refund-dashboard-frame" title="Refund Operations Dashboard" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Refund Operations Dashboard&lt;/title&gt;
+&lt;style&gt;
+:root{--ink:#10182e;--muted:#5c6d8e;--line:#e5ebf4;--bg:#f5f8fc;--green:#22c77a;--green-dark:#079455;--blue:#3978ff;--orange:#ff8a00;--red:#ff666a;--purple:#9a8bff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f7f9fc,#f2f6fb);font-family:Inter,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,Arial,sans-serif;color:var(--ink);font-size:15px}
+.dashboard{width:100%;max-width:none;margin:0;padding:28px 36px 40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px}.heading h1{font-size:32px;letter-spacing:-.7px;margin:0 0 8px;font-weight:760}.heading p{font-size:17px;color:#4d6082;margin:0}
+.controls{display:flex;gap:12px;align-items:center}.control,button{height:42px;border:1px solid #dfe6f0;border-radius:9px;background:#fff;color:#354565;padding:0 14px;font:inherit;box-shadow:0 1px 2px #1a315008}.control{display:flex;align-items:center;gap:10px;white-space:nowrap}.control select{border:0;background:transparent;color:inherit;font:inherit;outline:0;min-width:165px}.export{background:#10182e;color:#fff;border:0;padding:0 17px;cursor:pointer;display:flex;align-items:center;gap:9px}
+.grid{display:grid;gap:12px}.kpis{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:12px}.card{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:13px;box-shadow:0 2px 6px #253d5c05;min-width:0}.kpi{padding:24px 24px 20px;min-height:218px}.kpi-top{display:flex;align-items:center;gap:13px}.iconbox{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;font-size:28px;font-weight:500}.mint{background:#d9f9e9;color:#05a65b}.lavender{background:#e7edff;color:#386bff}.rose{background:#ffe7e8;color:#ff5258}.sky{background:#def5ff;color:#009ff2}.kpi-title{font-size:16px;font-weight:650;white-space:normal}.info{font-size:12px;color:#8a9ab5;border:1.5px solid #8a9ab5;border-radius:50%;width:14px;height:14px;display:inline-grid;place-items:center;margin-left:7px}.metric{font-size:36px;letter-spacing:-.6px;font-weight:760;margin:0 0 0 66px;display:flex;align-items:center;gap:13px;flex-wrap:wrap}.delta{font-size:12px;font-weight:700;color:#079455;background:#e0faed;border-radius:20px;padding:5px 10px;letter-spacing:0}.submetrics{border-top:1px solid #edf1f7;margin-top:15px;padding-top:13px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.submetrics small{display:block;color:var(--muted);font-size:13px;margin-bottom:5px;white-space:normal}.submetrics strong{font-size:16px;font-weight:650;white-space:normal}.ratingbar{height:14px;display:flex;border-radius:20px;overflow:hidden;margin-top:17px;background:#eef2f7}.ratingbar span:nth-child(1){background:#2ac47c;width:54%}.ratingbar span:nth-child(2){background:#9be9bb;width:19%}.ratingbar span:nth-child(3){background:#cbd3df;width:11%}.ratingbar span:nth-child(4){background:#ff7375;width:12%}.ratingbar span:nth-child(5){background:#ffb5b5;width:4%}.ratinglabels{display:grid;grid-template-columns:repeat(4,1fr);margin-top:8px;gap:3px}.ratinglabels strong{font-size:14px}.ratinglabels small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.chart-row{grid-template-columns:1.18fr 1fr;margin-bottom:12px}.chart-card{padding:24px 26px 20px;min-height:300px}.card-title{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:730;margin-bottom:16px}.title-icon{font-size:21px;color:#356dff}.legend{display:flex;align-items:center;gap:18px;margin-left:auto;font-size:11px;color:#405273;font-weight:500;flex-wrap:wrap}.legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}.dot{width:9px;height:9px;border-radius:3px;display:inline-block}.line-dot{width:17px;height:0;border-top:2px solid currentColor;position:relative}.line-dot:after{content:&quot;&quot;;position:absolute;width:5px;height:5px;border:2px solid currentColor;border-radius:50%;background:#fff;right:5px;top:-5px}.chart{width:100%;height:240px;display:block}.lower{grid-template-columns:1fr 1fr 1fr;margin-bottom:12px}.lower .card{padding:24px 24px 20px;min-height:310px}.bars{display:flex;flex-direction:column;gap:12px;margin-top:18px}.barrow{display:grid;grid-template-columns:158px minmax(40px,1fr) 35px;gap:10px;align-items:center;color:#4f6182;font-size:12px}.track{height:15px;border-radius:5px;background:#edf1f7;overflow:hidden}.fill{height:100%;border-radius:5px}.barrow b{font-size:12px;color:#18223a;text-align:right}.matrix-wrap{padding:0 0 0 0}.matrix{width:100%;border-collapse:separate;border-spacing:2px;font-size:11px;text-align:center}.matrix th{font-weight:500;color:#344666;background:#f5f8fc;padding:8px 5px}.matrix td{padding:10px 5px;font-size:13px;border-radius:4px}.matrix .rowhead{text-align:left;background:#f8fafd;white-space:nowrap}.good{background:#d9f8e8;color:#087642}.bad{background:#ffe8e8;color:#a52c34}.warn{background:#fff3e6;color:#9c5b13}.matrix-foot{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:5px}.matrix-foot div{border-radius:7px;padding:9px 12px;background:#fff0f0;color:#b43d45;font-size:11px}.matrix-foot div:last-child{background:#fff5e8;color:#bd6500}.matrix-foot strong{display:block;font-size:14px;margin-top:2px}.bottom{grid-template-columns:1.28fr 1fr}.bottom .card{padding:22px 22px 20px;min-height:280px}.viewall{margin-left:auto;color:#2563eb;font-weight:600;font-size:12px;cursor:pointer}.tablewrap{overflow-x:auto}table.cases{width:100%;border-collapse:collapse;white-space:nowrap;font-size:13px}table.cases th{text-align:left;background:#f6f8fc;color:#3f5172;font-weight:600;padding:12px 12px;border-bottom:1px solid #e7edf5}table.cases td{padding:12px 12px;border-bottom:1px solid #edf1f7} .pill{padding:4px 8px;border-radius:5px;font-weight:650;display:inline-block}.p-green{background:#dcf9e9;color:#079455}.p-orange{background:#fff1d9;color:#ad6900}.p-red{background:#ffe5e5;color:#d3343b}.actions{display:flex;flex-direction:column;gap:7px}.action{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:10px;padding:4px 0}.action-icon{width:35px;height:35px;border-radius:11px;display:grid;place-items:center;font-size:18px}.action strong{display:block;font-size:14px;font-weight:650;margin-bottom:5px}.action small{font-size:12px;color:#647594;line-height:1.5;display:block}.priority{font-size:10px;border-radius:20px;padding:5px 12px;background:#ffe8e8;color:#d33d43}.medium{background:#fff2df;color:#b86c00}.low{background:#dcf9e9;color:#07884d}.hist-label{font-size:10px;fill:#657796}.axis{stroke:#d9e2ee;stroke-width:1}.gridline{stroke:#eaf0f7;stroke-width:1;stroke-dasharray:2 3}
+@media(max-width:1100px){.dashboard{padding:16px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-row{grid-template-columns:1fr}.lower{grid-template-columns:1fr 1fr}.lower .card:last-child{grid-column:span 2}.bottom{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.controls{flex-wrap:wrap}}
+@media(max-width:650px){.dashboard{padding:12px}.kpis,.lower{grid-template-columns:1fr}.lower .card:last-child{grid-column:auto}.controls{width:100%}.control{flex:1}.control select{min-width:0;width:100%}.heading h1{font-size:22px}.chart-card{padding:14px 12px}.legend{gap:8px}.barrow{grid-template-columns:120px minmax(30px,1fr) 30px}.kpi-title{white-space:normal}.metric{font-size:26px}}
+@media(max-width:900px){.dashboard{padding:14px 16px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-row{grid-template-columns:1fr}.lower{grid-template-columns:1fr 1fr}.lower .card:last-child{grid-column:span 2}.bottom{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.controls{flex-wrap:wrap}}
+@media(max-width:560px){.dashboard{padding:10px}.kpis,.lower{grid-template-columns:1fr}.lower .card:last-child{grid-column:auto}.chart-card{padding:13px 10px}.card{min-width:0}.controls{width:100%}.control{flex:1;min-width:0}.control select{min-width:0;width:100%}.barrow,.data-bar-row{grid-template-columns:95px minmax(25px,1fr) 28px}.kpi{padding:14px}.metric{margin-left:0;font-size:25px}.submetrics{gap:5px}.submetrics strong{font-size:12px}.card-title{flex-wrap:wrap}.legend{margin-left:0}}
+@media(max-width:1200px){.dashboard{padding:16px 18px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-row{grid-template-columns:1fr}.lower{grid-template-columns:repeat(2,minmax(0,1fr))}.lower .card:last-child{grid-column:span 2}.bottom{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.controls{flex-wrap:wrap}}
+@media(max-width:700px){.dashboard{padding:10px}.kpis,.lower{grid-template-columns:1fr}.lower .card:last-child{grid-column:auto}.chart-card{padding:13px 10px}.controls{width:100%}.control{flex:1;min-width:0}.control select{min-width:0;width:100%}.barrow,.data-bar-row{grid-template-columns:100px minmax(25px,1fr) 28px}.kpi{padding:14px}.metric{margin-left:0;font-size:25px}.submetrics{gap:5px}.submetrics strong{font-size:12px}.card-title{flex-wrap:wrap}.legend{margin-left:0}.bottom .card{padding:12px 10px}table.cases{min-width:650px}}
+
+.kpis{grid-template-columns:minmax(0,2fr) minmax(250px,1fr) minmax(250px,1fr)}
+.outcome-overview{min-height:218px;padding:22px 24px 18px}
+.overview-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.overview-heading p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.overview-total{display:flex;align-items:baseline;gap:7px;white-space:nowrap}
+.overview-total strong{font-size:30px;letter-spacing:-.5px}.overview-total span{font-size:12px;color:var(--muted)}
+.outcome-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:19px 0 16px}
+.outcome-stat{display:flex;align-items:center;gap:8px;min-width:0}.outcome-stat&gt;div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.outcome-stat strong{font-size:21px;line-height:1.1}.outcome-stat span:last-child{font-size:11px;color:var(--muted);white-space:normal}
+.stat-dot{width:9px;height:9px;border-radius:50%;flex:0 0 9px}.resolved .stat-dot{background:#22c77a}.deflected .stat-dot{background:#5790ff}.escalated .stat-dot{background:#ff8a00}.processing .stat-dot{background:#a7b2c3}
+.rate-strip{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #edf1f7;padding-top:13px;gap:16px}.rate-item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:3px 10px}.rate-item&gt;span{font-size:12px;color:var(--muted)}.rate-item&gt;strong{font-size:19px}.rate-item small{grid-column:1/-1;color:var(--muted);font-size:11px}.rate-item small b{color:var(--ink)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1050px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.outcome-overview{grid-column:1/-1}}
+@media(max-width:600px){.dashboard{padding:18px 14px 28px}.kpis{grid-template-columns:1fr}.outcome-overview{grid-column:auto;padding:18px}.outcome-stats{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:15px}.rate-strip{gap:10px}.overview-total{flex-direction:column;gap:0;align-items:flex-end}.overview-total strong{font-size:25px}}
+
+&lt;/style&gt;
+&lt;style&gt;
+.data-note{color:#647594;font-size:11px;margin:0 0 12px;line-height:1.45}
+.data-status{padding:10px 13px;border-radius:8px;background:#eef4ff;color:#2b4e8a;margin:0 0 12px;font-size:12px}
+.data-status.error{background:#fff0f0;color:#a52c34}
+.data-bars{display:flex;flex-direction:column;gap:11px;margin-top:14px}
+.data-bar-row{display:grid;grid-template-columns:minmax(110px,1.1fr) minmax(40px,2fr) 35px;gap:10px;align-items:center;font-size:12px;color:#4f6182}
+.data-bar-track{height:14px;border-radius:5px;background:#edf1f7;overflow:hidden}
+.data-bar-fill{height:100%;border-radius:5px;background:#5790ff}
+.data-bar-row b{text-align:right;color:#18223a}
+.empty-state{padding:20px;color:#647594;font-size:12px}
+@media(max-width:650px){.data-bar-row{grid-template-columns:100px minmax(30px,1fr) 30px}}
+html,body{width:100%;min-width:0;min-height:100%;overflow-x:hidden}
+.dashboard{width:100%;max-width:none;padding:24px clamp(16px,2.5vw,40px) 36px}
+.grid,.card{min-width:0}
+.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+.chart-row{grid-template-columns:1.18fr 1fr}
+.lower{grid-template-columns:repeat(3,minmax(0,1fr))}
+.bottom{grid-template-columns:1.28fr 1fr}
+.tablewrap{width:100%;max-width:100%;overflow-x:auto}
+table.cases{min-width:760px}
+.viewall{margin-left:auto;border:0;background:transparent;color:#2563eb;font:inherit;font-size:13px;font-weight:650;cursor:pointer;padding:8px}
+.viewall:focus-visible,.export:focus-visible,#type:focus-visible{outline:3px solid #8b9eff;outline-offset:2px}
+@media(max-width:900px){.dashboard{padding:18px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-row{grid-template-columns:1fr}.lower{grid-template-columns:repeat(2,minmax(0,1fr))}.lower .card:last-child{grid-column:span 2}.bottom{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.controls{width:100%;flex-wrap:wrap}}
+@media(max-width:650px){.dashboard{padding:12px}.kpis,.chart-row,.lower,.bottom{grid-template-columns:minmax(0,1fr)}.lower .card:last-child{grid-column:auto}.controls{width:100%;align-items:stretch}.control{flex:1;min-width:0}.control select{min-width:0;width:100%}.heading h1{font-size:25px}.heading p{font-size:15px;line-height:1.5}.chart-card,.lower .card,.bottom .card{padding:16px 13px}.legend{gap:8px;margin-left:0}.barrow,.data-bar-row{grid-template-columns:minmax(88px,1fr) minmax(25px,1.2fr) 30px;gap:7px}.kpi{padding:17px 15px;min-height:0}.metric{margin-left:0;font-size:28px}.submetrics{gap:6px}.submetrics small{font-size:11px}.submetrics strong{font-size:13px}.card-title{flex-wrap:wrap}.tablewrap{overscroll-behavior-x:contain}}
+&lt;/style&gt;
+
+&lt;style&gt;
+/* Dashboard polish: keep the existing panels and artifact-backed behavior. */
+.overview-title-group{display:flex;align-items:center;gap:11px;min-width:0}.overview-icon{width:38px;height:38px;flex:0 0 38px;border-radius:10px;font-size:20px}.overview-title-group&gt;div{min-width:0}.stat-icon{width:18px;height:18px;flex:0 0 18px;display:inline-grid;place-items:center;border-radius:5px;font-size:12px;font-weight:750;background:#e7f5ee;color:#14845a}.deflected .stat-icon{background:#e8f0fb;color:#3978c8}.escalated .stat-icon{background:#fff2df;color:#bf6a05}.processing .stat-icon{background:#edf0f4;color:#778397}.rate-icon{display:inline-grid;place-items:center;width:15px;height:15px;margin-right:3px;font-size:12px;font-style:normal;color:#69778d}.rate-item&gt;span{display:flex;align-items:center;gap:3px}
+
+.dashboard{padding:18px clamp(16px,2.3vw,34px) 34px;background:#f6f8fb}.topbar{justify-content:flex-end;margin-bottom:12px}
+.heading h1{font-size:27px;letter-spacing:-.55px;margin-bottom:5px}.heading p{font-size:14px;color:#65738b;line-height:1.45}
+.data-status{font-size:12px;border:1px solid #dbe6f6;border-radius:9px}
+.kpis{grid-template-columns:minmax(0,1.9fr) minmax(220px,.9fr) minmax(220px,.9fr);gap:14px;margin-bottom:14px;align-items:stretch}
+.kpi{min-height:252px;padding:20px 21px}.outcome-overview{min-height:252px;padding:19px 21px 16px;display:flex;flex-direction:column}
+.overview-heading{align-items:center}.overview-heading .kpi-title{font-size:17px;color:#17233a}.overview-heading p{font-size:12px}.overview-total{display:flex;flex-direction:column;align-items:flex-end;gap:0}.overview-total strong{font-size:34px;line-height:1.05}.overview-total span{font-size:11px;color:#69778d}
+.outcome-stats{margin:17px 0 14px;padding:13px 0;border-top:1px solid #edf0f5;border-bottom:1px solid #edf0f5;gap:8px}
+.outcome-stat{gap:7px}.outcome-stat strong{font-size:21px}.outcome-stat span:last-child{font-size:11px;line-height:1.25}.resolved .stat-dot{background:#149767}.deflected .stat-dot{background:#3978c8}.escalated .stat-dot{background:#d97706}.processing .stat-dot{background:#8894a7}
+.rate-strip{border:0;padding:0;gap:18px;margin-top:auto}.rate-item{grid-template-columns:1fr auto;gap:3px 8px;align-content:start}.rate-item&gt;span{font-size:12px;font-weight:650;color:#34435b}.rate-item&gt;strong{font-size:18px;line-height:1.2}.rate-item small{font-size:11px;line-height:1.35;min-height:29px}.rate-item small.signal-detail{min-height:0;font-size:10px;color:#89626a}.rate-item small.secondary-rate{min-height:0;font-size:10px;color:#63728a}.rate-item em{grid-column:1/-1;font-size:10px;color:#78869a;font-style:normal;margin-top:1px}.rate-progress{grid-column:1/-1;height:6px;border-radius:99px;background:#e8edf4;overflow:hidden;margin-top:3px}.rate-progress span{display:block;width:0;height:100%;border-radius:inherit;background:#149767;transition:width .2s ease}.escalation-progress span{background:#d97706}
+.kpi:not(.outcome-overview) .kpi-top{gap:10px}.kpi:not(.outcome-overview) .iconbox{width:39px;height:39px;border-radius:10px;font-size:22px}.kpi:not(.outcome-overview) .kpi-title{font-size:15px}.kpi:not(.outcome-overview) .metric{margin:30px 0 0;font-size:34px;line-height:1.1;overflow-wrap:anywhere}.kpi:not(.outcome-overview) .submetrics{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:auto;padding-top:14px;gap:8px}.kpi:not(.outcome-overview) .submetrics small{font-size:11px;line-height:1.3}.kpi:not(.outcome-overview) .submetrics strong{font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.chart-row{grid-template-columns:1.1fr 1fr;gap:14px;margin-bottom:14px}.chart-card,.lower .card,.bottom .card{border-radius:12px;padding:19px 20px;min-height:0}.card-title{font-size:15px;gap:9px;margin-bottom:10px;line-height:1.35}.title-icon{font-size:18px;flex:0 0 auto}.data-note{font-size:11px;line-height:1.45}.data-bars{gap:10px;margin-top:12px}.data-bar-row{grid-template-columns:minmax(100px,1fr) minmax(50px,1.8fr) minmax(62px,.7fr);gap:10px;font-size:12px;line-height:1.25}.data-bar-row&gt;span{overflow-wrap:anywhere}.data-bar-track{height:12px;border-radius:4px}.data-bar-value{display:flex;justify-content:flex-end;align-items:center;gap:5px;text-align:right;white-space:nowrap;font-size:11px;color:#34435b}.data-bar-value b{font-size:12px;color:#17233a}.data-bar-value small{color:#69778d;margin-left:3px;font-size:10px}
+.lower{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:14px}.lower .card{min-height:275px}.matrix{font-size:11px}.matrix th{font-size:10px;line-height:1.3;padding:8px 4px}.matrix td{font-size:13px;padding:11px 5px}.matrix-note{margin-top:10px}.matrix-foot div{font-size:10px}.bottom{grid-template-columns:minmax(0,1.45fr) minmax(330px,1fr);gap:14px;align-items:start}.bottom .card{min-height:300px}.tablewrap{max-height:560px;overflow:auto;border:1px solid #edf0f5;border-radius:8px}.tablewrap table.cases{min-width:900px;font-size:12px;white-space:normal}.tablewrap table.cases th{position:sticky;top:0;z-index:1;font-size:11px;white-space:nowrap}.tablewrap table.cases th,.tablewrap table.cases td{padding:10px 11px;vertical-align:top}.tablewrap table.cases td:nth-child(2){min-width:210px;max-width:330px;line-height:1.4;overflow-wrap:anywhere}.tablewrap table.cases td:nth-child(3){min-width:125px}.tablewrap table.cases td:nth-child(5){min-width:105px}.tablewrap table.cases td:nth-child(6){white-space:nowrap}.evaluation-cell small{display:block;color:#69778d;font-size:10px;margin-top:4px}.viewall{height:auto;min-height:32px;border-radius:7px}.actions{gap:11px;max-height:520px;overflow-y:auto;padding-right:3px}.action{grid-template-columns:32px minmax(0,1fr) auto;align-items:start;gap:9px;padding:8px 0;border-bottom:1px solid #edf0f5}.action:last-child{border-bottom:0}.action-icon{width:30px;height:30px;border-radius:9px;font-size:14px}.action strong{font-size:13px;line-height:1.35}.action small{font-size:11px;line-height:1.45;overflow-wrap:anywhere}.action .case-refs{margin-top:5px;color:#47566d}.priority{font-size:10px;padding:4px 9px;white-space:nowrap}
+@media(max-width:1100px){.dashboard{padding:18px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.outcome-overview{grid-column:1/-1}.chart-row{grid-template-columns:1fr 1fr}.bottom{grid-template-columns:minmax(0,1.35fr) minmax(280px,1fr)}.topbar{flex-direction:row;align-items:center}.controls{flex-wrap:wrap}}
+@media(max-width:760px){.dashboard{padding:16px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.outcome-overview{grid-column:1/-1}.chart-row{grid-template-columns:1fr}.lower{grid-template-columns:repeat(2,minmax(0,1fr))}.lower .card:last-child{grid-column:1/-1}.bottom{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.controls{width:100%;flex-wrap:wrap}.outcome-stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:560px){.dashboard{padding:12px}.kpis,.chart-row,.lower,.bottom{grid-template-columns:minmax(0,1fr)}.outcome-overview{grid-column:auto;padding:16px}.outcome-stats{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:13px}.rate-strip{gap:14px}.overview-total strong{font-size:28px}.kpi:not(.outcome-overview){min-height:205px}.kpi:not(.outcome-overview) .metric{margin-top:22px;font-size:30px}.chart-card,.lower .card,.bottom .card{padding:16px 14px}.data-bar-row{grid-template-columns:minmax(86px,1fr) minmax(30px,1.3fr) minmax(56px,.7fr);gap:7px}.data-bar-value{font-size:10px}.data-bar-value b{font-size:11px}.lower{gap:12px}.bottom .card{min-width:0}.tablewrap{max-height:460px}.tablewrap table.cases{min-width:850px}.action{grid-template-columns:29px minmax(0,1fr) auto;gap:7px}.action-icon{width:27px;height:27px}}
+
+&lt;style&gt;.p-blue{background:#e7f0ff;color:#245ca9}.muted{color:#6b778b}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}&lt;/style&gt;
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;dashboard&quot;&gt;
+  &lt;header class=&quot;topbar&quot;&gt;
+    &lt;div class=&quot;controls&quot;&gt;
+      &lt;label class=&quot;control&quot;&gt;▦ &lt;select id=&quot;period&quot; aria-label=&quot;Benchmark run&quot;&gt;&lt;option&gt;Latest Benchmark Run&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
+      &lt;label class=&quot;control&quot;&gt; &lt;select id=&quot;type&quot; aria-label=&quot;Case category&quot;&gt;&lt;option&gt;All Case Categories&lt;/option&gt;&lt;/select&gt;&lt;/label&gt;
+      &lt;button class=&quot;export&quot; id=&quot;export&quot;&gt;⇩   Export Report&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+  &lt;div id=&quot;data-status&quot; class=&quot;data-status&quot; role=&quot;status&quot;&gt;Loading benchmark artifacts…&lt;/div&gt;
+  &lt;section class=&quot;grid kpis&quot; id=&quot;kpis&quot;&gt;
+  &lt;article class=&quot;card kpi outcome-overview&quot;&gt;
+    &lt;div class=&quot;overview-heading&quot;&gt;&lt;div class=&quot;overview-title-group&quot;&gt;&lt;span class=&quot;iconbox lavender overview-icon&quot; aria-hidden=&quot;true&quot;&gt;▦&lt;/span&gt;&lt;div&gt;&lt;div class=&quot;kpi-title&quot;&gt;Case Outcomes &amp;amp; Agent Performance&lt;/div&gt;&lt;p&gt;One benchmark run · terminal workflow outcomes and handling rates&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;overview-total&quot;&gt;&lt;strong id=&quot;metric-cases&quot;&gt;—&lt;/strong&gt;&lt;span&gt;total benchmark cases&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;outcome-stats&quot;&gt;
+      &lt;div class=&quot;outcome-stat resolved&quot;&gt;&lt;span class=&quot;stat-icon&quot; aria-hidden=&quot;true&quot;&gt;✓&lt;/span&gt;&lt;div&gt;&lt;strong id=&quot;metric-resolved&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Resolved&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;outcome-stat deflected&quot;&gt;&lt;span class=&quot;stat-icon&quot; aria-hidden=&quot;true&quot;&gt;↗&lt;/span&gt;&lt;div&gt;&lt;strong id=&quot;metric-deflected&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Deflected&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;outcome-stat escalated&quot;&gt;&lt;span class=&quot;stat-icon&quot; aria-hidden=&quot;true&quot;&gt;!&lt;/span&gt;&lt;div&gt;&lt;strong id=&quot;metric-escalated&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Escalated&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;outcome-stat processing&quot;&gt;&lt;span class=&quot;stat-icon&quot; aria-hidden=&quot;true&quot;&gt;…&lt;/span&gt;&lt;div&gt;&lt;strong id=&quot;metric-processing&quot;&gt;—&lt;/strong&gt;&lt;span&gt;Processing / Other&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;rate-strip&quot;&gt;
+      &lt;div class=&quot;rate-item&quot;&gt;&lt;span&gt;&lt;i class=&quot;rate-icon&quot; aria-hidden=&quot;true&quot;&gt;⚙&lt;/i&gt; Automation rate&lt;/span&gt;&lt;strong id=&quot;metric-automation&quot;&gt;—&lt;/strong&gt;&lt;small id=&quot;metric-automation-detail&quot;&gt;—&lt;/small&gt;&lt;div class=&quot;rate-progress&quot; role=&quot;progressbar&quot; aria-label=&quot;Automation rate: resolved plus deflected outcomes&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot;&gt;&lt;span id=&quot;automation-progress&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;div class=&quot;rate-item&quot;&gt;&lt;span&gt;&lt;i class=&quot;rate-icon&quot; aria-hidden=&quot;true&quot;&gt;↗&lt;/i&gt; Terminal escalation rate&lt;/span&gt;&lt;strong id=&quot;metric-escalation&quot;&gt;—&lt;/strong&gt;&lt;small id=&quot;metric-escalation-detail&quot;&gt;—&lt;/small&gt;&lt;div class=&quot;rate-progress escalation-progress&quot; role=&quot;progressbar&quot; aria-label=&quot;Terminal escalation rate across cases with recorded outcomes&quot; aria-valuemin=&quot;0&quot; aria-valuemax=&quot;100&quot;&gt;&lt;span id=&quot;escalation-progress&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;sr-only&quot; aria-hidden=&quot;true&quot;&gt;&lt;span id=&quot;metric-automated&quot;&gt;—&lt;/span&gt;&lt;span id=&quot;metric-case-count-2&quot;&gt;—&lt;/span&gt;&lt;span id=&quot;metric-csat-count&quot;&gt;—&lt;/span&gt;&lt;span id=&quot;metric-review-minutes&quot;&gt;—&lt;/span&gt;&lt;span id=&quot;metric-pass-rate&quot;&gt;—&lt;/span&gt;&lt;/div&gt;
+  &lt;/article&gt;
+  &lt;article class=&quot;card kpi&quot;&gt;&lt;div class=&quot;kpi-top&quot;&gt;&lt;div class=&quot;iconbox sky&quot;&gt;◷&lt;/div&gt;&lt;div class=&quot;kpi-title&quot;&gt;Resolution Latency (P95)&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;metric&quot; id=&quot;metric-p95&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;submetrics&quot;&gt;&lt;div&gt;&lt;small&gt;P50&lt;/small&gt;&lt;strong id=&quot;metric-p50&quot;&gt;—&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;Manual handling&lt;/small&gt;&lt;strong id=&quot;metric-manual-minutes&quot;&gt;—&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;Cases&lt;/small&gt;&lt;strong id=&quot;metric-latency-cases&quot;&gt;—&lt;/strong&gt;&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+  &lt;article class=&quot;card kpi&quot;&gt;&lt;div class=&quot;kpi-top&quot;&gt;&lt;div class=&quot;iconbox mint&quot;&gt;$&lt;/div&gt;&lt;div class=&quot;kpi-title&quot;&gt;Estimated LLM Cost&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;metric&quot; id=&quot;metric-llm-cost&quot;&gt;—&lt;/div&gt;&lt;div class=&quot;submetrics&quot;&gt;&lt;div&gt;&lt;small&gt;Input token cost&lt;/small&gt;&lt;strong id=&quot;metric-input-cost&quot;&gt;—&lt;/strong&gt;&lt;/div&gt;&lt;div&gt;&lt;small&gt;Output token cost&lt;/small&gt;&lt;strong id=&quot;metric-output-cost&quot;&gt;—&lt;/strong&gt;&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+&lt;/section&gt;
+  &lt;section class=&quot;grid chart-row&quot;&gt;
+    &lt;article class=&quot;card chart-card&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;&lt;span class=&quot;title-icon&quot;&gt;⌁&lt;/span&gt;Single-Run Outcome Distribution&lt;/div&gt;&lt;p class=&quot;data-note&quot;&gt;One benchmark run only · counts and percentages use all cases in the selected run. No historical trend.&lt;/p&gt;&lt;div id=&quot;outcome-chart&quot; class=&quot;data-bars&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;Waiting for data…&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+    &lt;article class=&quot;card chart-card&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;&lt;span class=&quot;title-icon&quot;&gt;☆&lt;/span&gt;Simulated CSAT Distribution&lt;/div&gt;&lt;p class=&quot;data-note&quot;&gt;CSAT is simulated by the benchmark rubric, not collected customer feedback.&lt;/p&gt;&lt;div id=&quot;csat-chart&quot; class=&quot;data-bars&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;Waiting for data…&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+  &lt;/section&gt;
+  &lt;section class=&quot;grid lower&quot;&gt;
+    &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;&lt;span class=&quot;title-icon&quot; style=&quot;color:#ff565b&quot;&gt;⚠&lt;/span&gt;Top Escalation Reasons&lt;/div&gt;&lt;p class=&quot;data-note&quot;&gt;Counts from the current benchmark run.&lt;/p&gt;&lt;div id=&quot;escalation-reasons&quot; class=&quot;data-bars&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;Waiting for data…&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+    &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;&lt;span class=&quot;title-icon&quot;&gt;◎&lt;/span&gt;Decision Quality (Confusion Matrix)&lt;/div&gt;&lt;div id=&quot;confusion-matrix&quot; class=&quot;matrix-wrap&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;Waiting for data…&lt;/div&gt;&lt;/div&gt;&lt;p id=&quot;confusion-note&quot; class=&quot;data-note&quot;&gt;&lt;/p&gt;&lt;/article&gt;
+    &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;&lt;span class=&quot;title-icon&quot;&gt;◷&lt;/span&gt;Resolution Time Distribution&lt;/div&gt;&lt;p class=&quot;data-note&quot;&gt;Latency buckets from the benchmark artifact.&lt;/p&gt;&lt;div id=&quot;latency-chart&quot; class=&quot;data-bars&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;Waiting for data…&lt;/div&gt;&lt;/div&gt;&lt;p id=&quot;latency-note&quot; class=&quot;data-note&quot;&gt;&lt;/p&gt;&lt;/article&gt;
+  &lt;/section&gt;
+  &lt;section class=&quot;grid bottom&quot;&gt;
+    &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;&lt;span class=&quot;title-icon&quot;&gt;▤&lt;/span&gt;Benchmark Cases &lt;span class=&quot;viewall&quot; id=&quot;viewall&quot;&gt;View All&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;tablewrap&quot;&gt;&lt;table class=&quot;cases&quot; id=&quot;cases&quot;&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Case ID&lt;/th&gt;&lt;th&gt;Customer Issue&lt;/th&gt;&lt;th&gt;Agent Decision&lt;/th&gt;&lt;th&gt;Evaluation&lt;/th&gt;&lt;th&gt;Actual outcome&lt;/th&gt;&lt;th&gt;Latency&lt;/th&gt;&lt;th&gt;Simulated CSAT&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;Loading cases…&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/article&gt;
+    &lt;article class=&quot;card&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;&lt;span class=&quot;title-icon&quot; style=&quot;color:#3978ff&quot;&gt;ϟ&lt;/span&gt;Recommended Actions&lt;/div&gt;&lt;div class=&quot;actions&quot; id=&quot;recommendations&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;Waiting for data…&lt;/div&gt;&lt;/div&gt;&lt;/article&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+&lt;script&gt;
+const DATA_PATHS = {
+  dashboard: &quot;../data/benchmark_results/dashboard.json&quot;,
+  cases: &quot;../data/benchmark_results/case_results.json&quot;
+};
+const $ = selector =&gt; document.querySelector(selector);
+const finite = value =&gt; typeof value === &quot;number&quot; &amp;&amp; Number.isFinite(value);
+const safe = (value, fallback = &quot;—&quot;) =&gt; value === null || value === undefined || value === &quot;&quot; ? fallback : String(value);
+const esc = value =&gt; String(value ?? &quot;&quot;).replace(/[&amp;&lt;&gt;&quot;&#x27;]/g, ch =&gt; ({&quot;&amp;&quot;:&quot;&amp;amp;&quot;,&quot;&lt;&quot;:&quot;&amp;lt;&quot;,&quot;&gt;&quot;:&quot;&amp;gt;&quot;,&#x27;&quot;&#x27;:&quot;&amp;quot;&quot;,&quot;&#x27;&quot;:&quot;&amp;#39;&quot;}[ch]));
+const fmtPct = value =&gt; value === null || value === undefined || !Number.isFinite(Number(value)) ? &quot;Not available&quot; : `${(Number(value) * 100).toFixed(1)}%`;
+const fmtSeconds = ms =&gt; finite(ms) &amp;&amp; ms &gt;= 0 ? `${(ms / 1000).toFixed(2)} s` : &quot;Not available&quot;;
+const fmtMoney = (value, currency = &quot;USD&quot;) =&gt; value === null || value === undefined || !Number.isFinite(Number(value)) ? &quot;Not available&quot; : new Intl.NumberFormat(&quot;en-US&quot;, {style:&quot;currency&quot;,currency,maximumFractionDigits:4}).format(Number(value));
+function setText(id, value) { const node = document.getElementById(id); if (node) node.textContent = value; }
+function renderBars(target, items, labelKey, countKey, options = {}) {
+  const node = document.getElementById(target);
+  if (!items || !items.length) { node.innerHTML = &#x27;&lt;div class=&quot;empty-state&quot;&gt;No data available.&lt;/div&gt;&#x27;; return; }
+  const max = Math.max(1, ...items.map(item =&gt; Number(item[countKey]) || 0));
+  const denominator = options.denominator;
+  node.innerHTML = items.map(item =&gt; {
+    const count = Number(item[countKey]) || 0;
+    const width = Math.max(0, count / max * 100);
+    const pct = Number.isFinite(denominator) &amp;&amp; denominator &gt; 0 ? `${(count / denominator * 100).toFixed(1)}%` : null;
+    const value = pct ? `&lt;span class=&quot;data-bar-value&quot;&gt;&lt;b&gt;${count}&lt;/b&gt;&lt;small&gt;${pct}&lt;/small&gt;&lt;/span&gt;` : `&lt;span class=&quot;data-bar-value&quot;&gt;&lt;b&gt;${count}&lt;/b&gt;&lt;/span&gt;`;
+    return `&lt;div class=&quot;data-bar-row&quot;&gt;&lt;span title=&quot;${esc(item[labelKey])}&quot;&gt;${esc(item[labelKey])}&lt;/span&gt;&lt;div class=&quot;data-bar-track&quot;&gt;&lt;div class=&quot;data-bar-fill&quot; style=&quot;width:${width}%;background:${esc(item.color || options.color || &quot;#5790ff&quot;)}&quot;&gt;&lt;/div&gt;&lt;/div&gt;${value}&lt;/div&gt;`;
+  }).join(&quot;&quot;);
+}
+function getCases(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload &amp;&amp; Array.isArray(payload.cases)) return payload.cases;
+  if (payload &amp;&amp; Array.isArray(payload.results)) return payload.results;
+  if (payload &amp;&amp; Array.isArray(payload.case_results)) return payload.case_results;
+  return [];
+}
+function actualDecision(item) {
+  return item.actual?.[&quot;settlement.decision&quot;] ?? item.actual_decision ?? item.display_actual_decision ?? &quot;Not available&quot;;
+}
+function evaluationPill(item) {
+  if (item.execution_status &amp;&amp; item.execution_status !== &quot;completed&quot;) return &#x27;&lt;span class=&quot;pill p-red&quot;&gt;Execution error&lt;/span&gt;&#x27;;
+  if (item.passed === true) return &#x27;&lt;span class=&quot;pill p-green&quot;&gt;Pass&lt;/span&gt;&#x27;;
+  if (item.passed === false) return &#x27;&lt;span class=&quot;pill p-red&quot;&gt;Fail&lt;/span&gt;&#x27;;
+  return &#x27;&lt;span class=&quot;pill p-orange&quot;&gt;Not scored&lt;/span&gt;&#x27;;
+}
+function workflowOutcome(item) {
+  const outcome = String(item.actual?.outcome ?? item.actual_outcome ?? item.outcome ?? &quot;&quot;).toUpperCase();
+  if (outcome === &quot;RESOLVED&quot; || outcome === &quot;DEFLECTED&quot; || outcome === &quot;ESCALATED&quot;) return outcome;
+  return &quot;Processing / other&quot;;
+}
+function percentile(values, fraction) {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a,b) =&gt; a-b);
+  const position = (sorted.length - 1) * fraction;
+  const lower = Math.floor(position), upper = Math.min(lower + 1, sorted.length - 1);
+  return sorted[lower] * (1 - (position - lower)) + sorted[upper] * (position - lower);
+}
+function binaryRefundLabel(record) {
+  if (!record || typeof record !== &quot;object&quot;) return null;
+  const decision = record[&quot;settlement.decision&quot;];
+  const amount = record[&quot;settlement.refund_amount&quot;];
+  const escalation = record.escalation;
+  if (escalation === true || decision === &quot;ESCALATE&quot;) return false;
+  if (decision === &quot;AUTO_APPROVED&quot;) {
+    if (finite(amount) &amp;&amp; amount &gt;= 0 &amp;&amp; escalation === false) return amount &gt; 0;
+    return null;
+  }
+  if ([&quot;PROPOSED&quot;,&quot;PROCESSING&quot;,&quot;REFUNDED&quot;,&quot;REJECTED&quot;,&quot;REJECT&quot;,&quot;DENIED&quot;,&quot;DECLINED&quot;,&quot;NO_REFUND&quot;,&quot;NOT_APPROVED&quot;].includes(decision) &amp;&amp; escalation === false) return false;
+  return null;
+}
+function confusionFor(cases) {
+  const matrix = {true_positive:0,true_negative:0,false_positive:0,false_negative:0};
+  let excludedExpected = 0, excludedActual = 0;
+  for (const item of cases) {
+    const expected = binaryRefundLabel(item.expected);
+    const actual = binaryRefundLabel(item.actual);
+    if (expected === null) excludedExpected++;
+    if (actual === null) excludedActual++;
+    if (expected === null || actual === null) continue;
+    if (expected &amp;&amp; actual) matrix.true_positive++;
+    else if (!expected &amp;&amp; !actual) matrix.true_negative++;
+    else if (!expected &amp;&amp; actual) matrix.false_positive++;
+    else matrix.false_negative++;
+  }
+  return {matrix, excludedExpected, excludedActual, denominator:Object.values(matrix).reduce((sum,n) =&gt; sum+n,0)};
+}
+function latencyBuckets(cases) {
+  const buckets = new Map();
+  for (const item of cases) {
+    const value = item.latency_ms;
+    if (!finite(value) || value &lt; 0) continue;
+    const second = Math.floor(value / 1000);
+    buckets.set(second, (buckets.get(second) || 0) + 1);
+  }
+  return [...buckets].sort((a,b) =&gt; a[0]-b[0]).map(([second,count]) =&gt; ({duration:`${second}–${second+1} s`,cases:count}));
+}
+function csatDistribution(cases) {
+  const counts = new Map();
+  let unscored = 0;
+  for (const item of cases) {
+    const value = item.simulated_csat;
+    if (value === null || value === undefined || !Number.isFinite(Number(value))) { unscored++; continue; }
+    const rating = Number(value).toFixed(1);
+    counts.set(rating, (counts.get(rating) || 0) + 1);
+  }
+  const bars = [...counts].sort((a,b) =&gt; Number(a[0])-Number(b[0])).map(([rating,count]) =&gt; ({label:`Rating ${rating}`,count}));
+  if (unscored) bars.push({label:&quot;Unscored&quot;,count:unscored,color:&quot;#a7b2c3&quot;});
+  return {bars,scored:cases.length-unscored};
+}
+function costMetrics(dashboard, cases, allRun) {
+  const metrics = dashboard.metrics || {};
+  if (allRun) return {
+    input:metrics.estimated_input_cost,
+    output:metrics.estimated_output_cost,
+    total:metrics.estimated_llm_cost,
+    savings:metrics.estimated_net_savings
+  };
+  const assumptions = dashboard.assumptions || {};
+  const inputPrice = assumptions.input_cost_per_million_tokens;
+  const outputPrice = assumptions.output_cost_per_million_tokens;
+  if (!finite(inputPrice) || !finite(outputPrice) || !cases.length || cases.some(item =&gt; !finite(item.prompt_tokens) || !finite(item.completion_tokens))) {
+    return {input:null,output:null,total:null,savings:null};
+  }
+  const input = cases.reduce((sum,item) =&gt; sum + item.prompt_tokens,0) * inputPrice / 1_000_000;
+  const output = cases.reduce((sum,item) =&gt; sum + item.completion_tokens,0) * outputPrice / 1_000_000;
+  return {input,output,total:input+output,savings:null};
+}
+let allCases = [];
+let currentDashboard = null;
+let benchmarkCases = [];
+let drawCases = () =&gt; {};
+function renderCases(items) {
+  benchmarkCases = items;
+  const tbody = $(&quot;#cases tbody&quot;), typeSelect = $(&quot;#type&quot;), viewAll = $(&quot;#viewall&quot;);
+  const categories = [...new Set(items.map(item =&gt; item.category).filter(Boolean))].sort();
+  const previous = typeSelect.value || &quot;all&quot;;
+  typeSelect.innerHTML = &#x27;&lt;option value=&quot;all&quot;&gt;All Case Categories&lt;/option&gt;&#x27; + categories.map(category =&gt; `&lt;option value=&quot;${esc(category)}&quot;&gt;${esc(category.replaceAll(&quot;_&quot;,&quot; &quot;))}&lt;/option&gt;`).join(&quot;&quot;);
+  typeSelect.value = categories.includes(previous) ? previous : &quot;all&quot;;
+  drawCases = () =&gt; {
+    const selected = typeSelect.value;
+    const filtered = items.filter(item =&gt; selected === &quot;all&quot; || item.category === selected);
+    const expanded = tbody.classList.contains(&quot;expanded&quot;);
+    const visible = expanded ? filtered : filtered.slice(0,5);
+    tbody.innerHTML = visible.length ? visible.map(item =&gt; {
+      const id = safe(item.case_id);
+      const issue = safe(item.customer_issue ?? item.customer_message, &quot;Issue not provided&quot;);
+      const decision = actualDecision(item);
+      const actualOutcome = item.actual?.outcome;
+      const latency = finite(item.latency_ms) &amp;&amp; item.latency_ms &gt;= 0 ? `${(item.latency_ms/1000).toFixed(2)} s` : &quot;Not available&quot;;
+      const csat = item.simulated_csat;
+      const decisionClass = /ESCALAT|REVIEW|PROCESSING|CLARIFY/i.test(String(decision)) ? &quot;p-orange&quot; : /REJECT|DENY/i.test(String(decision)) ? &quot;p-red&quot; : decision === &quot;Not available&quot; ? &quot;p-orange&quot; : &quot;p-green&quot;;
+      const csatHtml = csat == null ? &quot;Unscored&quot; : `&lt;span class=&quot;pill ${Number(csat)&gt;=4 ? &quot;p-green&quot; : Number(csat)&gt;=3 ? &quot;p-orange&quot; : &quot;p-red&quot;}&quot;&gt;${esc(Number(csat).toFixed(1))}&lt;/span&gt;`;
+      const outcomeHtml = actualOutcome == null ? &#x27;&lt;span class=&quot;muted&quot;&gt;Not available&lt;/span&gt;&#x27; : `&lt;span class=&quot;pill ${actualOutcome === &quot;RESOLVED&quot; ? &quot;p-green&quot; : actualOutcome === &quot;DEFLECTED&quot; ? &quot;p-blue&quot; : actualOutcome === &quot;ESCALATED&quot; ? &quot;p-orange&quot; : &quot;p-red&quot;}&quot;&gt;${esc(actualOutcome)}&lt;/span&gt;`;
+      const issueShort = issue.length &gt; 120 ? `${issue.slice(0,117)}…` : issue;
+      const statusDetail = item.execution_error ? `&lt;small title=&quot;${esc(item.execution_error)}&quot;&gt;Execution error recorded&lt;/small&gt;` : &quot;&quot;;
+      return `&lt;tr&gt;&lt;td&gt;${esc(id)}&lt;/td&gt;&lt;td title=&quot;${esc(issue)}&quot;&gt;${esc(issueShort)}&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;pill ${decisionClass}&quot; title=&quot;${esc(decision)}&quot;&gt;${esc(decision)}&lt;/span&gt;&lt;/td&gt;&lt;td class=&quot;evaluation-cell&quot;&gt;${evaluationPill(item)}${statusDetail}&lt;/td&gt;&lt;td&gt;${outcomeHtml}&lt;/td&gt;&lt;td&gt;${esc(latency)}&lt;/td&gt;&lt;td&gt;${csatHtml}&lt;/td&gt;&lt;/tr&gt;`;
+    }).join(&quot;&quot;) : &#x27;&lt;tr&gt;&lt;td colspan=&quot;7&quot;&gt;No cases match this category.&lt;/td&gt;&lt;/tr&gt;&#x27;;
+    const hasMore = filtered.length &gt; 5;
+    viewAll.hidden = !hasMore;
+    viewAll.textContent = expanded ? &quot;Show less&quot; : &quot;View all&quot;;
+    viewAll.setAttribute(&quot;aria-expanded&quot;, String(expanded));
+  };
+  drawCases();
+}
+function renderRecommendations(items, selectedCategory, cases) {
+  const node = $(&quot;#recommendations&quot;);
+  if (selectedCategory !== &quot;all&quot;) {
+    const ids = new Set(cases.map(item =&gt; item.case_id));
+    items = (items || []).filter(item =&gt; Array.isArray(item.case_ids) &amp;&amp; item.case_ids.some(id =&gt; ids.has(id)));
+    if (!items.length) { node.innerHTML = &#x27;&lt;div class=&quot;empty-state&quot;&gt;No category-specific recommendations are available in this artifact.&lt;/div&gt;&#x27;; return; }
+  }
+  if (!items || !items.length) { node.innerHTML = &#x27;&lt;div class=&quot;empty-state&quot;&gt;No recommendations in this artifact.&lt;/div&gt;&#x27;; return; }
+  node.innerHTML = items.map((item,index) =&gt; {
+    const priority = String(item.priority || &quot;Low&quot;).toLowerCase();
+    const cls = priority === &quot;high&quot; ? &quot;priority&quot; : priority === &quot;medium&quot; ? &quot;priority medium&quot; : &quot;priority low&quot;;
+    const iconStyle = priority === &quot;high&quot; ? &quot;background:#ffe8e8;color:#c64248&quot; : priority === &quot;medium&quot; ? &quot;background:#fff3df;color:#a86000&quot; : &quot;background:#def9e9;color:#08784a&quot;;
+    const ids = Array.isArray(item.case_ids) ? item.case_ids.join(&quot;, &quot;) : &quot;&quot;;
+    const references = ids ? `&lt;small class=&quot;case-refs&quot; title=&quot;${esc(ids)}&quot;&gt;Affected cases: ${esc(ids)}&lt;/small&gt;` : &quot;&quot;;
+    return `&lt;div class=&quot;action&quot;&gt;&lt;div class=&quot;action-icon&quot; style=&quot;${iconStyle}&quot;&gt;${index+1}&lt;/div&gt;&lt;div&gt;&lt;strong&gt;${esc(item.title || &quot;Recommendation&quot;)}&lt;/strong&gt;&lt;small&gt;${esc(item.explanation || &quot;&quot;)}&lt;/small&gt;${references}&lt;/div&gt;&lt;span class=&quot;${cls}&quot;&gt;${esc(item.priority || &quot;Low&quot;)}&lt;/span&gt;&lt;/div&gt;`;
+  }).join(&quot;&quot;);
+}
+function renderMatrix(cases) {
+  const {matrix,excludedExpected,excludedActual,denominator} = confusionFor(cases);
+  const tp=matrix.true_positive, tn=matrix.true_negative, fp=matrix.false_positive, fn=matrix.false_negative;
+  $(&quot;#confusion-matrix&quot;).innerHTML = denominator ? `&lt;table class=&quot;matrix&quot;&gt;&lt;caption class=&quot;sr-only&quot;&gt;Binary decision confusion matrix for ${denominator} eligible cases&lt;/caption&gt;&lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;th&gt;Predicted approve&lt;/th&gt;&lt;th&gt;Predicted not approve&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td class=&quot;rowhead&quot;&gt;Expected approve&lt;/td&gt;&lt;td class=&quot;good&quot;&gt;${tp}&lt;/td&gt;&lt;td class=&quot;${fn ? &quot;bad&quot; : &quot;good&quot;}&quot;&gt;${fn}&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td class=&quot;rowhead&quot;&gt;Expected not approve&lt;/td&gt;&lt;td class=&quot;${fp ? &quot;bad&quot; : &quot;good&quot;}&quot;&gt;${fp}&lt;/td&gt;&lt;td class=&quot;good&quot;&gt;${tn}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;` : &#x27;&lt;div class=&quot;empty-state&quot;&gt;No cases with binary decisions are available.&lt;/div&gt;&#x27;;
+  setText(&quot;confusion-note&quot;, `${denominator} binary-evaluable cases; ${cases.length-denominator} excluded (expected ambiguous: ${excludedExpected}; actual unavailable/ambiguous: ${excludedActual}). Escalations are treated as not automatically approved per benchmark policy.`);
+}
+function updateDashboardForSelection() {
+  if (!currentDashboard) return;
+  const selected = $(&quot;#type&quot;).value || &quot;all&quot;;
+  const cases = allCases.filter(item =&gt; selected === &quot;all&quot; || item.category === selected);
+  renderDashboard(currentDashboard,cases,selected,selected === &quot;all&quot;);
+  drawCases();
+}
+function renderDashboard(dashboard, cases, selectedCategory = &quot;all&quot;, allRun = true) {
+  const metrics = dashboard.metrics || {};
+  const total = cases.length;
+  const csat = csatDistribution(cases);
+  const outcomeCounts = {&quot;RESOLVED&quot;:0,&quot;DEFLECTED&quot;:0,&quot;ESCALATED&quot;:0,&quot;Processing / other&quot;:0};
+  for (const item of cases) outcomeCounts[workflowOutcome(item)]++;
+  setText(&quot;metric-cases&quot;, total);
+  setText(&quot;metric-resolved&quot;, outcomeCounts.RESOLVED);
+  setText(&quot;metric-deflected&quot;, outcomeCounts.DEFLECTED);
+  setText(&quot;metric-escalated&quot;, outcomeCounts.ESCALATED);
+  setText(&quot;metric-processing&quot;, outcomeCounts[&quot;Processing / other&quot;]);
+
+  const terminalOutcomes = cases.filter(item =&gt; [&quot;RESOLVED&quot;,&quot;DEFLECTED&quot;,&quot;ESCALATED&quot;].includes(workflowOutcome(item)));
+  const automatedOutcomes = terminalOutcomes.filter(item =&gt; [&quot;RESOLVED&quot;,&quot;DEFLECTED&quot;].includes(workflowOutcome(item))).length;
+  const terminalEscalated = terminalOutcomes.filter(item =&gt; workflowOutcome(item) === &quot;ESCALATED&quot;).length;
+  const automationRate = terminalOutcomes.length ? automatedOutcomes/terminalOutcomes.length : null;
+  const escalationRate = terminalOutcomes.length ? terminalEscalated/terminalOutcomes.length : null;
+  setText(&quot;metric-automation&quot;, automationRate === null ? &quot;Not available&quot; : `${(automationRate*100).toFixed(2)}%`);
+  setText(&quot;metric-automation-detail&quot;, `${automatedOutcomes} of ${terminalOutcomes.length} recorded outcomes resolved or deflected`);
+  setText(&quot;metric-escalation&quot;, fmtPct(escalationRate));
+  setText(&quot;metric-escalation-detail&quot;, `${terminalEscalated} of ${terminalOutcomes.length} cases with recorded outcomes`);
+  for (const [id,rate] of [[&quot;automation-progress&quot;,automationRate],[&quot;escalation-progress&quot;,escalationRate]]) {
+    const bar = document.getElementById(id);
+    const pct = rate === null ? 0 : Math.max(0,Math.min(100,rate*100));
+    bar.style.width = `${pct}%`;
+    bar.parentElement.setAttribute(&quot;aria-valuenow&quot;,String(pct));
+    bar.parentElement.setAttribute(&quot;aria-valuetext&quot;,rate === null ? &quot;Not available&quot; : fmtPct(rate));
+  }
+
+  const actualLatencies = cases.map(item =&gt; item.latency_ms).filter(value =&gt; finite(value) &amp;&amp; value &gt;= 0);
+  setText(&quot;metric-p95&quot;,fmtSeconds(percentile(actualLatencies,.95)));
+  setText(&quot;metric-p50&quot;,fmtSeconds(percentile(actualLatencies,.50)));
+  setText(&quot;metric-latency-cases&quot;,`${actualLatencies.length} / ${total}`);
+  const assumptions = dashboard.assumptions || {};
+  const manualMinutes = assumptions.manual_resolution_minutes_per_case;
+  setText(&quot;metric-manual-minutes&quot;,finite(manualMinutes) ? `${manualMinutes} min/case` : &quot;Not available&quot;);
+
+  const currency = assumptions.cost_currency || &quot;USD&quot;;
+  const costs = costMetrics(dashboard,cases,allRun);
+  setText(&quot;metric-llm-cost&quot;,fmtMoney(costs.total,currency));
+  setText(&quot;metric-input-cost&quot;,fmtMoney(costs.input,currency));
+  setText(&quot;metric-output-cost&quot;,fmtMoney(costs.output,currency));
+
+  const status = $(&quot;#data-status&quot;);
+  status.hidden = true;
+  renderBars(&quot;outcome-chart&quot;,[
+    {label:&quot;Resolved&quot;,count:outcomeCounts.RESOLVED,color:&quot;#149767&quot;},
+    {label:&quot;Deflected&quot;,count:outcomeCounts.DEFLECTED,color:&quot;#3978c8&quot;},
+    {label:&quot;Escalated&quot;,count:outcomeCounts.ESCALATED,color:&quot;#d97706&quot;},
+    {label:&quot;Processing / other&quot;,count:outcomeCounts[&quot;Processing / other&quot;],color:&quot;#8894a7&quot;}
+  ],&quot;label&quot;,&quot;count&quot;,{denominator:total});
+  renderBars(&quot;csat-chart&quot;,csat.bars,&quot;label&quot;,&quot;count&quot;,{color:&quot;#7868d8&quot;});
+  if (selectedCategory === &quot;all&quot;) renderBars(&quot;escalation-reasons&quot;,metrics.top_escalation_reasons || [],&quot;reason&quot;,&quot;count&quot;,{color:&quot;#d97706&quot;});
+  else $(&quot;#escalation-reasons&quot;).innerHTML = &#x27;&lt;div class=&quot;empty-state&quot;&gt;Category-level escalation reason details are not available in this artifact.&lt;/div&gt;&#x27;;
+  renderMatrix(cases);
+  renderBars(&quot;latency-chart&quot;,latencyBuckets(cases),&quot;duration&quot;,&quot;cases&quot;,{color:&quot;#3978c8&quot;});
+  const ultraFast = actualLatencies.filter(value =&gt; value &lt; 100).length;
+  const latencyNote = `${actualLatencies.length} valid timing(s) of ${total} cases; values below 100 ms: ${ultraFast}. Short durations are not evidence of successful resolution.`;
+  setText(&quot;latency-note&quot;,latencyNote);
+  renderRecommendations(dashboard.recommendations || [],selectedCategory,cases);
+}
+async function loadBenchmarkData() {
+  const status = $(&quot;#data-status&quot;);
+  try {
+    const [dashboardResponse,casesResponse] = await Promise.all([
+      fetch(DATA_PATHS.dashboard,{cache:&quot;no-store&quot;}),
+      fetch(DATA_PATHS.cases,{cache:&quot;no-store&quot;})
+    ]);
+    if (!dashboardResponse.ok) throw new Error(`dashboard.json returned HTTP ${dashboardResponse.status}`);
+    if (!casesResponse.ok) throw new Error(`case_results.json returned HTTP ${casesResponse.status}`);
+    const [dashboard,payload] = await Promise.all([dashboardResponse.json(),casesResponse.json()]);
+    allCases = getCases(payload);
+    if (dashboard.schema_version !== 1 || !dashboard.metrics || !allCases.length) throw new Error(&quot;JSON loaded, but expected benchmark metrics or case records were not found.&quot;);
+    if (Number(dashboard.case_count) !== allCases.length) throw new Error(&quot;Dashboard and case artifacts do not contain the same number of benchmark cases.&quot;);
+    currentDashboard = dashboard;
+    const typeSelect = $(&quot;#type&quot;);
+    const categories = [...new Set(allCases.map(item =&gt; item.category).filter(Boolean))].sort();
+    typeSelect.innerHTML = &#x27;&lt;option value=&quot;all&quot;&gt;All Case Categories&lt;/option&gt;&#x27; + categories.map(category =&gt; `&lt;option value=&quot;${esc(category)}&quot;&gt;${esc(category.replaceAll(&quot;_&quot;,&quot; &quot;))}&lt;/option&gt;`).join(&quot;&quot;);
+    renderCases(allCases);
+    updateDashboardForSelection();
+  } catch (error) {
+    status.classList.add(&quot;error&quot;);
+    status.textContent = `Could not load benchmark data: ${error.message}. Serve this page over HTTP and verify the JSON paths.`;
+    console.error(&quot;RefundBench benchmark data loading failed:&quot;,error);
+  }
+}
+$(&quot;#type&quot;).addEventListener(&quot;change&quot;,updateDashboardForSelection);
+$(&quot;#export&quot;).addEventListener(&quot;click&quot;,() =&gt; {
+  const selected = $(&quot;#type&quot;).value || &quot;all&quot;;
+  const filtered = allCases.filter(item =&gt; selected === &quot;all&quot; || item.category === selected);
+  const rows = [
+    [&quot;Case ID&quot;,&quot;Customer Issue&quot;,&quot;Agent Decision&quot;,&quot;Evaluation&quot;,&quot;Actual outcome&quot;,&quot;Latency&quot;,&quot;Simulated CSAT&quot;],
+    ...filtered.map(item =&gt; [
+      safe(item.case_id,&quot;&quot;),safe(item.customer_issue ?? item.customer_message,&quot;&quot;),safe(actualDecision(item),&quot;&quot;),
+      item.execution_status &amp;&amp; item.execution_status !== &quot;completed&quot; ? &quot;Execution error&quot; : item.passed === true ? &quot;Pass&quot; : item.passed === false ? &quot;Fail&quot; : &quot;Not scored&quot;,
+      safe(item.actual?.outcome,&quot;Not available&quot;),finite(item.latency_ms) &amp;&amp; item.latency_ms &gt;= 0 ? `${(item.latency_ms/1000).toFixed(2)} s` : &quot;Not available&quot;,
+      item.simulated_csat == null ? &quot;Unscored&quot; : `${Number(item.simulated_csat).toFixed(1)} / 5 (simulated)`
+    ])
+  ];
+  const csv = rows.map(row =&gt; row.map(value =&gt; &#x27;&quot;&#x27; + String(value).replace(/&quot;/g,&#x27;&quot;&quot;&#x27;).trim() + &#x27;&quot;&#x27;).join(&quot;,&quot;)).join(&quot;\n&quot;);
+  const blob = new Blob([csv],{type:&quot;text/csv;charset=utf-8;&quot;});
+  const url = URL.createObjectURL(blob), link = document.createElement(&quot;a&quot;);
+  link.href=url;link.download=&quot;refundbench-cases.csv&quot;;link.click();URL.revokeObjectURL(url);
+});
+$(&quot;#viewall&quot;).addEventListener(&quot;click&quot;,() =&gt; { $(&quot;#cases tbody&quot;).classList.toggle(&quot;expanded&quot;);drawCases(); });
+$(&quot;#viewall&quot;).setAttribute(&quot;role&quot;,&quot;button&quot;);
+$(&quot;#viewall&quot;).setAttribute(&quot;tabindex&quot;,&quot;0&quot;);
+$(&quot;#viewall&quot;).addEventListener(&quot;keydown&quot;,event =&gt; { if(event.key === &quot;Enter&quot; || event.key === &quot; &quot;){event.preventDefault();$(&quot;#viewall&quot;).click();} });
+loadBenchmarkData();
+function reportDashboardHeight() {
+  const height = Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight));
+  window.parent.postMessage({type:&quot;refundbench-dashboard-height&quot;,height},&quot;*&quot;);
+}
+const dashboardResizeObserver = new ResizeObserver(() =&gt; requestAnimationFrame(reportDashboardHeight));
+dashboardResizeObserver.observe(document.documentElement);
+dashboardResizeObserver.observe(document.body);
+window.addEventListener(&quot;load&quot;,reportDashboardHeight);
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;" class="refund-dashboard-frame" style="display:block;width:100%;height:1850px;min-height:1850px;border:0;border-radius:10px;background:#f5f8fc"></iframe>
+      </section>
+
+      <section id="view-dataset" class="view dataset-page">
+        <div class="page-heading"><div class="page-icon">▤</div><div><h1>Dataset Analysis</h1></div></div>
+        <div id="dataset-load-error" class="dataset-error" hidden></div>
+        <section class="dataset-summary" aria-label="Dataset overview">
+          <article class="dataset-card"><div class="dataset-label">Golden Cases</div><div class="dataset-number" id="dataset-case-count">—</div><div class="dataset-help">Evaluation scenarios</div></article>
+          <article class="dataset-card"><div class="dataset-label">Orders</div><div class="dataset-number" id="dataset-order-count">—</div><div class="dataset-help">Order records and item details</div></article>
+          <article class="dataset-card"><div class="dataset-label">Deliveries</div><div class="dataset-number" id="dataset-delivery-count">—</div><div class="dataset-help">Delivery status and item evidence</div></article>
+        </section>
+        <section class="dataset-main-grid">
+          <article class="dataset-card"><h2>Scenario Coverage</h2><p class="dataset-subtle">Single primary category from each golden case's category metadata. Counts and percentages use all cases.</p><div class="dataset-donut-layout"><div id="scenario-donut" class="dataset-donut" aria-label="Scenario category donut chart"></div><div id="scenario-legend" class="dataset-legend"></div></div><div id="scenario-total" class="dataset-subtle"></div></article>
+          <article class="dataset-card"><h2>Data Lineage &amp; Relationships</h2><p class="dataset-subtle">Fixture relationships use exact stored identifiers. Agent evidence and decisions are produced at runtime.</p><div class="dataset-lineage"><div class="lineage-node"><h3>Golden Case</h3><p class="dataset-subtle">Customer scenario, expected result, and order_id</p><strong id="lineage-case-count">—</strong></div><span class="lineage-arrow" aria-hidden="true">→</span><div class="lineage-node"><h3>Order</h3><p class="dataset-subtle">Items, quantities, prices, and order state</p><strong id="lineage-order-count">—</strong></div><span class="lineage-arrow" aria-hidden="true">↔</span><div class="lineage-node"><h3>Delivery</h3><p class="dataset-subtle">Records keyed to order_id; delivered items keyed by item_id</p><strong id="lineage-delivery-count">—</strong></div></div><div class="lineage-node" style="margin-top:10px"><h3>Runtime agent evidence &amp; decisions</h3><p class="dataset-subtle">Grievance extraction → evidence → judge judgments → consensus → policy → settlement. These are runtime outputs, not persistent fixture datasets.</p></div><div id="lineage-selection" class="dataset-subtle" style="margin-top:10px">Select a case below the coverage chart to inspect its exact fixture links.</div></article>
+        </section>
+        <section class="dataset-main-grid">
+          <article class="dataset-card"><div class="dataset-card-head"><div><h2>Data Catalog</h2><p class="dataset-subtle">Stored fixture sources</p></div></div><div class="dataset-toolbar"><input id="dataset-catalog-search" class="dataset-search" type="search" placeholder="Search datasets" aria-label="Search datasets"></div><div id="dataset-catalog" class="dataset-catalog"></div></article>
+          <article class="dataset-card"><div class="dataset-card-head" style="justify-content:space-between"><div><h2 id="schema-title">Schema Explorer · Golden Cases</h2><p id="schema-description" class="dataset-subtle"></p></div><button id="download-schema" class="dataset-button" type="button">Download CSV Dictionary</button></div><div id="schema-summary" class="dataset-subtle"></div><div class="dataset-tabs" role="tablist" aria-label="Schema explorer tabs"><button class="dataset-tab active" data-dataset-tab="fields" role="tab" aria-selected="true">Field Schema</button><button class="dataset-tab" data-dataset-tab="samples" role="tab" aria-selected="false">Sample Records</button><button class="dataset-tab" data-dataset-tab="quality" role="tab" aria-selected="false">Data Quality</button><button class="dataset-tab" data-dataset-tab="relationships" role="tab" aria-selected="false">Relationships</button></div><div id="dataset-panel-fields" class="dataset-tab-panel"></div><div id="dataset-panel-samples" class="dataset-tab-panel" hidden></div><div id="dataset-panel-quality" class="dataset-tab-panel" hidden></div><div id="dataset-panel-relationships" class="dataset-tab-panel" hidden></div></article>
+        </section>
+        <article class="dataset-card"><div class="dataset-card-head"><div><h2>Golden Case Explorer</h2><p class="dataset-subtle">Category selection filters the actual golden-case records below.</p></div></div><div class="dataset-toolbar"><label class="dataset-subtle" for="coverage-case-select">Inspect relationship</label><select id="coverage-case-select" class="dataset-search"><option value="">Select a golden case</option></select><label class="dataset-subtle" for="coverage-category-filter">Scenario category</label><select id="coverage-category-filter" class="dataset-search"><option value="all">All categories</option></select></div><div id="coverage-case-table" class="dataset-table-wrap"></div></article>
+      </section>
+
+      <section id="view-workflow" class="view">
+        <div class="page-heading"><div class="page-icon">⑂</div><div><h1>AI Agent Workflow</h1><p>Explore the decision process at two levels: the overall agent lifecycle and the detailed refund policy flow.</p></div></div>
+        <div class="workflow-tabs" role="tablist" aria-label="Workflow detail level">
+          <button class="workflow-tab active" role="tab" aria-selected="true" data-workflow="high">High-Level Workflow</button>
+          <button class="workflow-tab" role="tab" aria-selected="false" data-workflow="low">Low-Level Decision Flow</button>
+        </div>
+        <section id="workflow-high" class="workflow-panel active">
+          <div class="workflow-card hld-card">
+            <svg class="hld-icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <symbol id="hld-i-message" viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 2v-5.5A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 10h8M8 14h5"/></symbol>
+              <symbol id="hld-i-id" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5.5 16a3 3 0 0 1 5 0M13 10h5M13 14h5"/></symbol>
+              <symbol id="hld-i-package" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10M8 5l9 4"/></symbol>
+              <symbol id="hld-i-harness" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3M10 10h4v4h-4z"/></symbol>
+              <symbol id="hld-i-route" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M6 7v8a4 4 0 0 0 4 4h6M8 5h4a4 4 0 0 1 4 4v8"/></symbol>
+              <symbol id="hld-i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z"/></symbol>
+              <symbol id="hld-i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+              <symbol id="hld-i-refresh-shield" viewBox="0 0 24 24"><path d="M20 7V3l-3 3M4 17v4l3-3M5.5 8A7 7 0 0 1 17 6l3 1M18.5 16A7 7 0 0 1 7 18l-3-1"/><path d="m12 10 3 1v2c0 2-1.3 3.4-3 4-1.7-.6-3-2-3-4v-2z"/></symbol>
+              <symbol id="hld-i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5M8 10h5M10.5 8v5"/></symbol>
+              <symbol id="hld-i-truck" viewBox="0 0 24 24"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></symbol>
+              <symbol id="hld-i-file-search" viewBox="0 0 24 24"><path d="M6 3h8l5 5v5M14 3v5h5M6 3v18h7"/><circle cx="16" cy="16" r="3"/><path d="m18.2 18.2 2.3 2.3"/></symbol>
+              <symbol id="hld-i-judges" viewBox="0 0 24 24"><path d="M9 4a3 3 0 0 0-5 2 3 3 0 0 0 0 5 3 3 0 0 0 2 5 3 3 0 0 0 5 2V6a3 3 0 0 0-2-2ZM15 4a3 3 0 0 1 5 2 3 3 0 0 1 0 5 3 3 0 0 1-2 5 3 3 0 0 1-5 2V6a3 3 0 0 1 2-2Z"/><path d="M9 9h2m2 0h2M8 14h3m2 0h3"/></symbol>
+              <symbol id="hld-i-consensus" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M15 15a5 5 0 0 1 6 5M16 3v4m-2-2h4"/></symbol>
+              <symbol id="hld-i-policy" viewBox="0 0 24 24"><path d="M12 3v17m-7 1h14M5 7h14M7 7l-3 6h6L7 7Zm10 0-3 6h6l-3-6Z"/><path d="m9 17 2 2 4-4"/></symbol>
+              <symbol id="hld-i-receipt" viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-4 2-4-2-3 2zM8 8h8M8 12h8M8 16h4"/></symbol>
+              <symbol id="hld-i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></symbol>
+              <symbol id="hld-i-arrow-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7 12h10m-4-4 4 4-4 4"/></symbol>
+              <symbol id="hld-i-alert" viewBox="0 0 24 24"><path d="M10.3 4.2 2.8 18a2 2 0 0 0 1.8 3h14.8a2 2 0 0 0 1.8-3L13.7 4.2a2 2 0 0 0-3.4 0Z"/><path d="M12 9v5m0 3h.01"/></symbol>
+              <symbol id="hld-i-human" viewBox="0 0 24 24"><circle cx="10" cy="7" r="3"/><path d="M4 20a6 6 0 0 1 12 0M16 11l3 3 3-3M19 14V8"/></symbol>
+              <symbol id="hld-i-failure" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></symbol>
+              <symbol id="hld-i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2m-7 7 2 2 5-5m-7 8h8"/></symbol>
+              <symbol id="hld-i-activity" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></symbol>
+              <symbol id="hld-i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+              <symbol id="hld-i-coins" viewBox="0 0 24 24"><ellipse cx="9" cy="6" rx="6" ry="3"/><path d="M3 6v9c0 1.7 2.7 3 6 3M15 6v4M3 10c0 1.7 2.7 3 6 3"/><circle cx="17" cy="17" r="5"/><path d="M17 14v6m2-5.2c-.4-.6-1-.8-2-.8-1.8 0-2 2 0 2s1.8 2 0 2c-.9 0-1.6-.3-2-.9"/></symbol>
+            </svg>
+            <header class="hld-header">
+              <div><h2>RefundBench — High-Level Design</h2><p>Agent orchestration, evidence-grounded decisions, and benchmark-driven evaluation</p></div>
+              <div class="hld-legend" aria-label="Diagram legend"><span><i></i>Runtime execution</span><span><i class="legend-data"></i>Data &amp; evaluation</span><span><i class="legend-feedback"></i>Feedback / iteration</span></div>
+            </header>
+            <div class="hld-diagram" aria-label="RefundBench high-level architecture">
+              <section class="hld-layer hld-data-layer">
+                <div class="hld-layer-label data-label"><span>01</span><svg class="hld-icon" aria-hidden="true"><use href="#hld-i-message"/></svg>Request &amp; case context</div>
+                <div class="hld-inputs"><div class="hld-input"><svg class="hld-input-icon hld-svg" aria-hidden="true"><use href="#hld-i-message"/></svg><div>Customer message<small>Issue description and claim</small></div></div><div class="hld-input"><svg class="hld-input-icon hld-svg" aria-hidden="true"><use href="#hld-i-id"/></svg><div>Case ID<small>Run and trace correlation</small></div></div><div class="hld-input"><svg class="hld-input-icon hld-svg" aria-hidden="true"><use href="#hld-i-package"/></svg><div>Order ID<small>Fixture lookup key, when available</small></div></div></div>
+                <div class="hld-normalize">↓ Validated into structured <code>AgentState</code></div>
+              </section>
+              <div class="hld-flow-down" aria-hidden="true">↓</div>
+              <section class="hld-layer hld-runtime">
+                <div class="hld-layer-label runtime-label"><span>02</span><svg class="hld-icon" aria-hidden="true"><use href="#hld-i-harness"/></svg>AGENT HARNESS · CONTROL PLANE</div>
+                <div class="hld-harness-heading"><div><strong>Orchestrator coordinates the bounded workflow</strong><p>Deterministic routing selects actions; <code>AgentHarness.validate()</code> enforces allowed actions and prerequisites.</p></div><span class="hld-badge">MAX_ITERATIONS · tool retries</span></div>
+                <div class="hld-harness-grid">
+                  <article class="hld-module"><div class="hld-module-top"><span class="hld-module-icon"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-route"/></svg></span>Action selection</div><p><code>_get_deterministic_next_action()</code> routes by current state and completed action.</p></article>
+                  <article class="hld-module"><div class="hld-module-top"><span class="hld-module-icon"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-play"/></svg></span>Action execution</div><p><code>_execute_action()</code> calls handlers and captures results, errors, and timing.</p></article>
+                  <article class="hld-module"><div class="hld-module-top"><span class="hld-module-icon"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-database"/></svg></span>State management</div><p><code>AgentState</code> tracks request IDs, order, delivery, evidence, judgments, consensus, decisions, and response.</p></article>
+                  <article class="hld-module"><div class="hld-module-top"><span class="hld-module-icon"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-refresh-shield"/></svg></span>Control &amp; recovery</div><p>Iteration bounds, configured retries, failure classification, escalation, stop conditions, and terminal outcome assignment.</p></article>
+                </div>
+                <div class="hld-feedback"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-refresh-shield"/></svg>Action result and observations update AgentState, then deterministic routing selects the next action · bounded loop</div>
+              </section>
+              <div class="hld-flow-down" aria-hidden="true">↓</div>
+              <section class="hld-layer hld-data-layer">
+                <div class="hld-layer-label data-label"><span>03</span><svg class="hld-icon" aria-hidden="true"><use href="#hld-i-search"/></svg>Domain tools &amp; evidence retrieval</div>
+                <div class="hld-split"><div><div class="hld-tool-grid">
+                  <div class="hld-tool"><svg class="hld-tool-icon hld-svg" aria-hidden="true"><use href="#hld-i-package"/></svg><div><code>GET_ORDER</code><small>Retrieve order and items</small></div></div><div class="hld-tool"><svg class="hld-tool-icon hld-svg" aria-hidden="true"><use href="#hld-i-truck"/></svg><div><code>GET_DELIVERY</code><small>Retrieve delivery record</small></div></div><div class="hld-tool"><svg class="hld-tool-icon hld-svg" aria-hidden="true"><use href="#hld-i-file-search"/></svg><div><code>EXTRACT_GRIEVANCES</code><small>Classify intent and claims</small></div></div><div class="hld-tool"><svg class="hld-tool-icon hld-svg" aria-hidden="true"><use href="#hld-i-search"/></svg><div><code>GET_EVIDENCE</code><small>Build facts per grievance</small></div></div>
+                </div><div class="hld-evidence"><strong><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-clipboard"/></svg>Evidence context:</strong> order/item details · delivery status and timestamps · delivered-item quantities when present · grievance-specific facts passed to judges.</div></div>
+                  <aside class="hld-data-source"><div class="hld-data-source-title"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-database"/></svg>Fixture-backed data sources</div><p><code>data/orders.json</code><br><code>data/deliveries.json</code><br>Accessed through repository tools keyed by order ID.</p></aside>
+                </div>
+              </section>
+              <div class="hld-flow-down" aria-hidden="true">↓</div>
+              <section class="hld-layer hld-judges hld-data-layer">
+                <div class="hld-layer-label data-label"><span>04</span><svg class="hld-icon" aria-hidden="true"><use href="#hld-i-judges"/></svg>Independent judges · parallel per grievance</div>
+                <div class="hld-judge-grid"><div class="hld-judge"><div class="hld-judge-head"><svg class="hld-judge-icon hld-svg" aria-hidden="true"><use href="#hld-i-judges"/></svg>Judge 1</div><small>Shared grievance and evidence</small></div><div class="hld-judge"><div class="hld-judge-head"><svg class="hld-judge-icon hld-svg" aria-hidden="true"><use href="#hld-i-judges"/></svg>Judge 2</div><small>Independent verdict</small></div><div class="hld-judge"><div class="hld-judge-head"><svg class="hld-judge-icon hld-svg" aria-hidden="true"><use href="#hld-i-judges"/></svg>Judge 3</div><small>Independent verdict</small></div></div>
+                <p class="hld-judge-note">Three judge calls are submitted in parallel; a failure is recorded and currently fails the judge action rather than using a partial vote set.</p>
+              </section>
+              <div class="hld-flow-down" aria-hidden="true">↓</div>
+              <section class="hld-decision-grid" aria-label="Consensus and policy">
+                <article class="hld-decision consensus"><div class="hld-layer-label decision-label"><span>05</span><svg class="hld-icon" aria-hidden="true"><use href="#hld-i-consensus"/></svg>Consensus engine</div><strong>At least 2 of 3 matching verdicts</strong><p>Returns the majority verdict. No majority returns <code>ESCALATE</code>.</p></article>
+                <article class="hld-decision policy"><div class="hld-layer-label decision-label"><span>06</span><svg class="hld-icon" aria-hidden="true"><use href="#hld-i-policy"/></svg>Policy decision</div><strong>Policy maps consensus and evidence to a decision</strong><p>Produces REFUND, NO_REFUND, REQUEST_EVIDENCE, or ESCALATE per grievance.</p></article>
+              </section>
+              <div class="hld-flow-down" aria-hidden="true">↓</div>
+              <div class="hld-section-title"><svg class="hld-svg" aria-hidden="true" style="color:#c2410c"><use href="#hld-i-receipt"/></svg>07 · Settlement · policy-dependent refund effect</div>
+              <section class="hld-settlement" aria-label="Settlement and review paths"><div class="hld-settlement-card"><div class="hld-support-head"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-receipt"/></svg>Settlement service · refund effect is policy-dependent</div><p>Normal completion calls settlement after policy. Only REFUND decisions contribute an amount; the service checks the ₹2,000 cap and existing order refund before recording a result.</p></div><span class="hld-settle-arrow" aria-hidden="true">→</span><div class="hld-settlement-card"><div class="hld-support-head"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-database"/></svg>Settlement result</div><p>AUTO_APPROVED / ESCALATE or preserved existing status. Ledger provides order-level idempotency.</p></div></section>
+              <div class="hld-flow-down" aria-hidden="true">↓</div>
+              <section class="hld-outcomes" aria-label="Terminal workflow outcomes"><div class="hld-outcome-title"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-route"/></svg>08 · Terminal workflow outcome</div><div class="hld-outcome resolved"><strong><svg class="hld-status-icon hld-svg" aria-hidden="true"><use href="#hld-i-check"/></svg>RESOLVED</strong><small>Default when no deflection or escalation condition is recorded</small></div><div class="hld-outcome deflected"><strong><svg class="hld-status-icon hld-svg" aria-hidden="true"><use href="#hld-i-arrow-circle"/></svg>DEFLECTED</strong><small>Order status is CANCELLED or IN_TRANSIT</small></div><div class="hld-outcome escalated"><strong><svg class="hld-status-icon hld-svg" aria-hidden="true"><use href="#hld-i-alert"/></svg>ESCALATED</strong><small>Explicit escalation signal or settlement ESCALATE</small></div></section>
+              <p class="hld-workflow-note">Terminal classification runs after orchestration: cancelled/in-transit order → DEFLECTED; explicit escalation conditions → ESCALATED; otherwise → RESOLVED. Execution exceptions remain failed runs, not business outcomes.</p>
+              <section class="hld-support">
+                <article class="hld-support-card review-support"><div class="hld-support-head"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-human"/></svg>Human review</div><p>Escalation signals route a case for review. Policy escalation does not itself guarantee the terminal workflow outcome is ESCALATED in the current classifier.</p></article>
+                <article class="hld-support-card failure-support"><div class="hld-support-head"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-failure"/></svg>Execution failure</div><p>Uncaught errors and exhausted failures remain execution failures; they are kept distinct from RESOLVED, DEFLECTED, and ESCALATED.</p></article>
+              </section>
+              <div class="hld-flow-down" aria-hidden="true">↓ runtime result feeds offline evaluation</div>
+              <section class="hld-evaluation-layer" aria-label="Offline evaluation and observability layer">
+                <div class="hld-layer-label data-label"><span>09</span><svg class="hld-icon" aria-hidden="true"><use href="#hld-i-activity"/></svg>Offline evaluation &amp; observability</div>
+                <div class="hld-support">
+                  <article class="hld-support-card eval-support"><div class="hld-support-head"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-clipboard"/></svg>Benchmark evaluation · offline</div><p>Golden expectations are compared with actual intent, grievances, judgments, outcome, escalation, and settlement fields. Mismatches are retained for diagnosis.</p><div class="hld-sources"><code>data/golden_set.json</code><code>data/benchmark_results/case_results.json</code></div></article>
+                  <article class="hld-support-card observe-support"><div class="hld-support-head"><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-activity"/></svg>Observability &amp; report artifacts</div><p>Timing events, retries, model usage where recorded, outcomes, pass metrics, cost estimates, and dataset quality.</p><div class="hld-observe"><span><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-check"/></svg>Outcome &amp; pass metrics</span><span><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-clock"/></svg>Latency &amp; retries</span><span><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-coins"/></svg>Model usage &amp; cost</span><span><svg class="hld-svg" aria-hidden="true"><use href="#hld-i-database"/></svg>Execution / settlement diagnostics</span></div><div class="hld-sources"><code>data/benchmark_results/dashboard.json</code><code>data/orders.json</code><code>data/deliveries.json</code></div></article>
+                </div>
+              </section>
+              <div class="hld-notes"><strong>System boundary:</strong> the harness coordinates actions; judges assess evidence; policy authorizes refund decisions; settlement records eligible decisions. Benchmark artifacts describe saved evaluation runs, not live production telemetry. Workflow outcome ≠ settlement outcome.</div>
+            </div>
+            <p class="workflow-note">The Low-Level Decision Flow expands the branch conditions across ten decision levels.</p>
+          </div>
+        </section>
+        <section id="workflow-low" class="workflow-panel">
+          <div class="lowflow-toolbar">
+            <div><strong>Implemented workflow · decision tree</strong><p>Deterministic action routing, evidence review, policy, settlement, and terminal classification from the current code.</p></div>
+            <span class="lld-legend"><i class="legend-action"></i>Action <i class="legend-decision"></i>Decision <i class="legend-terminal"></i>Business outcome <i class="legend-failure"></i>Failure path</span>
+          </div>
+          <div class="lld-diagram-scroll" role="region" aria-label="RefundBench implemented workflow decision tree" tabindex="0">
+            <svg class="lld-diagram" viewBox="0 0 1500 1260" role="img" aria-labelledby="lld-title lld-description">
+              <title id="lld-title">RefundBench implemented workflow decision tree</title>
+              <desc id="lld-description">Compact landscape decision tree showing order and delivery checks, deflection and escalation branches, evidence and three parallel judges, consensus, policy outcomes, settlement, and terminal workflow classification.</desc>
+              <defs><marker id="lld-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="lld-arrowhead"/></marker></defs>
+              <g class="lld-connectors" marker-end="url(#lld-arrow)">
+                <path d="M750 92V112"/><path d="M750 178V198"/>
+                <path d="M640 238H430V250"/><path d="M750 278V302"/><path d="M860 238H1050"/>
+                <path d="M320 290H280"/><path d="M430 330V350H750V370"/><path d="M750 446V466"/>
+                <path d="M910 406H1050" class="lld-outcome-route"/>
+                <path d="M750 542V562"/><path d="M750 638V655H250V675"/><path d="M750 655V675"/><path d="M750 655H1250V675"/>
+                <path d="M250 753V770H750V790"/><path d="M750 753V790"/><path d="M1250 753V770H750"/>
+                <path d="M750 870V892"/><path d="M640 930H340V980"/><path d="M750 968V980"/><path d="M860 930H1160V980"/>
+                <path d="M340 1040V1050H750"/><path d="M540 1040V1050H750"/><path d="M960 1040V1050H750"/><path d="M1160 1040V1050H750"/>
+                <path d="M750 1090V1110"/><path d="M750 1170H360V1190"/><path d="M750 1170V1190"/><path d="M750 1170H1140V1190"/>
+                <path d="M1320 238H1390V1170H840" class="lld-outcome-route"/>
+                <path d="M1320 390H1360V1170H840" class="lld-outcome-route"/>
+                <path d="M1320 836H1390V1170H840" class="lld-outcome-route"/>
+                <path d="M320 290H70V1208H230" class="lld-outcome-route"/>
+              </g>
+              <g class="lld-labels">
+                <text x="775" y="193">order found</text><text x="900" y="228">No</text><text x="525" y="228">Yes</text>
+                <text x="775" y="365">DELIVERED</text><text x="925" y="397">Unsupported status / missing delivery</text>
+                <text x="775" y="557">Evidence ready</text><text x="390" y="665">Judge 1</text><text x="765" y="665">Judge 2</text><text x="1260" y="665">Judge 3</text>
+                <text x="775" y="785">2+ matching verdicts</text><text x="900" y="815">No majority → escalation</text>
+                <text x="430" y="972">Policy outputs</text><text x="775" y="1048">All policy outputs continue to settlement</text>
+                <text x="775" y="1106">Ledger / duplicate / cap check</text>
+              </g>
+              <g class="lld-node lld-root"><rect x="560" y="20" width="380" height="72" rx="15"/><text x="750" y="49" text-anchor="middle" class="lld-title">Customer Request</text><text x="750" y="73" text-anchor="middle" class="lld-detail">customer_message · order_id · optional case_id</text></g>
+              <g class="lld-node lld-action"><rect x="590" y="112" width="320" height="66" rx="12"/><text x="750" y="139" text-anchor="middle" class="lld-title">GET_ORDER</text><text x="750" y="160" text-anchor="middle" class="lld-detail">Deterministic first action</text></g>
+              <g class="lld-node lld-decision"><polygon points="750,198 860,238 750,278 640,238"/><text x="750" y="235" text-anchor="middle" class="lld-title">Order found?</text><text x="750" y="253" text-anchor="middle" class="lld-detail">record present</text></g>
+              <g class="lld-node lld-side lld-review"><rect x="1050" y="198" width="270" height="80" rx="12"/><text x="1185" y="229" text-anchor="middle" class="lld-title">ESCALATE action</text><text x="1185" y="253" text-anchor="middle" class="lld-detail">Order missing; reason recorded</text></g>
+              <g class="lld-node lld-decision"><polygon points="430,250 540,290 430,330 320,290"/><text x="430" y="286" text-anchor="middle" class="lld-title">Order status?</text><text x="430" y="304" text-anchor="middle" class="lld-detail">after GET_ORDER</text></g>
+              <g class="lld-node lld-side lld-deflected"><rect x="90" y="250" width="230" height="80" rx="12"/><text x="205" y="281" text-anchor="middle" class="lld-title">DEFLECTED</text><text x="205" y="305" text-anchor="middle" class="lld-detail">CANCELLED / IN_TRANSIT</text></g>
+              <g class="lld-node lld-side lld-review"><rect x="1050" y="350" width="270" height="80" rx="12"/><text x="1185" y="381" text-anchor="middle" class="lld-title">ESCALATE action</text><text x="1185" y="405" text-anchor="middle" class="lld-detail">Unsupported status / missing delivery</text></g>
+              <g class="lld-node lld-action"><rect x="590" y="370" width="320" height="76" rx="12"/><text x="750" y="400" text-anchor="middle" class="lld-title">GET_DELIVERY</text><text x="750" y="424" text-anchor="middle" class="lld-detail">Requires retrieved order</text></g>
+              <g class="lld-node lld-action"><rect x="590" y="466" width="320" height="76" rx="12"/><text x="750" y="496" text-anchor="middle" class="lld-title">EXTRACT_GRIEVANCES + GET_EVIDENCE</text><text x="750" y="520" text-anchor="middle" class="lld-detail">Normalize claims; gather one evidence record per grievance</text></g>
+              <g class="lld-node lld-action lld-judge-stage"><rect x="590" y="562" width="320" height="76" rx="12"/><text x="750" y="592" text-anchor="middle" class="lld-title">RUN_JUDGES</text><text x="750" y="616" text-anchor="middle" class="lld-detail">Three independent calls per grievance</text></g>
+              <g class="lld-node lld-judge"><rect x="130" y="675" width="240" height="78" rx="12"/><text x="250" y="706" text-anchor="middle" class="lld-title">Judge 1</text><text x="250" y="730" text-anchor="middle" class="lld-detail">Parallel judgment</text></g>
+              <g class="lld-node lld-judge"><rect x="630" y="675" width="240" height="78" rx="12"/><text x="750" y="706" text-anchor="middle" class="lld-title">Judge 2</text><text x="750" y="730" text-anchor="middle" class="lld-detail">Parallel judgment</text></g>
+              <g class="lld-node lld-judge"><rect x="1130" y="675" width="240" height="78" rx="12"/><text x="1250" y="706" text-anchor="middle" class="lld-title">Judge 3</text><text x="1250" y="730" text-anchor="middle" class="lld-detail">Parallel judgment</text></g>
+              <g class="lld-node lld-consensus"><polygon points="750,790 860,830 750,870 640,830"/><text x="750" y="826" text-anchor="middle" class="lld-title">BUILD_CONSENSUS</text><text x="750" y="844" text-anchor="middle" class="lld-detail">2 of 3 matching verdicts</text></g>
+              <g class="lld-node lld-side lld-review"><rect x="1050" y="800" width="270" height="72" rx="12"/><text x="1185" y="829" text-anchor="middle" class="lld-title">No majority</text><text x="1185" y="852" text-anchor="middle" class="lld-detail">Consensus verdict: ESCALATE</text></g>
+              <g class="lld-node lld-action lld-policy"><rect x="590" y="892" width="320" height="76" rx="12"/><text x="750" y="922" text-anchor="middle" class="lld-title">APPLY_POLICY</text><text x="750" y="946" text-anchor="middle" class="lld-detail">Evidence + consensus → policy action</text></g>
+              <g class="lld-node lld-policy-output"><rect x="250" y="980" width="180" height="60" rx="10"/><text x="340" y="1004" text-anchor="middle" class="lld-title">REFUND</text><text x="340" y="1024" text-anchor="middle" class="lld-detail">Eligible amount</text></g>
+              <g class="lld-node lld-policy-output"><rect x="450" y="980" width="180" height="60" rx="10"/><text x="540" y="1004" text-anchor="middle" class="lld-title">NO_REFUND</text><text x="540" y="1024" text-anchor="middle" class="lld-detail">No amount</text></g>
+              <g class="lld-node lld-policy-output"><rect x="870" y="980" width="180" height="60" rx="10"/><text x="960" y="1004" text-anchor="middle" class="lld-title">REQUEST_EVIDENCE</text><text x="960" y="1024" text-anchor="middle" class="lld-detail">No amount</text></g>
+              <g class="lld-node lld-policy-output"><rect x="1070" y="980" width="180" height="60" rx="10"/><text x="1160" y="1004" text-anchor="middle" class="lld-title">ESCALATE</text><text x="1160" y="1024" text-anchor="middle" class="lld-detail">No amount</text></g>
+              <g class="lld-node lld-action lld-settlement"><rect x="590" y="1050" width="320" height="40" rx="10"/><text x="750" y="1075" text-anchor="middle" class="lld-title">SETTLE · apply ledger / cap checks</text></g>
+              <g class="lld-node lld-terminal lld-resolved"><rect x="230" y="1190" width="260" height="36" rx="9"/><text x="360" y="1213" text-anchor="middle" class="lld-title">RESOLVED</text></g>
+              <g class="lld-node lld-terminal lld-escalated"><rect x="620" y="1190" width="260" height="36" rx="9"/><text x="750" y="1213" text-anchor="middle" class="lld-title">ESCALATED</text></g>
+              <g class="lld-node lld-terminal lld-deflected"><rect x="1010" y="1190" width="260" height="36" rx="9"/><text x="1140" y="1213" text-anchor="middle" class="lld-title">DEFLECTED · status branch</text></g>
+            </svg>
+          </div>
+          <section class="lld-recovery" aria-label="Shared failure and retry flow">
+            <h3>Shared action failure handling</h3><p>Applies when an action handler raises; the same policy is used across workflow actions.</p>
+            <div class="lld-recovery-scroll"><svg class="lld-recovery-diagram" viewBox="0 0 1120 430" role="img" aria-label="Action exceptions are classified as transient, permanent, or unknown; iteration-limit exceptions remain execution failures.">
+              <defs><marker id="lld-recovery-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="lld-arrowhead"/></marker></defs>
+              <g class="lld-connectors" marker-end="url(#lld-recovery-arrow)"><path d="M560 70V105"/><path d="M505 165H170V205"/><path d="M560 165V205"/><path d="M615 165H950V205"/><path d="M470 365H650"/></g>
+              <g class="lld-node lld-action"><rect x="390" y="12" width="340" height="58" rx="12"/><text x="560" y="48" text-anchor="middle" class="lld-title">Action handler exception</text></g>
+              <g class="lld-node lld-decision"><polygon points="560,105 615,150 560,195 505,150"/><text x="560" y="155" text-anchor="middle" class="lld-title">Failure type?</text></g>
+              <g class="lld-labels"><text x="260" y="190">TRANSIENT</text><text x="575" y="190">PERMANENT</text><text x="850" y="190">UNKNOWN</text></g>
+              <g class="lld-node lld-retry"><rect x="20" y="205" width="300" height="100" rx="12"/><text x="170" y="237" text-anchor="middle" class="lld-title">Retry same action</text><text x="170" y="262" text-anchor="middle" class="lld-detail">Up to MAX_TOOL_RETRIES</text><text x="170" y="284" text-anchor="middle" class="lld-detail">Exhaustion → escalation reason</text></g>
+              <g class="lld-node lld-note"><rect x="410" y="205" width="300" height="100" rx="12"/><text x="560" y="237" text-anchor="middle" class="lld-title">CONTINUE</text><text x="560" y="262" text-anchor="middle" class="lld-detail">Resume deterministic routing</text><text x="560" y="284" text-anchor="middle" class="lld-detail">after permanent failure</text></g>
+              <g class="lld-node lld-review"><rect x="800" y="205" width="300" height="100" rx="12"/><text x="950" y="237" text-anchor="middle" class="lld-title">ESCALATE signal</text><text x="950" y="262" text-anchor="middle" class="lld-detail">Returned state classifies</text><text x="950" y="284" text-anchor="middle" class="lld-detail">as ESCALATED</text></g>
+              <g class="lld-node lld-retry"><rect x="20" y="330" width="450" height="70" rx="12"/><text x="245" y="358" text-anchor="middle" class="lld-title">MAX_ITERATIONS exceeded / uncaught exception</text><text x="245" y="383" text-anchor="middle" class="lld-detail">run_agent() raises to caller</text></g>
+              <g class="lld-node lld-execution-failure"><rect x="650" y="330" width="440" height="70" rx="12"/><text x="870" y="358" text-anchor="middle" class="lld-title">Execution failure</text><text x="870" y="383" text-anchor="middle" class="lld-detail">No successful workflow outcome assigned</text></g>
+            </svg></div>
+          </section>
+          <div class="flow-caveat"><strong>Outcome and settlement are different:</strong> DEFLECTED is returned for CANCELLED / IN_TRANSIT before settlement. Policy ESCALATE is a signal, but does not alone guarantee terminal ESCALATED; the classifier checks an explicit ESCALATE action/reason, the recorded tool-failure signal, or settlement status ESCALATE. SETTLE is called after policy decisions; only REFUND adds an amount. Within the cap, the settlement response is AUTO_APPROVED while the ledger record is PROPOSED.</div>
+        </section>
+      </section>
+    </main>
+  </section>
+</div>
+<script>
+const navButtons=[...document.querySelectorAll('[data-view]')];
+function showView(name){
+  document.querySelectorAll('.view').forEach(view=>view.classList.toggle('active',view.id==='view-'+name));
+  navButtons.forEach(button=>button.classList.toggle('active',button.dataset.view===name));
+}
+let datasetPageRequested=false;
+navButtons.forEach(button=>button.addEventListener('click',()=>{
+  showView(button.dataset.view);
+  if(button.dataset.view==='dataset'&&!datasetPageRequested){datasetPageRequested=true;loadDatasetFixtures();}
+}));
+const dashboardFrame=document.getElementById('refund-dashboard-frame');
+window.addEventListener('message',event=>{
+  if(event.source!==dashboardFrame.contentWindow||event.data?.type!=='refundbench-dashboard-height')return;
+  const height=Number(event.data.height);
+  if(Number.isFinite(height)&&height>=600&&height<=12000){
+    dashboardFrame.style.setProperty('--dashboard-height',`${height}px`);
+  }
+});
+const workflowTabs=[...document.querySelectorAll('[data-workflow]')];
+workflowTabs.forEach(tab=>tab.addEventListener('click',()=>{
+  const selected=tab.dataset.workflow;
+  workflowTabs.forEach(item=>{
+    const active=item===tab;
+    item.classList.toggle('active',active);
+    item.setAttribute('aria-selected',String(active));
+  });
+  document.querySelectorAll('.workflow-panel').forEach(panel=>panel.classList.toggle('active',panel.id==='workflow-'+selected));
+}));
+
+const fixtureSources={golden_cases:{name:'Golden Cases',path:'../data/golden_set.json',id:'case_id',description:'Scenario definitions, expected outcomes, and order references.'},orders:{name:'Orders',path:'../data/orders.json',id:'order_id',description:'Order records, items, quantities, prices, and order states.'},deliveries:{name:'Deliveries',path:'../data/deliveries.json',id:'order_id',description:'Delivery statuses, timestamps, and delivered-item records.'}};
+const fixtureSchema={
+  golden_cases:{fields:{case_id:['string',true],category:['string',true],order_id:['string',true],customer_message:['string',true],expected:['object',true],preconditions:['object',false]}},
+  orders:{fields:{order_id:['string',true],customer_id:['string',true],expected_delivery_at:['string',true],status:['string',true],total_amount:['number',true],order_weight:['number',true],items:['array<OrderItem>',true]},nested:{items:{item_id:['string',true],name:['string',true],quantity:['number',true],unit_price:['number',true]}}},
+  deliveries:{fields:{order_id:['string',true],delivered_at:['string',true],status:['string',true],delivered_weight:['number',true],items:['array<DeliveredItem>',false]},nested:{items:{item_id:['string',true],quantity:['number',true]}}}
+};
+let fixtureData={},fixtureErrors={},selectedDataset='golden_cases',coverageCategory='all',coverageSearch='';
+const $ds=id=>document.getElementById(id);
+const escDs=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const datasetCount=key=>Array.isArray(fixtureData[key])?fixtureData[key].length:null;
+function renderDatasetCounts(){
+  [['golden_cases','dataset-case-count'],['orders','dataset-order-count'],['deliveries','dataset-delivery-count']].forEach(([key,id])=>{$ds(id).textContent=datasetCount(key)===null?'—':datasetCount(key).toLocaleString();});
+  $ds('lineage-case-count').textContent=datasetCount('golden_cases')===null?'—':`${datasetCount('golden_cases')} stored cases`;
+  $ds('lineage-order-count').textContent=datasetCount('orders')===null?'—':`${datasetCount('orders')} stored orders`;
+  $ds('lineage-delivery-count').textContent=datasetCount('deliveries')===null?'—':`${datasetCount('deliveries')} stored records`;
+}
+async function loadDatasetFixtures(){
+  const settled=await Promise.all(Object.entries(fixtureSources).map(async([key,source])=>{
+    try{const response=await fetch(source.path,{cache:'no-store'});if(!response.ok)throw new Error(`${source.path} returned HTTP ${response.status}`);const value=await response.json();if(!Array.isArray(value))throw new Error(`${source.path} must contain a JSON array`);return {key,value};}
+    catch(error){return {key,error};}
+  }));
+  fixtureErrors={};fixtureData={};
+  settled.forEach(result=>{if(result.error)fixtureErrors[result.key]=result.error.message;else fixtureData[result.key]=result.value;});
+  renderDatasetCounts();renderCatalog();renderScenarioCoverage();renderCoverageControls();renderSchemaExplorer();renderDatasetQuality();renderDatasetRelationships();
+  const errors=Object.entries(fixtureErrors);
+  if(errors.length){$ds('dataset-load-error').hidden=false;$ds('dataset-load-error').innerHTML=`Some fixture sources could not be loaded. The saved benchmark-results view is independent and remains available.<ul>${errors.map(([key,message])=>`<li><strong>${escDs(fixtureSources[key].name)}:</strong> ${escDs(message)}</li>`).join('')}</ul>Serve the existing dashboard over HTTP; browsers commonly block JSON fetches from file:// pages.`;}
+  else{$ds('dataset-load-error').hidden=true;}
+}
+function renderScenarioCoverage(){
+  const cases=fixtureData.golden_cases||[],counts=new Map();
+  cases.forEach(item=>{const category=typeof item.category==='string'&&item.category.trim()?item.category.trim():'Unclassified';counts.set(category,(counts.get(category)||0)+1);});
+  const rows=[...counts.entries()].sort((a,b)=>a[0]==='Unclassified'?1:b[0]==='Unclassified'?-1:a[0].localeCompare(b[0]));
+  const colors=['#3978c8','#16a36a','#f29b38','#8a73ce','#d85e6a','#35a8a0','#7b8ba2','#cf7e44','#5c79ce','#a668a0'];
+  let angle=0;const stops=rows.map(([name,count],index)=>{const start=angle;angle+=cases.length?count/cases.length*360:0;return `${colors[index%colors.length]} ${start}deg ${angle}deg`;});
+  const donut=$ds('scenario-donut');donut.style.background=rows.length?`conic-gradient(${stops.join(',')})`:'#e9edf3';donut.innerHTML=`<div class="dataset-donut-hole"><strong>${cases.length.toLocaleString()}</strong><span>cases</span></div>`;
+  $ds('scenario-legend').innerHTML=rows.length?rows.map(([name,count],index)=>`<button type="button" data-coverage-category="${escDs(name)}"><i class="dataset-dot" style="background:${colors[index%colors.length]}"></i><span>${escDs(name)}</span><strong>${count} · ${cases.length?(count/cases.length*100).toFixed(1):'0.0'}%</strong></button>`).join(''):'<div class="dataset-empty">Golden case data is unavailable.</div>';
+  $ds('scenario-total').textContent=`${rows.reduce((sum,row)=>sum+row[1],0)} classified cases of ${cases.length} total · category is single-valued metadata; unclassified cases are included.`;
+  document.querySelectorAll('[data-coverage-category]').forEach(button=>button.addEventListener('click',()=>{coverageCategory=button.dataset.coverageCategory;renderCoverageControls();renderCoverageTable();}));
+}
+function renderCoverageControls(){
+  const cases=fixtureData.golden_cases||[],select=$ds('coverage-category-filter'),selected=coverageCategory;
+  const categories=[...new Set(cases.map(row=>typeof row.category==='string'&&row.category.trim()?row.category.trim():'Unclassified'))].sort();
+  select.innerHTML='<option value="all">All categories</option>'+categories.map(category=>`<option value="${escDs(category)}">${escDs(category)}</option>`).join('');
+  select.value=categories.includes(selected)?selected:'all';coverageCategory=select.value;
+  const caseSelect=$ds('coverage-case-select');caseSelect.innerHTML='<option value="">Select a golden case</option>'+cases.map(row=>`<option value="${escDs(row.case_id)}">${escDs(row.case_id)} · ${escDs(row.order_id)}</option>`).join('');
+  select.onchange=()=>{coverageCategory=select.value;renderCoverageTable();};caseSelect.onchange=()=>{renderDatasetRelationships(caseSelect.value);};
+  renderCoverageTable();
+}
+function renderCoverageTable(){
+  const cases=fixtureData.golden_cases||[],filtered=cases.filter(row=>(coverageCategory==='all'||(row.category||'Unclassified')===coverageCategory)&&`${row.case_id} ${row.category} ${row.order_id} ${row.customer_message}`.toLowerCase().includes(coverageSearch));
+  $ds('coverage-case-table').innerHTML=filtered.length?`<table class="dataset-table"><thead><tr><th>Case ID</th><th>Category</th><th>Order ID</th><th>Customer scenario</th><th>Expected outcome</th></tr></thead><tbody>${filtered.slice(0,100).map(row=>`<tr><td><code>${escDs(row.case_id)}</code></td><td>${escDs(row.category||'Unclassified')}</td><td><code>${escDs(row.order_id)}</code></td><td>${escDs(row.customer_message||'')}</td><td>${escDs(row.expected?.outcome??'Not specified')}</td></tr>`).join('')}</tbody></table>${filtered.length>100?`<div class="dataset-subtle">Showing 100 of ${filtered.length} matching cases.</div>`:''}`:'<div class="dataset-empty">No matching cases.</div>';
+}
+function renderCatalog(){
+  const search=$ds('dataset-catalog-search').value.trim().toLowerCase();
+  const entries=Object.entries(fixtureSources).filter(([key,item])=>`${item.name} ${item.description}`.toLowerCase().includes(search));
+  $ds('dataset-catalog').innerHTML=entries.length?entries.map(([key,item])=>`<button class="dataset-source ${selectedDataset===key?'selected':''}" type="button" data-source="${key}"><span><strong>${item.name}</strong><small>${item.description}</small></span><strong>${datasetCount(key)===null?'—':datasetCount(key).toLocaleString()}</strong></button>`).join(''):'<div class="dataset-empty">No datasets match that search.</div>';
+  document.querySelectorAll('[data-source]').forEach(button=>button.addEventListener('click',()=>{selectedDataset=button.dataset.source;renderCatalog();renderSchemaExplorer();renderDatasetQuality();renderDatasetRelationships();}));
+}
+function valueType(value){if(value===null)return 'null';if(Array.isArray(value))return 'array';if(typeof value==='object')return 'object';if(typeof value==='number')return Number.isInteger(value)?'integer':'number';return typeof value;}
+function currentFields(key){
+  const spec=fixtureSchema[key],records=fixtureData[key]||[],names=new Set([...Object.keys(spec.fields),...records.flatMap(row=>Object.keys(row||{}))]);
+  return [...names].map(name=>{const [type,required]=spec.fields[name]||['unmodeled',false],values=records.map(row=>row?.[name]),present=values.filter(value=>value!==null&&value!==undefined);return {name,type,required:!!required,nullRate:records.length?(records.length-present.length)/records.length:null,example:present[0]};});
+}
+function renderSchemaExplorer(){
+  const source=fixtureSources[selectedDataset],records=fixtureData[selectedDataset]||[],fields=currentFields(selectedDataset);
+  $ds('schema-title').textContent=`Schema Explorer · ${source.name}`;$ds('schema-description').textContent=source.description;
+  $ds('schema-summary').textContent=`${datasetCount(selectedDataset)===null?'Data unavailable':datasetCount(selectedDataset).toLocaleString()+' records'} · ${fields.length} top-level fields · Stored fixture JSON`;
+  $ds('dataset-panel-fields').innerHTML=fields.length?`<div class="dataset-table-wrap"><table class="dataset-table"><thead><tr><th>Field Name</th><th>Type</th><th>Description</th><th>Required</th><th>Null Rate</th><th>Example Value</th></tr></thead><tbody>${fields.map(field=>`<tr><td><code>${escDs(field.name)}</code></td><td>${escDs(field.type)}</td><td>${fixtureSchema[selectedDataset].fields[field.name]?'Defined by the project model; no field description is declared.':'Present in records but not declared by the project model.'}</td><td>${field.required?'Yes':'No'}</td><td>${field.nullRate===null?'Not available':(field.nullRate*100).toFixed(1)+'%'}</td><td>${field.example===undefined?'Not available':`<details><summary>${escDs(JSON.stringify(field.example).slice(0,80))}</summary><pre>${escDs(JSON.stringify(field.example,null,2))}</pre></details>`}</td></tr>`).join('')}</tbody></table></div>`:'<div class="dataset-empty">No schema or fixture records are available.</div>';
+  const samplePanel=$ds('dataset-panel-samples');
+  samplePanel.innerHTML=`<div class="dataset-toolbar"><input id="sample-search" class="dataset-search" type="search" placeholder="Search records" aria-label="Search sample records"><select id="sample-record-select" class="dataset-search" aria-label="Select sample record"></select></div><div id="sample-record-detail"></div>`;
+  const search=samplePanel.querySelector('#sample-search'),select=samplePanel.querySelector('#sample-record-select');
+  const updateSamples=()=>{const filtered=records.filter(row=>JSON.stringify(row).toLowerCase().includes(search.value.toLowerCase())).slice(0,100);select.innerHTML=filtered.map((row,index)=>`<option value="${index}">${escDs(row?.[source.id]??`record ${index+1}`)}${records.filter(other=>other?.[source.id]===row?.[source.id]).length>1?` · row ${records.indexOf(row)+1}`:''}</option>`).join('');$ds('sample-record-detail').innerHTML=filtered.length?`<details open><summary>Record ${escDs(filtered[Number(select.value)||0]?.[source.id]??'')} · expand JSON</summary><pre>${escDs(JSON.stringify(filtered[Number(select.value)||0],null,2))}</pre></details>`:'<div class="dataset-empty">No records match the search.</div>';select.onchange=()=>{$ds('sample-record-detail').innerHTML=filtered.length?`<details open><summary>Record ${escDs(filtered[Number(select.value)]?.[source.id]??'')} · expand JSON</summary><pre>${escDs(JSON.stringify(filtered[Number(select.value)],null,2))}</pre></details>`:'';};};
+  search.oninput=updateSamples;updateSamples();
+  document.querySelectorAll('[data-dataset-tab]').forEach(tab=>{const panel=$ds(`dataset-panel-${tab.dataset.datasetTab}`);tab.classList.toggle('active',!panel.hidden);tab.setAttribute('aria-selected',String(!panel.hidden));});
+}
+function renderDatasetQuality(){
+  $ds('dataset-panel-quality').innerHTML='<div class="dataset-empty">No validation report is available for this session.</div>';
+}
+function renderDatasetRelationships(caseId){
+  const source=selectedDataset,selectedCase=(fixtureData.golden_cases||[]).find(row=>row.case_id===caseId)||null;
+  if(source==='golden_cases'){
+    const row=selectedCase||null,order=row?(fixtureData.orders||[]).find(item=>item.order_id===row.order_id):null,delivery=order?(fixtureData.deliveries||[]).filter(item=>item.order_id===order.order_id):[];
+    $ds('lineage-selection').innerHTML=row?`<strong>${escDs(row.case_id)}</strong> → order_id <code>${escDs(row.order_id)}</code> → ${order?`order found (${escDs(order.order_id)})`:'no exact order_id match'} → ${delivery.length?`${delivery.length} matching delivery record(s)`:'no exact delivery record'}.`:'Select a case above to inspect exact case → order_id → delivery.order_id links.';
+  }else if(source==='orders'){
+    $ds('lineage-selection').textContent='Order relationship: order_id connects golden cases and delivery records; items are nested under the order and keyed by item_id.';
+  }else{
+    $ds('lineage-selection').textContent='Delivery relationship: order_id connects to its order; each delivered item uses item_id and quantity. Repeated delivery order_id records remain distinct fixture rows.';
+  }
+  const rows=source==='golden_cases'?(fixtureData.golden_cases||[]):source==='orders'?(fixtureData.orders||[]):(fixtureData.deliveries||[]);
+  const relations=source==='golden_cases'?['case.order_id → order.order_id (exact ID match)','delivery.order_id → order.order_id (0..many fixture rows)','Runtime evidence/judgments/consensus/policy/settlement are not stored here']:source==='orders'?['order.order_id → golden_case.order_id','order.order_id → delivery.order_id','order.items[].item_id ↔ delivery.items[].item_id']:['delivery.order_id → order.order_id','delivery.items[].item_id ↔ order.items[].item_id'];
+  $ds('dataset-panel-relationships').innerHTML=`<p class="dataset-subtle">${rows.length} selected-dataset records. Relationships below follow identifiers present in the stored model.</p><ul>${relations.map(item=>`<li>${escDs(item)}</li>`).join('')}</ul>`;
+}
+function switchDatasetTab(tab){document.querySelectorAll('[data-dataset-tab]').forEach(button=>{const active=button===tab;button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));$ds(`dataset-panel-${button.dataset.datasetTab}`).hidden=!active;});}
+document.querySelectorAll('[data-dataset-tab]').forEach(button=>button.addEventListener('click',()=>switchDatasetTab(button)));
+$ds('dataset-catalog-search').addEventListener('input',renderCatalog);
+$ds('coverage-case-select').addEventListener('change',event=>renderDatasetRelationships(event.target.value));
+$ds('coverage-category-filter').addEventListener('change',event=>{coverageCategory=event.target.value;renderCoverageTable();});
+$ds('download-schema').addEventListener('click',()=>{
+  const rows=currentFields(selectedDataset),header=['Field Name','Type','Description','Required','Null Rate','Example Value','Validation'];
+  const quote=value=>`"${String(value??'').replace(/"/g,'""')}"`;
+  const csv=[header,...rows.map(field=>[field.name,field.type,fixtureSchema[selectedDataset].fields[field.name]?'Defined by project model; no field description is declared.':'Present in records but not declared by model.',field.required?'Yes':'No',field.nullRate===null?'Not available':`${(field.nullRate*100).toFixed(2)}%`,field.example===undefined?'Not available':JSON.stringify(field.example),'Model mapping / observed record'])].map(row=>row.map(quote).join(',')).join('\r\n');
+  const link=document.createElement('a'),url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));link.href=url;link.download=`refundbench-${selectedDataset}-schema.csv`;link.click();URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>

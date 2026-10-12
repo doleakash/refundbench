@@ -52,6 +52,8 @@ class AgentState(BaseModel):
     # Failure / escalation state
     escalation_reason: str | None = None
 
+    outcome: str | None = None
+
 
 class AgentDecision(BaseModel):
     action: Action

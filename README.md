@@ -114,7 +114,40 @@ With the virtual environment active:
 pytest
 ```
 
-## Current focus
+## Benchmark business dashboard
 
-The next phase is evaluating the refund agent’s quality, performance, and
-business impact.
+The dashboard is read-only and consumes the generated JSON artifacts in
+`data/benchmark_results/`. If `output.txt` contains a saved benchmark report,
+from the project root run `python -m benchmark.generate_dashboard` to
+recalculate metrics offline and generate `case_results.json` and
+`dashboard.json`. This command does not run evaluations or call an LLM.
+Then launch the dashboard with `streamlit run app.py`. Opening or refreshing
+the dashboard only reads the generated JSON.
+
+If no saved benchmark report exists yet, first run
+`python -m benchmark.runner` to evaluate the golden cases and save a report;
+this evaluation may call the configured LLM provider and incur charges.
+Then run the offline artifact-generation command above. If artifacts or the
+saved report are missing, the dashboard shows an empty state rather than
+fabricating results.
+
+Business assumptions used for estimated savings and review effort are saved
+with the dashboard artifact. They can be set through the benchmark runner's
+CLI options or the corresponding `REFUNDBENCH_*` environment variables.
+Simulated CSAT is a deterministic proxy, not customer feedback, and a single
+run does not represent a historical trend.
+
+Latency is measured by the `TOTAL_AGENT` event from orchestrator entry through
+workflow completion, including internal tools and decision work but excluding
+surrounding application-service bookkeeping. Latency percentiles use only
+measured cases and include measured/missing coverage. Token aggregates are
+reported only when telemetry is complete across all cases; estimated LLM cost
+requires complete input/output token telemetry and configured prices matched
+to the model/provider/endpoint.
+
+Estimated net savings count manual handling as avoided only for automatic
+approvals whose deterministic decision, refund amount, and escalation
+comparisons all pass. The estimate subtracts assumed escalation review labor
+and estimated LLM operating cost. It excludes error costs, churn,
+infrastructure, and other unmodeled support costs, so it is not realized
+savings and may overstate economic impact.

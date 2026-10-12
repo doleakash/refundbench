@@ -36,6 +36,8 @@ class LLMModel(AgentModel):
             raise ValueError("OPEN_AI_MODEL is not configured")
 
         self.model = model
+        self.provider = settings.llm_provider
+        self.endpoint = settings.llm_base_url or _OPENAI_BASE_URL
         self.max_retries = settings.max_llm_retries
 
         client_options = {
@@ -43,9 +45,7 @@ class LLMModel(AgentModel):
             "timeout": settings.llm_timeout,
             "max_retries": 0,
         }
-        base_url = settings.llm_base_url or _OPENAI_BASE_URL
-
-        self.client = OpenAI(**client_options, base_url=base_url)
+        self.client = OpenAI(**client_options, base_url=self.endpoint)
 
     def complete(
         self,
@@ -68,6 +68,8 @@ class LLMModel(AgentModel):
                     duration_ms=(perf_counter() - started_at) * 1000,
                     success=True,
                     model=self.model,
+                    provider=self.provider,
+                    endpoint=self.endpoint,
                     prompt_tokens=(
                         getattr(usage, "prompt_tokens", None)
                         if usage is not None
@@ -86,7 +88,18 @@ class LLMModel(AgentModel):
                 )
                 log_timing_event(event)
                 return response, event
-            except (APIConnectionError, APIStatusError) as error:
+            except Exception as error:
+                event = TimingEvent(
+                    case_id=case_id,
+                    order_id=order_id,
+                    stage="LLM_CALL",
+                    duration_ms=(perf_counter() - started_at) * 1000,
+                    success=False,
+                    model=self.model,
+                    provider=self.provider,
+                    endpoint=self.endpoint,
+                )
+                log_timing_event(event)
                 retryable = isinstance(error, APIConnectionError) or (
                     isinstance(error, APIStatusError)
                     and (
@@ -105,6 +118,8 @@ class LLMModel(AgentModel):
                         duration_ms=(perf_counter() - started_at) * 1000,
                         success=False,
                         model=self.model,
+                        provider=self.provider,
+                        endpoint=self.endpoint,
                     )
                 )
                 sleep(_LLM_RETRY_BACKOFF * (2**attempt))
