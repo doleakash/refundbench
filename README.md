@@ -1,72 +1,128 @@
-# RefundBench
+# RefundBench — Evidence-Grounded Refund Operations Agent
 
-RefundBench is a customer-support refund-resolution application. It provides
-a Streamlit interface and a FastAPI backend for resolving customer complaints
-using order and delivery data, LLM-assisted grievance evaluation, and
-deterministic policy and settlement logic.
+RefundBench is an evaluation-focused demo of an agent-assisted refund workflow. It combines tool-based order and delivery lookup, evidence-backed grievance judgments, explicit consensus, deterministic policy, and settlement tracking.
 
-## What it does
+[Live dashboard](https://refundbench-dashboard.vercel.app/) · [Architecture PRD](https://refundbench-dashboard.vercel.app/)
 
-For a submitted customer complaint, RefundBench follows this workflow:
+## Problem
 
-1. Retrieve the order and delivery.
-2. Extract grievances from the complaint.
-3. Build evidence for each grievance and evaluate it with parallel judges.
-4. Reach consensus, apply refund policy, and calculate a settlement.
-5. Let the customer accept an approved refund through the interface.
+Refund decisions depend on several different signals: what the customer reports, what the order contains, what delivery records show, and what the refund policy permits. A useful system must keep those signals distinct, explain its decision path, and escalate when evidence or judge agreement is insufficient.
 
-Refund acceptance uses an order-based idempotency key in the current refund
-workflow. Cases and refund records are currently held in process-local memory;
-order and delivery data are read from JSON files in `data/`.
+RefundBench demonstrates that workflow and evaluates it against a versioned golden-case dataset.
 
 ## Architecture
 
-```mermaid
-flowchart TD
-    Customer --> Streamlit["Streamlit frontend"]
-    Streamlit --> Client["HTTP API client"]
-    Client --> API["FastAPI routes"]
-    API --> Service["Case application service"]
-    Service --> Cases["In-memory case repository"]
-    Service --> Agent["Agent orchestrator"]
-    Agent --> Handlers["Action handlers"]
-    Handlers --> Orders["JSON order/delivery repository"]
-    Handlers --> Evaluation["Grievance extraction and judges"]
-    Evaluation --> LLM["OpenAI API"]
-    Handlers --> Policy["Policy and settlement"]
-    Service --> Refund["Refund workflow"]
-    Refund --> Ledger["In-memory refund ledger"]
-    Refund --> Provider["Mock refund provider"]
-```
-
-## Project structure
-
 ```text
-.
-├── app/
-│   ├── agent/                 # Agent state, workflow, harness, action handlers
-│   ├── application/cases/     # Case use cases and in-memory case repository
-│   ├── domain/                # Order, delivery, grievance, and evidence models
-│   ├── evaluation/            # Evidence, grievance extraction, judges, consensus
-│   ├── infrastructure/        # LLM, JSON order access, observability
-│   ├── interfaces/api/        # FastAPI routes, schemas, and mappers
-│   ├── policy/                # Refund policy decisions
-│   ├── response/              # Customer response generation
-│   ├── settlement/            # Settlement and refund lifecycle
-│   └── bootstrap.py           # Dependency wiring and API app factory
-├── benchmark/                 # Golden-set runner, comparator, and result models
-├── config/                    # Environment settings and logging setup
-├── data/                      # JSON orders, deliveries, and agent test cases
-├── frontend/                  # Streamlit UI and HTTP API client
-├── tests/                     # Pytest suite
-├── app.py                     # Streamlit entry point
-├── backend.py                 # FastAPI ASGI entry point
-└── requirements.txt
+Customer Request
+       ↓
+Streamlit UI → FastAPI → Case Service → Bounded Agent Orchestrator
+                                        ├─ Order and delivery tools
+                                        ├─ Grievance extraction
+                                        ├─ Evidence construction
+                                        └─ Independent LLM judges (parallel)
+                                                   ↓
+                                          2-of-3 Consensus
+                                                   ↓
+                                      Deterministic Refund Policy
+                                                   ↓
+                                      Conditional Settlement
+                                                   ↓
+                                 Response / Workflow Outcome
+
+Golden Cases + Fixtures → Benchmark Runner → Comparator → Saved Run Artifacts
 ```
+
+The runtime path and offline benchmark are separate. The benchmark compares actual case results with expected behavior; its metrics are not production telemetry.
+
+### Decision pipeline
+
+| Stage | Responsibility |
+| --- | --- |
+| Agent orchestrator | Selects and executes bounded workflow actions while maintaining case state. |
+| Domain tools | Retrieve order and delivery records and construct grievance-specific evidence. |
+| Judges | Assess claims independently using the available evidence. |
+| Consensus | Returns a verdict when at least two judges agree; insufficient agreement escalates. |
+| Policy | Applies deterministic refund rules to the evidence and consensus result. |
+| Settlement | Records eligible settlement decisions and preserves refund idempotency by order. |
+| Benchmark | Compares expected and actual case results and produces diagnostic metrics. |
+
+Workflow outcomes (`RESOLVED`, `DEFLECTED`, `ESCALATED`) are distinct from settlement status and execution failures.
+
+## Key engineering decisions
+
+### Evidence before policy
+
+Customer intent is kept separate from workflow outcome. Judges receive the evidence constructed from the order, delivery, and extracted grievance; missing evidence is not treated automatically as proof for or against a claim.
+
+### Consensus is explicit
+
+For each grievance, three independent judge calls run in parallel. A verdict requires at least two matching judgments. A split without a majority produces an escalation verdict for policy handling.
+
+### Deterministic policy and settlement
+
+LLM judgments do not directly issue refunds. A deterministic policy produces the decision consumed by settlement. Settlement and terminal workflow classification are tracked separately, and execution failure is not a successful outcome.
+
+### Reproducible evaluation
+
+Golden cases live in `data/golden_set.json`; orders and deliveries are stored separately in `data/orders.json` and `data/deliveries.json`. The comparator preserves field-level diagnostics so a case can fail for a specific reason.
+
+## Evaluation
+
+Run the golden set with the configured LLM provider:
+
+```bash
+python -m benchmark.runner
+```
+
+The full run writes `case_results.json` and `dashboard.json` under `data/benchmark_results/`. It may call the configured provider and incur API charges. To run one case, use `--case CASE-GOLDEN-001`; a focused run does not regenerate the full-run dashboard artifacts.
+
+To rebuild dashboard artifacts offline from a previously saved report:
+
+```bash
+python -m benchmark.generate_dashboard --report output.txt
+```
+
+This command does not run the agent or call an LLM. The report must be in the format expected by the saved-report loader.
+
+### Reading the metrics
+
+- Simulated CSAT is produced by the benchmark rubric; it is not customer feedback.
+- A single run is not a historical trend.
+- Latency percentiles use measured cases and include measurement coverage.
+- Estimated LLM cost requires complete token telemetry and matching model, provider, endpoint, and prices.
+- Estimated savings use explicit manual-handling and review assumptions. They are not realized savings and exclude unmodeled costs such as errors, churn, and infrastructure.
+
+## Interfaces
+
+- **Operations app:** Streamlit UI backed by FastAPI. Reviewers can submit a complaint, inspect the decision, and accept a proposed refund.
+- **Evaluation dashboard:** `frontend/refundbench.html` includes saved-run metrics, Dataset Analysis, and AI Agent Workflow diagrams. It reads benchmark artifacts and fixture JSON independently. Serve it over HTTP; direct `file://` access may block JSON loading.
+
+## Data and artifacts
+
+| Path | Purpose |
+| --- | --- |
+| `data/golden_set.json` | Expected benchmark scenarios and behavior. |
+| `data/orders.json` | Order and item fixtures. |
+| `data/deliveries.json` | Delivery status and item-level evidence fixtures. |
+| `data/refunds.json` | Local refund ledger records. |
+| `data/benchmark_results/case_results.json` | Generated case-level results for a saved run. |
+| `data/benchmark_results/dashboard.json` | Generated aggregate metrics and dashboard recommendations. |
+
+Benchmark result artifacts are generated output and are git-ignored. The HTML dashboard treats fixture JSON as read-only.
+
+## Tech stack
+
+- Python
+- Streamlit
+- FastAPI and Uvicorn
+- Pydantic
+- OpenAI-compatible LLM provider integration
+- Pytest
+- HTML, CSS, and JavaScript for the standalone dashboard
 
 ## Run locally
 
-Create and activate a virtual environment, then install dependencies:
+Create an environment and install dependencies:
 
 ```bash
 python3 -m venv .venv
@@ -74,80 +130,64 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Configure the required API key and model in the environment or a root `.env`
-file. OpenAI is the default provider:
+Configure the provider. OpenAI is the default:
 
 ```dotenv
 OPENAI_API_KEY=your_api_key
 OPEN_AI_MODEL=your_model_name
 ```
 
-To use Groq instead, set `LLM_PROVIDER=GROQ`; `LLM_BASE_URL` is optional and
-defaults to Groq's OpenAI-compatible endpoint. OpenAI uses the SDK's default
-endpoint unless `LLM_BASE_URL` is explicitly set:
+For Groq, set `LLM_PROVIDER=GROQ`; `LLM_BASE_URL` is optional. `BACKEND_URL` can override the Streamlit app's API URL (default `http://localhost:8000`).
 
-```dotenv
-LLM_PROVIDER=GROQ
-```
-
-Start the FastAPI backend:
+Start the API and operations app in separate terminals:
 
 ```bash
 uvicorn backend:app --host 127.0.0.1 --port 8000
 ```
 
-In a second terminal, activate the environment and start the Streamlit
-frontend:
-
 ```bash
 streamlit run app.py
 ```
 
-The frontend uses `http://localhost:8000` by default. Set `BACKEND_URL` to
-override the backend URL.
+To serve the standalone HTML dashboard from the repository root:
 
-## Run tests
+```bash
+python -m http.server 8001
+```
 
-With the virtual environment active:
+Then open `http://127.0.0.1:8001/frontend/refundbench.html`.
+
+## Validation and tests
+
+Validate the fixture dataset without running the agent:
+
+```bash
+pytest tests/test_refundbench_dataset.py
+```
+
+Run the full test suite:
 
 ```bash
 pytest
 ```
 
-## Benchmark business dashboard
+## Project structure
 
-The dashboard is read-only and consumes the generated JSON artifacts in
-`data/benchmark_results/`. If `output.txt` contains a saved benchmark report,
-from the project root run `python -m benchmark.generate_dashboard` to
-recalculate metrics offline and generate `case_results.json` and
-`dashboard.json`. This command does not run evaluations or call an LLM.
-Then launch the dashboard with `streamlit run app.py`. Opening or refreshing
-the dashboard only reads the generated JSON.
+```text
+app/                    Agent, domain, policy, settlement, and API layers
+benchmark/              Golden-case runner, comparator, metrics, artifact tools
+config/                 Environment-backed settings
+data/                   Golden cases, fixtures, refund ledger, saved artifacts
+frontend/app.py         Streamlit operations app and dashboard
+frontend/refundbench.html Standalone dashboard, dataset analysis, workflow diagrams
+tests/                  Unit, integration, and dataset validation tests
+app.py                  Streamlit entry point
+backend.py              FastAPI ASGI entry point
+```
 
-If no saved benchmark report exists yet, first run
-`python -m benchmark.runner` to evaluate the golden cases and save a report;
-this evaluation may call the configured LLM provider and incur charges.
-Then run the offline artifact-generation command above. If artifacts or the
-saved report are missing, the dashboard shows an empty state rather than
-fabricating results.
+## Limitations
 
-Business assumptions used for estimated savings and review effort are saved
-with the dashboard artifact. They can be set through the benchmark runner's
-CLI options or the corresponding `REFUNDBENCH_*` environment variables.
-Simulated CSAT is a deterministic proxy, not customer feedback, and a single
-run does not represent a historical trend.
-
-Latency is measured by the `TOTAL_AGENT` event from orchestrator entry through
-workflow completion, including internal tools and decision work but excluding
-surrounding application-service bookkeeping. Latency percentiles use only
-measured cases and include measured/missing coverage. Token aggregates are
-reported only when telemetry is complete across all cases; estimated LLM cost
-requires complete input/output token telemetry and configured prices matched
-to the model/provider/endpoint.
-
-Estimated net savings count manual handling as avoided only for automatic
-approvals whose deterministic decision, refund amount, and escalation
-comparisons all pass. The estimate subtracts assumed escalation review labor
-and estimated LLM operating cost. It excludes error costs, churn,
-infrastructure, and other unmodeled support costs, so it is not realized
-savings and may overstate economic impact.
+- This is a demo and benchmark system, not a production refund processor.
+- The refund provider is a mock; external payment execution is not integrated.
+- Case state is held in memory while the service runs; the local refund ledger is stored in `data/refunds.json`.
+- Simulated CSAT and estimated business impact are evaluation proxies, not observed customer or financial results.
